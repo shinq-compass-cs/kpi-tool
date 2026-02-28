@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPIフォローツール｜しんきゅうコンパス</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0f4c81;
+    --primary-light: #1a6db5;
+    --accent: #00a86b;
+    --accent-light: #e6f7f1;
+    --warning: #e67e22;
+    --warning-light: #fef3e2;
+    --danger: #e74c3c;
+    --danger-light: #fdecea;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* ===== ログイン画面 ===== */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f4c81 0%, #1a6db5 50%, #00a86b 100%);
+    padding: 20px;
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .login-logo {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-400);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 32px;
+    line-height: 1.4;
+  }
+
+  .login-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: var(--gray-800);
+    transition: border-color 0.2s;
+    outline: none;
+    margin-bottom: 20px;
+  }
+
+  .login-input:focus { border-color: var(--primary-light); }
+
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .login-btn:hover { background: var(--primary-light); transform: translateY(-1px); }
+  .login-btn:active { transform: translateY(0); }
+
+  .login-error {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--danger-light);
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    font-size: 13px;
+    display: none;
+  }
+
+  /* ===== ダッシュボード ===== */
+  #dashboard { display: none; }
+
+  .top-bar {
+    background: var(--primary);
+    color: var(--white);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+  }
+
+  .top-bar-left {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .top-bar-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .contact-btn:hover { opacity: 0.85; }
+  .contact-btn.line { background: #06C755; color: white; }
+  .contact-btn.mail { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+
+  .logout-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .logout-btn:hover { background: rgba(255,255,255,0.15); }
+
+  .main-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* ===== ヘッダーカード ===== */
+  .header-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--primary);
+  }
+
+  .salon-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+
+  .data-date {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 16px;
+  }
+
+  .rank-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .rank-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .rank-badge .rank-num {
+    font-size: 24px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .search-point-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ===== 達成状況サマリー ===== */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .summary-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .summary-num {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .summary-label { font-size: 12px; color: var(--gray-600); }
+  .summary-card.achieved .summary-num { color: var(--accent); }
+  .summary-card.unachieved .summary-num { color: var(--danger); }
+  .summary-card.total .summary-num { color: var(--primary); }
+
+  /* ===== ニーズセクション ===== */
+  .needs-section {
+    margin-bottom: 20px;
+  }
+
+  .needs-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .needs-header.search { background: linear-gradient(90deg, #1a3a5c, #2563EB); color: white; }
+  .needs-header.click { background: linear-gradient(90deg, #1a5c3a, #00a86b); color: white; }
+  .needs-header.reserve { background: linear-gradient(90deg, #5c3a1a, #e67e22); color: white; }
+
+  .needs-emoji { font-size: 20px; }
+
+  .needs-body {
+    background: var(--white);
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ===== KPIアイテム ===== */
+  .kpi-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.15s;
+  }
+
+  .kpi-item:last-child { border-bottom: none; }
+  .kpi-item:hover { background: var(--gray-50); }
+  .kpi-item.unachieved { background: #fffbf8; }
+
+  .kpi-status {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .kpi-status.ok { background: var(--accent-light); color: var(--accent); }
+  .kpi-status.ng { background: var(--danger-light); color: var(--danger); }
+
+  .kpi-main { flex: 1; min-width: 0; }
+
+  .kpi-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+  }
+
+  .kpi-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  .kpi-point-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: #fff3cd;
+    color: #856404;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  .kpi-values {
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  .kpi-values .current {
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+
+  .kpi-values .current.ok { color: var(--accent); }
+  .kpi-values .current.ng { color: var(--danger); }
+
+  /* ===== アクションボックス ===== */
+  .action-box {
+    margin: 8px 0 4px 0;
+    padding: 12px 14px;
+    background: var(--warning-light);
+    border-left: 3px solid var(--warning);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13px;
+    color: var(--gray-800);
+  }
+
+  .action-title {
+    font-weight: 700;
+    color: var(--warning);
+    margin-bottom: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .action-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: var(--white);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .action-link:hover {
+    background: var(--warning);
+    color: white;
+  }
+
+  .action-link.primary {
+    background: var(--warning);
+    color: white;
+  }
+
+  .action-link.primary:hover { opacity: 0.85; }
+
+  /* ===== トレンドグラフエリア ===== */
+  .trend-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .trend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .trend-chart-wrap {
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+  }
+
+  .trend-chart-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+  }
+
+  canvas { width: 100% !important; }
+
+  /* ===== ローディング ===== */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,76,129,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    color: white;
+    gap: 16px;
+  }
+
+  .spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { font-size: 14px; font-weight: 500; }
+
+  /* ===== レスポンシブ ===== */
+  @media (max-width: 600px) {
+    .summary-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .summary-num { font-size: 22px; }
+    .trend-grid { grid-template-columns: 1fr; }
+    .login-card { padding: 32px 24px; }
+    .top-bar { padding: 0 12px; }
+    .contact-btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== ローディング ===== -->
+<div class="loading-overlay" id="loading" style="display:none;">
+  <div class="spinner"></div>
+  <div class="loading-text">データを読み込んでいます...</div>
+</div>
+
+<!-- ===== ログイン画面 ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">しんきゅうコンパス</div>
+    <div class="login-title">KPIフォローツール</div>
+    <label class="login-label">サロンID</label>
+    <input type="text" id="salon-id-input" class="login-input" placeholder="例：12345" />
+    <button class="login-btn" onclick="handleLogin()">ダッシュボードを表示</button>
+    <div class="login-error" id="login-error">サロンIDが見つかりませんでした。番号をご確認ください。</div>
+  </div>
+</div>
+
+<!-- ===== ダッシュボード ===== -->
+<div id="dashboard">
+  <div class="top-bar">
+    <div class="top-bar-left">📊 KPIフォローツール</div>
+    <div class="top-bar-right">
+      <a href="#" target="_blank" class="contact-btn line">💬 <span>LINE相談</span></a>
+      <a href="mailto:info@shinq-compass.jp" class="contact-btn mail">✉️ <span>メール相談</span></a>
+      <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- ヘッダーカード -->
+    <div class="header-card">
+      <div class="salon-name" id="salon-name">―</div>
+      <div class="data-date" id="data-date">データ取得中...</div>
+      <div class="rank-row">
+        <div class="rank-badge" id="rank-badge" style="display:none;">
+          <span>エリア内順位</span>
+          <span class="rank-num" id="area-rank">―</span>
+          <span>位</span>
+        </div>
+        <div class="search-point-badge" id="point-badge" style="display:none;">
+          ⭐ 検索優先ポイント：<strong id="search-point">―</strong> pt
+        </div>
+      </div>
+    </div>
+
+    <!-- 達成サマリー -->
+    <div class="summary-row">
+      <div class="summary-card achieved">
+        <div class="summary-num" id="achieved-count">―</div>
+        <div class="summary-label">達成中</div>
+      </div>
+      <div class="summary-card unachieved">
+        <div class="summary-num" id="unachieved-count">―</div>
+        <div class="summary-label">未達・未設定</div>
+      </div>
+      <div class="summary-card total">
+        <div class="summary-num" id="total-count">―</div>
+        <div class="summary-label">対象KPI数</div>
+      </div>
+    </div>
+
+    <!-- ニーズ別KPI -->
+    <div id="kpi-sections"></div>
+
+    <!-- トレンドグラフ -->
+    <div class="trend-section" id="trend-section" style="display:none;">
+      <div class="section-title">📈 月次トレンド（直近6ヶ月）</div>
+      <div class="trend-grid">
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">アクセス数</div>
+          <canvas id="chart-access"></canvas>
+        </div>
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">クリック率（%）</div>
+          <canvas id="chart-ctr"></canvas>
+        </div>
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">ネット予約率（%）</div>
+          <canvas id="chart-cvr"></canvas>
+        </div>
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">口コミ件数</div>
+          <canvas id="chart-review"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ===== 設定（ここを変更してください） =====
+const API_KEY = 'AIzaSyB4Ll_RyY62htH9TwnV3ZxJiEybkEpiHCg'; // ← 発行したAPIキーに置き換えてください
+const SPREADSHEET_ID = '1CiuXRdYG-lI_jWA4DiR_uXvYU9dgqTE1v-JWsZF1l_g';
+
+// 月別タブ（新しい順に追加していく。毎月先頭に追加してください）
+const MONTHLY_SHEETS = ['2602', '2601', '2512'];
+const FREE_TRIAL_SHEET = '無料体験';
+
+// 担当者連絡先
+const LINE_URL = 'https://line.me/ti/p/@348cwzis';
+const MAIL_ADDRESS = 'info@shinq-compass.jp';
+
+// ===== KPI定義 =====
+const KPI_DEFS = {
+  // ニーズ1: 検索で見つけてもらう
+  search: {
+    label: '🔍 検索で見つけてもらう',
+    theme: 'search',
+    items: [
+      { key: 'access', name: 'アクセス数', col: 12, threshold: 200, type: 'num', unit: '', searchPoint: false },
+      { key: 'ctr', name: 'クリック率', col: null, threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.click > 0 ? (d.click / d.access * 100) : null },
+      { key: 'store_pr', name: '店舗PR情報登録', col: 31, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 100 },
+      { key: 'reserve_public', name: '予約公開利用院', col: 27, threshold: 1, type: 'flag_str', unit: '', searchPoint: true, point: 50 },
+      { key: 'reserve_gmb', name: '予約GMB設置', col: 28, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 50 },
+      { key: 'reserve_banner', name: '予約バナー設置', col: 29, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 50 },
+      { key: 'compass_link', name: 'コンパス相互リンク設置', col: 30, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 30 },
+    ]
+  },
+  // ニーズ2: 予約ボタンを押してもらう
+  click: {
+    label: '👆 予約ボタンを押してもらう',
+    theme: 'click',
+    items: [
+      { key: 'review', name: '口コミ件数', col: 23, threshold: 5, type: 'num', unit: '件', searchPoint: true, point: '1件ごと' },
+      { key: 'review_reply', name: '口コミ返信件数', col: 24, threshold: 5, type: 'num', unit: '件', searchPoint: true, point: '1件ごと' },
+      { key: 'pickup_review', name: 'PickUp口コミ', col: 25, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+      { key: 'review_parts', name: '口コミパーツ設置', col: 26, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 30 },
+      { key: 'menu3', name: 'メニュー3件以上登録', col: 32, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+    ]
+  },
+  // ニーズ3: 実際に予約してもらう
+  reserve: {
+    label: '📅 実際に予約してもらう',
+    theme: 'reserve',
+    items: [
+      { key: 'cvr', name: 'ネット予約率', col: null, threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.click > 0 ? (d.net_reserve / d.click * 100) : null },
+      { key: 'menu_link', name: 'メニュー連携', col: 33, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+      { key: 'guest_reserve', name: 'ゲスト予約利用', col: 36, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+      { key: 'deadline', name: '予約受付締切時間', col: 37, threshold: 60, type: 'deadline', unit: '分', searchPoint: false },
+    ]
+  }
+};
+
+// ===== アクション定義 =====
+const ACTIONS = {
+  access: {
+    text: 'アクセスを増やすために、以下の施策を実施しましょう。',
+    links: [
+      { label: '🔍 検索優先ポイント対象KPIを確認する', action: 'scroll_search' },
+      { label: '🔗 予約導線系KPIを確認する', action: 'scroll_reserve' },
+    ]
+  },
+  ctr: {
+    text: 'クリック率を上げるために、口コミを強化して患者さんの反応を高めましょう。',
+    links: [{ label: '💬 口コミ系KPIを確認する', action: 'scroll_click' }]
+  },
+  review: {
+    text: '口コミを増やすために、以下のツールをご活用ください。',
+    links: [
+      { label: '📄 口コミ代理投稿用紙をダウンロード', url: 'https://example.com/review_form.pdf' },
+      { label: '📱 QRコードを表示する', action: 'show_qr' },
+      { label: '📋 院内設置用PDF（3枚）をダウンロード', url: 'https://example.com/review_guide.pdf' },
+    ]
+  },
+  review_reply: {
+    text: '口コミへの返信を増やしましょう。返信ひな形生成ツールも活用できます。',
+    links: [
+      { label: '💬 口コミ返信ページへ', url: 'https://admin.shinq-compass.jp/' },
+      { label: '✍️ 返信ひな形を自動生成する', url: 'https://example.com/reply-tool' },
+    ]
+  },
+  pickup_review: {
+    text: 'PickUp口コミを設定して、患者さんの印象的な声を目立たせましょう。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  review_parts: {
+    text: '口コミパーツをホームページに設置して、患者さんに信頼感を与えましょう。',
+    links: [
+      { label: '🛠️ 代行設置を依頼する（Googleフォーム）', url: 'https://forms.gle/YOUR_FORM_ID' },
+      { label: '📋 自分で設置する場合はこちら', url: 'https://admin.shinq-compass.jp/' },
+    ]
+  },
+  store_pr: {
+    text: '店舗PR情報を登録して、検索優先ポイントを獲得しましょう（+100pt）。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  menu3: {
+    text: 'メニューを3件以上登録して、患者さんに選ばれやすくしましょう。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  reserve_public: {
+    text: 'しんきゅう予約を公開設定にして、ネット予約を受け付けましょう（+50pt）。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  reserve_gmb: {
+    text: 'GoogleビジネスプロフィールにしんきゅうURLを設置して、アクセスを増やしましょう（+50pt）。',
+    links: [
+      { label: '🛠️ 代行設定を依頼する（Googleフォーム）', url: 'https://forms.gle/YOUR_FORM_ID' },
+      { label: '📋 自分で設定する場合はこちら', url: 'https://business.google.com/' },
+    ]
+  },
+  reserve_banner: {
+    text: '予約バナーをホームページに設置して、予約への導線を強化しましょう（+50pt）。',
+    links: [
+      { label: '🛠️ 代行設置を依頼する（Googleフォーム）', url: 'https://forms.gle/YOUR_FORM_ID' },
+      { label: '📋 自分で設置する場合はこちら', url: 'https://admin.shinq-compass.jp/' },
+    ]
+  },
+  compass_link: {
+    text: 'ホームページにコンパスへの相互リンクを設置して、検索優先ポイントを獲得しましょう（+30pt）。',
+    links: [
+      { label: '🛠️ 代行設置を依頼する（Googleフォーム）', url: 'https://forms.gle/YOUR_FORM_ID' },
+      { label: '📋 自分で設置する場合はこちら', url: 'https://admin.shinq-compass.jp/' },
+    ]
+  },
+  menu_link: {
+    text: 'メニュー連携を設定して、患者さんがスムーズに予約できるようにしましょう。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  guest_reserve: {
+    text: 'ゲスト予約を有効にして、初診の患者さんが予約しやすくしましょう。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  deadline: {
+    text: '予約受付締切を1時間以内に設定して、直前の予約を取りこぼさないようにしましょう。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  cvr: {
+    text: 'ネット予約率を上げるために、予約設定系のKPIを実施しましょう。',
+    links: [{ label: '📅 予約設定系KPIを確認する', action: 'scroll_reserve' }]
+  },
+};
+
+// ===== グローバル変数 =====
+let currentData = null;
+let trendData = [];
+let charts = {};
+
+// ===== ユーティリティ =====
+function formatSheetName(name) {
+  // 'YYMM' 形式のシート名を '20YY年M月分' に変換
+  if (/^\d{4}$/.test(name)) {
+    const year = 2000 + parseInt(name.slice(0, 2));
+    const month = parseInt(name.slice(2));
+    return `${year}年${month}月分`;
+  }
+  return name;
+}
+
+function showLoading(show) {
+  document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+
+function extractValue(cell) {
+  if (cell === null || cell === undefined) return null;
+  const str = String(cell);
+  const match = str.match(/,"([^"]*?)"\)$/);
+  if (match) return match[1];
+  const match2 = str.match(/,([\d.]+)\)$/);
+  if (match2) return parseFloat(match2[1]);
+  return str;
+}
+
+async function fetchSheet(sheetName, range = 'A1:BZ1200') {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}!${range}?key=${API_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`シート取得失敗: ${sheetName}`);
+  const json = await res.json();
+  return json.values || [];
+}
+
+function parseRow(row, isMonthly) {
+  const get = (idx) => {
+    const val = row[idx];
+    if (val === undefined || val === null || val === '' || val === '#N/A') return null;
+    const num = parseFloat(val);
+    return isNaN(num) ? val : num;
+  };
+
+  if (isMonthly) {
+    return {
+      salon_id: String(get(0) || '').trim(),
+      name: get(1),
+      area: get(6),
+      search_point: get(10),
+      access: get(12),
+      click: get(13),
+      net_reserve: get(14),
+      reserve_public: get(15),
+      review: get(23),
+      review_reply: get(24),
+      pickup_review: get(25),
+      review_parts: get(26),
+      reserve_public_flag: get(27),
+      reserve_gmb: get(28),
+      reserve_banner: get(29),
+      compass_link: get(30),
+      store_pr: get(31),
+      menu3: get(32),
+      menu_link: get(33),
+      guest_reserve: get(36),
+      deadline: get(37),
+    };
+  } else {
+    // 無料体験タブ
+    return {
+      salon_id: String(get(0) || '').trim(),
+      name: get(4),
+      area: get(11),
+      search_point: get(18),
+      access: get(13),
+      click: get(15),
+      net_reserve: get(17),
+      reserve_public: null,
+      review: get(37),
+      review_reply: get(38),
+      pickup_review: get(24),
+      review_parts: get(23),
+      reserve_public_flag: get(19),
+      reserve_gmb: get(20),
+      reserve_banner: get(21),
+      compass_link: get(22),
+      store_pr: get(25),
+      menu3: get(26),
+      menu_link: get(27),
+      guest_reserve: get(30),
+      deadline: get(31),
+    };
+  }
+}
+
+// ===== ログイン処理 =====
+async function handleLogin() {
+  const salonId = document.getElementById('salon-id-input').value.trim();
+  if (!salonId) return;
+
+  showLoading(true);
+  document.getElementById('login-error').style.display = 'none';
+
+  try {
+    let found = null;
+    let foundSheet = null;
+    trendData = [];
+
+    // 月別タブを新しい順に検索（全月分のトレンドデータも収集）
+    for (const sheet of MONTHLY_SHEETS) {
+      const rows = await fetchSheet(sheet);
+      for (let i = 1; i < rows.length; i++) {
+        const id = String(rows[i][0] || '').trim();
+        if (id === salonId) {
+          const data = parseRow(rows[i], true);
+          // 最初に見つかった（最新）シートのデータをメインデータとして使用
+          if (!found) {
+            found = data;
+            foundSheet = sheet;
+          }
+          // 全月分をトレンド用に収集（古い順になるようunshiftで先頭追加）
+          trendData.unshift({ sheet, data });
+          break;
+        }
+      }
+    }
+
+    // 月別に見つからなければ無料体験タブを検索
+    if (!found) {
+      const rows = await fetchSheet(FREE_TRIAL_SHEET);
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const id = String(row[0] || '').trim();
+        if (id === salonId) {
+          found = parseRow(row, false);
+          foundSheet = FREE_TRIAL_SHEET;
+          break;
+        }
+      }
+    }
+
+    if (!found) {
+      document.getElementById('login-error').style.display = 'block';
+      showLoading(false);
+      return;
+    }
+
+    currentData = found;
+    renderDashboard(found, foundSheet);
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('login-error').textContent = 'データの読み込みに失敗しました。時間をおいて再試行してください。';
+    document.getElementById('login-error').style.display = 'block';
+  }
+
+  showLoading(false);
+}
+
+// ===== ダッシュボード描画 =====
+function renderDashboard(d, sheetName) {
+  // 院名・日付
+  document.getElementById('salon-name').textContent = d.name || `サロンID: ${d.salon_id}`;
+  document.getElementById('data-date').textContent = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
+
+  // エリア順位・ポイント
+  if (d.search_point !== null) {
+    document.getElementById('search-point').textContent = d.search_point;
+    document.getElementById('point-badge').style.display = 'flex';
+  }
+
+  // KPIセクション描画
+  let totalAchieved = 0, totalUnachieved = 0, totalCount = 0;
+
+  const sectionsEl = document.getElementById('kpi-sections');
+  sectionsEl.innerHTML = '';
+
+  Object.entries(KPI_DEFS).forEach(([needsKey, needsDef]) => {
+    const section = document.createElement('div');
+    section.className = 'needs-section';
+    section.id = `needs-${needsKey}`;
+
+    const header = document.createElement('div');
+    header.className = `needs-header ${needsDef.theme}`;
+    header.innerHTML = `<span class="needs-emoji"></span><span>${needsDef.label}</span>`;
+    section.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'needs-body';
+
+    needsDef.items.forEach(item => {
+      let value = null;
+      let achieved = false;
+
+      if (item.type === 'rate' && item.calc) {
+        value = item.calc(d);
+        if (value !== null) achieved = value >= item.threshold;
+      } else if (item.type === 'num') {
+        value = d[item.key];
+        if (value !== null) achieved = value >= item.threshold;
+      } else if (item.type === 'flag') {
+        value = d[item.key];
+        achieved = value == 1;
+      } else if (item.type === 'flag_str') {
+        value = d[item.key];
+        achieved = value == 1 || value === '公開';
+      } else if (item.type === 'deadline') {
+        value = d[item.key];
+        if (value !== null) achieved = value <= item.threshold;
+      }
+
+      totalCount++;
+      if (achieved) totalAchieved++;
+      else totalUnachieved++;
+
+      const itemEl = document.createElement('div');
+      itemEl.className = `kpi-item ${achieved ? 'achieved' : 'unachieved'}`;
+
+      // 値の表示テキスト
+      let valueText = '';
+      if (item.type === 'rate') {
+        valueText = value !== null ? `${value.toFixed(1)}% / 目標 ${item.threshold}%` : '―';
+      } else if (item.type === 'num') {
+        valueText = value !== null ? `${value}${item.unit} / 目標 ${item.threshold}${item.unit}` : '―';
+      } else if (item.type === 'flag' || item.type === 'flag_str') {
+        valueText = achieved ? '設定済み ✓' : '未設定';
+      } else if (item.type === 'deadline') {
+        valueText = value !== null ? `${value}分 / 目標 ${item.threshold}分以内` : '―';
+      }
+
+      const pointBadge = item.searchPoint
+        ? `<span class="kpi-point-badge">★ ${item.point ? item.point + 'pt' : 'ポイント対象'}</span>`
+        : '';
+
+      itemEl.innerHTML = `
+        <div class="kpi-status ${achieved ? 'ok' : 'ng'}">${achieved ? '✓' : '!'}</div>
+        <div class="kpi-main">
+          <div class="kpi-name-row">
+            <span class="kpi-name">${item.name}</span>
+            ${pointBadge}
+          </div>
+          <div class="kpi-values">
+            <span class="current ${achieved ? 'ok' : 'ng'}">${valueText}</span>
+          </div>
+          ${!achieved && ACTIONS[item.key] ? renderAction(item.key) : ''}
+        </div>
+      `;
+
+      body.appendChild(itemEl);
+    });
+
+    section.appendChild(body);
+    sectionsEl.appendChild(section);
+  });
+
+  // サマリー更新
+  document.getElementById('achieved-count').textContent = totalAchieved;
+  document.getElementById('unachieved-count').textContent = totalUnachieved;
+  document.getElementById('total-count').textContent = totalCount;
+
+  // トレンドグラフ
+  if (trendData.length >= 2) {
+    renderTrendCharts();
+  }
+
+  // 画面切り替え
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  // ライン問い合わせURL更新
+  document.querySelector('.contact-btn.line').href = LINE_URL;
+}
+
+function renderAction(key) {
+  const action = ACTIONS[key];
+  if (!action) return '';
+
+  const links = action.links.map(link => {
+    if (link.url) {
+      return `<a href="${link.url}" target="_blank" class="action-link primary">${link.label}</a>`;
+    }
+    return `<button class="action-link" onclick="handleActionClick('${link.action}')">${link.label}</button>`;
+  }).join('');
+
+  return `
+    <div class="action-box">
+      <div class="action-title">✅ アクション</div>
+      <div>${action.text}</div>
+      <div class="action-links">${links}</div>
+    </div>
+  `;
+}
+
+function handleActionClick(action) {
+  if (action === 'scroll_search') document.getElementById('needs-search')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'scroll_click') document.getElementById('needs-click')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'scroll_reserve') document.getElementById('needs-reserve')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'show_qr') alert('QRコード表示機能は準備中です。担当者にご連絡ください。');
+}
+
+// ===== トレンドチャート =====
+function renderTrendCharts() {
+  document.getElementById('trend-section').style.display = 'block';
+
+  const labels = trendData.map(t => formatSheetName(t.sheet));
+  const accessData = trendData.map(t => t.data.access || 0);
+  const ctrData = trendData.map(t => t.data.click && t.data.access ? parseFloat((t.data.click / t.data.access * 100).toFixed(1)) : 0);
+  const cvrData = trendData.map(t => t.data.net_reserve && t.data.click ? parseFloat((t.data.net_reserve / t.data.click * 100).toFixed(1)) : 0);
+  const reviewData = trendData.map(t => t.data.review || 0);
+
+  const makeChart = (id, data, color, label, threshold) => {
+    if (charts[id]) charts[id].destroy();
+    const ctx = document.getElementById(id)?.getContext('2d');
+    if (!ctx) return;
+    charts[id] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label,
+          data,
+          borderColor: color,
+          backgroundColor: color + '20',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  };
+
+  makeChart('chart-access', accessData, '#0f4c81', 'アクセス数', 200);
+  makeChart('chart-ctr', ctrData, '#2563EB', 'クリック率(%)', 10);
+  makeChart('chart-cvr', cvrData, '#e67e22', 'ネット予約率(%)', 10);
+  makeChart('chart-review', reviewData, '#00a86b', '口コミ件数', 5);
+}
+
+// ===== ログアウト =====
+function handleLogout() {
+  currentData = null;
+  trendData = [];
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+  document.getElementById('salon-id-input').value = '';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('kpi-sections').innerHTML = '';
+  document.getElementById('trend-section').style.display = 'none';
+}
+
+// Enterキーでログイン
+document.getElementById('salon-id-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
+</script>
+</body>
+</html>
