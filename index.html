@@ -1262,8 +1262,8 @@ async function handleLogin() {
       return;
     }
 
-    // メールアドレス照合
-    if (found.email !== email) {
+    // メールアドレス照合（csモードはスキップ）
+    if (!IS_CS_MODE && found.email !== email) {
       const err = document.getElementById('login-error');
       err.textContent = 'メールアドレスが一致しません。ご確認ください。';
       err.style.display = 'block';
