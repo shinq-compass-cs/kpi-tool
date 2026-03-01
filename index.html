@@ -988,58 +988,71 @@ function findHeaderRowIndex(rows) {
   return 0; // 見つからなければ先頭行にフォールバック
 }
 
-// ===== ヘッダーマップ構築（ヘッダー行の文字列 → 列インデックス） =====
+// ===== ヘッダーマップ構築（改行を除去して正規化） =====
 function buildHeaderMap(headerRow) {
   const map = {};
   if (!headerRow) return map;
   for (let i = 0; i < headerRow.length; i++) {
-    const h = String(headerRow[i] || '').trim();
-    if (h) map[h] = i;
+    // セル内の改行を除去してキーを正規化（初出を優先）
+    const h = String(headerRow[i] || '').replace(/\n/g, '').trim();
+    if (h && !(h in map)) map[h] = i;
   }
   return map;
 }
 
 // ===== 行データをヘッダーマップで解析（VLOOKUP方式） =====
 function parseRowDynamic(row, hm) {
-  const get = (key) => {
-    const idx = hm[key];
+  const getVal = (idx) => {
     if (idx === undefined) return null;
     const val = row[idx];
     if (val === undefined || val === null || val === '' || val === '#N/A') return null;
     const num = parseFloat(val);
     return isNaN(num) ? val : num;
   };
-  const emailIdx = hm['メールアドレス'];
+
+  // 複数候補キーで検索：完全一致 → 前方一致（「アクセス数」→「アクセス数（30日）」）→ 次候補
+  const findIdx = (...keys) => {
+    for (const key of keys) {
+      if (hm[key] !== undefined) return hm[key];
+      const found = Object.keys(hm).find(k => k.startsWith(key) && k !== key);
+      if (found !== undefined) return hm[found];
+    }
+    return undefined;
+  };
+  const get = (...keys) => getVal(findIdx(...keys));
+
+  const emailIdx = findIdx('メールアドレス');
   return {
-    salon_id:          String(get('サロンID') || '').trim(),
+    salon_id:          String(getVal(findIdx('サロンID')) || '').trim(),
     name:              get('院名'),
     email:             emailIdx !== undefined ? String(row[emailIdx] || '').trim().toLowerCase() : '',
     login:             get('ログイン'),
-    compass_plan:      get('コンパス現在プラン'),
-    yoyaku_plan:       get('予約現在プラン'),
+    // シートにより列名が異なる項目は複数候補を指定
+    compass_plan:      get('コンパス現在プラン', 'しんきゅうコンパス：プラン'),
+    yoyaku_plan:       get('予約現在プラン', 'しんきゅう予約：現在のプラン'),
     area:              get('検索順位エリア'),
     area_rank:         get('エリア内ランキング'),
-    search_point:      get('検索優先ポイント'),
-    access:            get('アクセス数'),
-    click:             get('クリック数'),
+    search_point:      get('検索優先ポイント', '掲載優先ポイント'),   // 2602は「掲載優先ポイント」
+    access:            get('アクセス数'),                            // 前方一致で「アクセス数（30日）」にも対応
+    click:             get('クリック数', '予約ボタンクリック数'),      // 2601は「予約ボタンクリック数」
     net_reserve:       get('ネット予約数'),
-    reserve_public:    get('予約公開状態'),
+    reserve_public:    get('予約公開状態', '予約公開利用院'),          // 2601は「予約公開利用院」
     reserve_gmb:       get('予約GMB'),
-    reserve_banner:    get('予約バナー'),
-    compass_link:      get('HP相互リンク'),
-    review_parts:      get('口コミパーツ'),
-    pickup_review:     get('口コミpickup'),
+    reserve_banner:    get('予約バナー'),                            // 前方一致で「予約バナー設置18800」も対応
+    compass_link:      get('HP相互リンク', 'コンパス相互リンク設置'),  // 2601は「コンパス相互リンク設置」
+    review_parts:      get('口コミパーツ'),                          // 前方一致で「口コミパーツ設置」「口コミパーツ(30点)」も対応
+    pickup_review:     get('口コミpickup', 'PickUp口コミ'),           // 2601は「PickUp口コミ」
     store_pr:          get('店舗PR情報登録'),
     menu3:             get('メニュー3件以上登録'),
     menu_link:         get('メニュー連携'),
     guest_reserve:     get('ゲスト予約利用'),
     deadline:          get('予約受付締切時間'),
     calendar_count:    get('カレンダー登録件数'),
-    net_reserve_count: get('ネット予約件数'),
-    manual_count:      get('手動登録件数'),
-    block_count:       get('ブロック件数'),
-    review:            get('口コミ件数'),
-    review_reply:      get('口コミ返信数'),
+    net_reserve_count: get('ネット予約件数', 'ネット予約'),            // 2601は「ネット予約」
+    manual_count:      get('手動登録件数', '手動登録'),               // 2601は「手動登録」
+    block_count:       get('ブロック件数', 'ブロック'),               // 2601は「ブロック」
+    review:            get('口コミ件数', '口コミ5件以上'),            // 実態は件数値が格納されている
+    review_reply:      get('口コミ返信数', '口コミ返信５件以上'),
   };
 }
 
