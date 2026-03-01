@@ -798,6 +798,22 @@
       <div class="advice-body" id="advice-body"></div>
     </div>
 
+    <!-- 口コミQRコード -->
+    <div class="qr-section" id="qr-section" style="display:none;">
+      <div class="section-title">📷 口コミ投稿 QRコード</div>
+      <div class="qr-body">
+        <div class="qr-canvas-wrap">
+          <canvas id="qr-canvas" width="200" height="200"></canvas>
+          <button class="qr-download-btn" onclick="downloadQR()">⬇ ダウンロード</button>
+        </div>
+        <div class="qr-info">
+          <div class="qr-info-label">口コミ投稿URL</div>
+          <a id="qr-review-url" class="qr-review-url" href="" target="_blank" rel="noopener"></a>
+          <p class="qr-hint">このQRコードをスキャンすると、しんきゅうコンパスの口コミ投稿ページに直接アクセスできます。院内への掲示やチラシへの印刷にご活用ください。</p>
+        </div>
+      </div>
+    </div>
+
     <!-- トレンドグラフ -->
     <div class="trend-section" id="trend-section" style="display:none;">
       <div class="section-title">📈 月次トレンド（直近6ヶ月）</div>
