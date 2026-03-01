@@ -1456,13 +1456,12 @@ function handleActionClick(action) {
 
 function openHpForm() {
   if (!currentData) return;
-  const formId   = '1i7FVy5MkP5h6Kw8PtBqQV-qmVpaAD8kRZTU9jz3wDO8';
+  const hashId   = '1FAIpQLScEVhraUKgynEPApUDz5QVexUnidX3H9IK6RhqH1ITO72m8dQ';
   const idEntry  = '2102948924';
   const nameEntry= '1524391233';
-  const url = `https://docs.google.com/forms/d/${formId}/viewform?usp=pp_url` +
+  const url = `https://docs.google.com/forms/d/e/${hashId}/viewform?usp=pp_url` +
     `&entry.${idEntry}=${encodeURIComponent(currentData.salon_id || '')}` +
     `&entry.${nameEntry}=${encodeURIComponent(currentData.name || '')}`;
-  console.log('[HP Form URL]', url);
   window.open(url, '_blank');
 }
 
