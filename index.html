@@ -1317,7 +1317,8 @@ function renderDashboard(d, sheetName) {
 
     const header = document.createElement('div');
     header.className = `needs-header ${needsDef.theme}`;
-    header.innerHTML = `<span class="needs-emoji"></span><span>${needsDef.label}</span>`;
+    header.innerHTML = `<span class="needs-header-label"><span class="needs-emoji"></span><span>${needsDef.label}</span></span><span class="needs-chevron">▼</span>`;
+    header.addEventListener('click', () => section.classList.toggle('collapsed'));
     section.appendChild(header);
 
     const body = document.createElement('div');
