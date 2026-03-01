@@ -1172,10 +1172,12 @@ function parseRowDynamic(row, hm) {
 // ===== ログイン処理 =====
 async function handleLogin() {
   const salonId = document.getElementById('salon-id-input').value.trim();
-  const email = document.getElementById('email-input').value.trim().toLowerCase();
-  if (!salonId || !email) {
+  const email = IS_CS_MODE ? null : document.getElementById('email-input').value.trim().toLowerCase();
+  if (!salonId || (!IS_CS_MODE && !email)) {
     const err = document.getElementById('login-error');
-    err.textContent = 'サロンIDとメールアドレスを入力してください。';
+    err.textContent = IS_CS_MODE
+      ? 'サロンIDを入力してください。'
+      : 'サロンIDとメールアドレスを入力してください。';
     err.style.display = 'block';
     return;
   }
