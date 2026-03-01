@@ -1886,7 +1886,7 @@ function sendLoginLog() {
 
 // ダッシュボード内の外部リンククリックを追跡
 document.getElementById('dashboard').addEventListener('click', (e) => {
-  if (IS_CS_MODE) return;
+  if (isInternal) return;
   const a = e.target.closest('a[href]');
   if (a && /^https?:/.test(a.href)) trackUrl(a.href);
 });
