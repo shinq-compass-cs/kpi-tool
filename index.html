@@ -1428,7 +1428,7 @@ function handleActionClick(action) {
   if (action === 'scroll_search') document.getElementById('needs-search')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'scroll_click') document.getElementById('needs-click')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'scroll_reserve') document.getElementById('needs-reserve')?.scrollIntoView({ behavior: 'smooth' });
-  if (action === 'show_qr') alert('QRコード表示機能は準備中です。担当者にご連絡ください。');
+  if (action === 'show_qr') document.getElementById('qr-section')?.scrollIntoView({ behavior: 'smooth' });
 }
 
 // ===== 追加取得可能ポイント計算 =====
