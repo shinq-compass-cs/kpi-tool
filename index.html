@@ -1066,9 +1066,10 @@ async function handleLogin() {
     for (const sheet of MONTHLY_SHEETS) {
       const rows = await fetchSheet(sheet);
       if (!rows.length) continue;
-      const hm = buildHeaderMap(rows[0]);  // 1行目からヘッダーマップ構築
+      const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
+      const hm = buildHeaderMap(rows[headerIdx]);
       const idCol = hm['サロンID'] ?? 0;
-      for (let i = 1; i < rows.length; i++) {
+      for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
         const id = String(rows[i][idCol] || '').trim();
         if (id === salonId) {
           const data = parseRowDynamic(rows[i], hm);
