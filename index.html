@@ -1708,7 +1708,7 @@ function generateAdvice(d) {
       let achieved = false;
       if (item.type === 'num')         achieved = d[item.key] !== null && d[item.key] >= item.threshold;
       else if (item.type === 'flag')   achieved = Number(d[item.key]) >= 1;
-      else if (item.type === 'flag_str') achieved = !!d[item.key] && d[item.key] === '公開';
+      else if (item.type === 'flag_str') achieved = d[item.key] == 1 || d[item.key] === '公開';
       else if (item.type === 'deadline') achieved = d[item.key] !== null && d[item.key] <= item.threshold;
       if (!achieved) unachieved.add(item.key);
     }
