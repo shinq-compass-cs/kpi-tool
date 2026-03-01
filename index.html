@@ -1359,8 +1359,9 @@ function calcPotentialRank(area, maxPt, allRows, hm) {
   const areaIdx = hm['検索順位エリア'];
   const ptIdx   = hm['検索優先ポイント'];
   if (areaIdx === undefined || ptIdx === undefined) return null;
+  const startRow = findHeaderRowIndex(allRows) + 1; // ヘッダー行をスキップ
   let countAbove = 0;
-  for (let i = 1; i < allRows.length; i++) {
+  for (let i = startRow; i < allRows.length; i++) {
     const rowArea = String(allRows[i][areaIdx] || '').trim();
     const rowPt   = parseFloat(allRows[i][ptIdx]);
     if (rowArea === String(area || '').trim() && !isNaN(rowPt) && rowPt > maxPt) {
