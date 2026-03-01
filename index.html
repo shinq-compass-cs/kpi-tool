@@ -1160,22 +1160,15 @@ async function handleLogin() {
 function renderDashboard(d, sheetName) {
   // 院名・日付
   document.getElementById('salon-name').textContent = d.name || `サロンID: ${d.salon_id}`;
-  document.getElementById('data-date').textContent = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
-
-  // 契約プラン表示
+  // データ参照元 ｜ 表示日時 ｜ 契約プランを1行で表示
+  let dateStr = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
   if (d.compass_plan) {
-    document.getElementById('compass-plan-badge').textContent = 'しんきゅうコンパス：' + d.compass_plan;
-    const planVal = String(d.compass_plan).trim();
-    const isPlatinaPlus = planVal === 'プラチナPLUSプラン' || planVal === 'プラチナPLUS';
-    const yoyakuText = isPlatinaPlus
-      ? 'しんきゅう予約：プロプラン相当'
-      : (d.yoyaku_plan ? 'しんきゅう予約：' + d.yoyaku_plan : '');
-    if (yoyakuText) {
-      document.getElementById('yoyaku-plan-badge').textContent = yoyakuText;
-      document.getElementById('yoyaku-plan-badge').style.display = 'inline-flex';
-    }
-    document.getElementById('plan-row').style.display = 'flex';
+    dateStr += ` ｜ しんきゅうコンパス：${d.compass_plan}`;
+    const isPlatinaPlus = String(d.compass_plan).trim() === 'プラチナPLUSプラン' || String(d.compass_plan).trim() === 'プラチナPLUS';
+    const yoyakuText = isPlatinaPlus ? 'プロプラン相当' : (d.yoyaku_plan || '');
+    if (yoyakuText) dateStr += ` ｜ しんきゅう予約：${yoyakuText}`;
   }
+  document.getElementById('data-date').textContent = dateStr;
 
   // エリア内ランキング
   if (d.area_rank !== null && d.area_rank !== undefined) {
