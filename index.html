@@ -1172,10 +1172,17 @@ async function handleLogin() {
     // 月別に見つからなければ無料体験タブを検索
     if (!found) {
       const rows = await fetchSheet(FREE_TRIAL_SHEET);
+      console.log('[DEBUG] 無料体験タブ 行数=', rows.length);
       if (rows.length) {
         const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
         const hm = buildHeaderMap(rows[headerIdx]);
         const idCol = hm['サロンID'] ?? 0;
+        // 無料体験タブの全サロンIDをログ（先頭20件）
+        const sampleIds = [];
+        for (let i = headerIdx + 1; i < Math.min(rows.length, headerIdx + 21); i++) {
+          sampleIds.push(String(rows[i][idCol] || '').trim());
+        }
+        console.log('[DEBUG] 無料体験タブ 先頭20件のID:', sampleIds);
         for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
           const row = rows[i];
           const id = String(row[idCol] || '').trim();
