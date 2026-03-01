@@ -1267,8 +1267,8 @@ async function handleLogin() {
       return;
     }
 
-    // メールアドレス照合（csモードはスキップ）
-    if (!IS_CS_MODE && found.email !== email) {
+    // メールアドレス照合（社内メアドの場合はスキップ）
+    if (!loginIsInternal && found.email !== email) {
       const err = document.getElementById('login-error');
       err.textContent = 'メールアドレスが一致しません。ご確認ください。';
       err.style.display = 'block';
@@ -1277,7 +1277,8 @@ async function handleLogin() {
     }
 
     currentData = found;
-    if (!IS_CS_MODE) {
+    isInternal = loginIsInternal;
+    if (!isInternal) {
       loginTime = new Date();
       logSent = false;
       sessionClickedUrls.length = 0;
