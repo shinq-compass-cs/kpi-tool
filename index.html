@@ -1208,6 +1208,22 @@ function calcAdditionalPoints(d) {
   return add;
 }
 
+// ===== 同エリア内での到達可能順位を計算 =====
+// maxPt を達成した場合に何位になるかを全行データから算出
+function calcPotentialRank(area, maxPt, allRows, isMonthly) {
+  const areaCol = isMonthly ? 6 : 12;   // 月別:G列 / 無料体験:M列
+  const ptCol   = isMonthly ? 10 : 19;  // 月別:K列 / 無料体験:T列
+  let countAbove = 0;
+  for (let i = 1; i < allRows.length; i++) {
+    const rowArea = String(allRows[i][areaCol] || '').trim();
+    const rowPt   = parseFloat(allRows[i][ptCol]);
+    if (rowArea === String(area || '').trim() && !isNaN(rowPt) && rowPt > maxPt) {
+      countAbove++;
+    }
+  }
+  return countAbove + 1;
+}
+
 // ===== アドバイス生成 =====
 function generateAdvice(d) {
   const access = d.access || 0;
