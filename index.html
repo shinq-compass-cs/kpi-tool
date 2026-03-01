@@ -978,7 +978,17 @@ function isFreeTrialDateValid(row) {
   return date >= firstOfMonth;
 }
 
-// ===== ヘッダーマップ構築（1行目の文字列 → 列インデックス） =====
+// ===== ヘッダー行を自動検出（先頭から最大5行を走査して「サロンID」を含む行を探す） =====
+function findHeaderRowIndex(rows) {
+  for (let i = 0; i < Math.min(rows.length, 5); i++) {
+    if (rows[i] && rows[i].some(cell => String(cell || '').trim() === 'サロンID')) {
+      return i;
+    }
+  }
+  return 0; // 見つからなければ先頭行にフォールバック
+}
+
+// ===== ヘッダーマップ構築（ヘッダー行の文字列 → 列インデックス） =====
 function buildHeaderMap(headerRow) {
   const map = {};
   if (!headerRow) return map;
