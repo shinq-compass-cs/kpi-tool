@@ -1090,6 +1090,8 @@ async function handleLogin() {
           const row = rows[i];
           const id = String(row[idCol] || '').trim();
           if (id === salonId) {
+            // F列（index 5）が先月以前のデータは除外
+            if (!isFreeTrialDateValid(row)) break;
             found = parseRowDynamic(row, hm);
             foundSheet = FREE_TRIAL_SHEET;
             // 到達可能ポイント・順位を計算してデータに付加
