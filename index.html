@@ -1596,7 +1596,7 @@ function calcAdditionalPoints(d) {
     const val = d[item.key];
     const achieved = item.type === 'flag'
       ? (Number(val) >= 1)
-      : (!!val && val === '公開');
+      : (val == 1 || val === '公開');
     if (!achieved) add += item.point;
   }
   return add;
