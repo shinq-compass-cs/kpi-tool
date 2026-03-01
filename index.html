@@ -1894,12 +1894,6 @@ document.getElementById('dashboard').addEventListener('click', (e) => {
 // タブを閉じた場合のフォールバック送信
 window.addEventListener('beforeunload', () => sendLoginLog());
 
-// ===== CSモード初期化 =====
-if (IS_CS_MODE) {
-  document.getElementById('email-label').style.display = 'none';
-  document.getElementById('email-input').style.display = 'none';
-  document.querySelector('.login-subtitle').textContent = '社内専用';
-}
 </script>
 </body>
 </html>
