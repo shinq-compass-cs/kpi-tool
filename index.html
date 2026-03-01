@@ -1450,6 +1450,68 @@ function handleActionClick(action) {
   if (action === 'scroll_click') document.getElementById('needs-click')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'scroll_reserve') document.getElementById('needs-reserve')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'show_qr') document.getElementById('qr-section')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'download_review_pdf') downloadReviewPdf();
+}
+
+async function downloadReviewPdf() {
+  if (!currentData) return;
+  const salonId = currentData.salon_id;
+  const reviewUrl = `https://www.shinq-compass.jp/salon/review/add/${salonId}`;
+
+  // QRコードを非表示divに生成してcanvasデータを取得
+  const tempDiv = document.createElement('div');
+  tempDiv.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+  document.body.appendChild(tempDiv);
+  new QRCode(tempDiv, {
+    text: reviewUrl,
+    width: 200, height: 200,
+    colorDark: '#1a1a1a', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M,
+  });
+  const qrCanvas = tempDiv.querySelector('canvas');
+  const qrDataUrl = qrCanvas.toDataURL('image/png');
+  document.body.removeChild(tempDiv);
+
+  // pdf-lib でベースPDFを読み込み
+  if (!window.PDFLib) { alert('PDF生成ライブラリの読み込みに失敗しました。リロードして再試行してください。'); return; }
+  const { PDFDocument } = window.PDFLib;
+  const pdfUrl = 'https://shinq-compass-cs.github.io/kpi-tool/docs/post%20a%20review.pdf';
+  let pdfBytes;
+  try {
+    pdfBytes = await fetch(pdfUrl).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); });
+  } catch (e) {
+    alert('PDFの読み込みに失敗しました: ' + e.message);
+    return;
+  }
+  const pdfDoc = await PDFDocument.load(pdfBytes);
+  const pages = pdfDoc.getPages();
+  if (pages.length < 2) { alert('PDFページ数が不足しています'); return; }
+
+  // 2ページ目右下の空欄にQRコードを埋め込む
+  const page2 = pages[1];
+  const { width, height } = page2.getSize();
+  const qrImageBytes = await fetch(qrDataUrl).then(r => r.arrayBuffer());
+  const qrImage = await pdfDoc.embedPng(qrImageBytes);
+
+  // 空欄サイズ・位置 (右下の四角形に合わせて調整)
+  const qrSize = 108;      // QR描画サイズ（ポイント）: 約38mm
+  const marginRight = 28;  // 右端からの余白
+  const marginBottom = 28; // 下端からの余白
+  page2.drawImage(qrImage, {
+    x: width - qrSize - marginRight,
+    y: marginBottom,
+    width: qrSize,
+    height: qrSize,
+  });
+
+  // ダウンロード
+  const modifiedBytes = await pdfDoc.save();
+  const blob = new Blob([modifiedBytes], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `院内設置用QR_${salonId}.pdf`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 // ===== 追加取得可能ポイント計算 =====
