@@ -1168,7 +1168,6 @@ async function handleLogin() {
     }
 
     // 月別に見つからなければ無料体験タブを検索
-    console.log('[DEBUG] 月別シート検索結果:', found ? '発見 in ' + foundSheet : '未発見');
     if (!found) {
       const rows = await fetchSheet(FREE_TRIAL_SHEET);
       if (rows.length) {
@@ -1179,8 +1178,7 @@ async function handleLogin() {
           const row = rows[i];
           const id = String(row[idCol] || '').trim();
           if (id === salonId) {
-            console.log('[DEBUG] 無料体験タブで発見 row[5](F列)=', row[5], '有効:', isFreeTrialDateValid(row));
-            // F列（index 5）が先月以前のデータは除外
+            // F列（index 5）が先月以前のデータは除外（99/12/30等のプレースホルダーは除外しない）
             if (!isFreeTrialDateValid(row)) break;
             found = parseRowDynamic(row, hm);
             foundSheet = FREE_TRIAL_SHEET;
