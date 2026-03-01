@@ -1826,6 +1826,7 @@ function renderTrendCharts() {
 
 // ===== ログアウト =====
 function handleLogout() {
+  sendLoginLog();
   currentData = null;
   trendData = [];
   avgData = null;
