@@ -1463,6 +1463,21 @@ function calcAdditionalPoints(d) {
 
 // ===== 同エリア内での到達可能順位を計算 =====
 // maxPt を達成した場合に何位になるかを全行データから算出（VLOOKUP方式）
+// ===== 有料院平均値計算（最新月別シート全行） =====
+function calcSheetAverages(allRows, hm) {
+  const hi = findHeaderRowIndex(allRows);
+  const acc = [], ctr = [], cvr = [], rev = [];
+  for (let i = hi + 1; i < allRows.length; i++) {
+    const d = parseRowDynamic(allRows[i], hm);
+    if (d.access > 0)  acc.push(d.access);
+    if (d.access > 0 && d.click != null)  ctr.push(d.click / d.access * 100);
+    if (d.click > 0 && d.net_reserve != null) cvr.push(d.net_reserve / d.click * 100);
+    if (d.review != null && d.review >= 0)  rev.push(d.review);
+  }
+  const avg = arr => arr.length ? parseFloat((arr.reduce((s,v)=>s+v,0)/arr.length).toFixed(1)) : null;
+  return { access: avg(acc), ctr: avg(ctr), cvr: avg(cvr), review: avg(rev) };
+}
+
 function calcPotentialRank(area, maxPt, allRows, hm) {
   const areaIdx = hm['検索順位エリア'];
   // シートにより列名が異なる（2602: 掲載優先ポイント、2601以前: 検索優先ポイント）
