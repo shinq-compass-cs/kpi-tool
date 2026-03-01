@@ -1187,6 +1187,27 @@ function handleActionClick(action) {
   if (action === 'show_qr') alert('QRコード表示機能は準備中です。担当者にご連絡ください。');
 }
 
+// ===== 追加取得可能ポイント計算 =====
+function calcAdditionalPoints(d) {
+  const items = [
+    { key: 'store_pr',      point: 100, type: 'flag' },
+    { key: 'reserve_public', point: 50, type: 'flag_str' },
+    { key: 'reserve_gmb',   point: 50,  type: 'flag' },
+    { key: 'reserve_banner', point: 50, type: 'flag' },
+    { key: 'compass_link',  point: 30,  type: 'flag' },
+    { key: 'review_parts',  point: 30,  type: 'flag' },
+  ];
+  let add = 0;
+  for (const item of items) {
+    const val = d[item.key];
+    const achieved = item.type === 'flag'
+      ? (Number(val) >= 1)
+      : (!!val && val === '公開');
+    if (!achieved) add += item.point;
+  }
+  return add;
+}
+
 // ===== アドバイス生成 =====
 function generateAdvice(d) {
   const access = d.access || 0;
