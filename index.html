@@ -966,6 +966,12 @@ async function handleLogin() {
           if (!found) {
             found = data;
             foundSheet = sheet;
+            // 到達可能ポイント・順位を計算してデータに付加
+            const addPt = calcAdditionalPoints(found);
+            const maxPt = Number(found.search_point || 0) + addPt;
+            found.add_pt = addPt;
+            found.potential_max_pt = maxPt;
+            found.potential_rank = calcPotentialRank(found.area, maxPt, rows, true);
           }
           // 全月分をトレンド用に収集（古い順になるようunshiftで先頭追加）
           trendData.unshift({ sheet, data });
@@ -983,6 +989,12 @@ async function handleLogin() {
         if (id === salonId) {
           found = parseRow(row, false);
           foundSheet = FREE_TRIAL_SHEET;
+          // 到達可能ポイント・順位を計算してデータに付加
+          const addPt = calcAdditionalPoints(found);
+          const maxPt = Number(found.search_point || 0) + addPt;
+          found.add_pt = addPt;
+          found.potential_max_pt = maxPt;
+          found.potential_rank = calcPotentialRank(found.area, maxPt, rows, false);
           break;
         }
       }
