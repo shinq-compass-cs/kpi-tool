@@ -1682,6 +1682,7 @@ function renderTrendCharts() {
 function handleLogout() {
   currentData = null;
   trendData = [];
+  avgData = null;
   Object.values(charts).forEach(c => c.destroy());
   charts = {};
   document.getElementById('salon-id-input').value = '';
