@@ -1033,6 +1033,15 @@ function renderDashboard(d, sheetName) {
   if (d.search_point !== null) {
     document.getElementById('search-point').textContent = d.search_point;
     document.getElementById('point-badge').style.display = 'flex';
+
+    // 努力目標バナー（未設定の固定ポイント項目から追加取得可能pt を計算）
+    const addPt = calcAdditionalPoints(d);
+    if (addPt > 0) {
+      const maxPt = Number(d.search_point) + addPt;
+      document.getElementById('goal-text').innerHTML =
+        `検索優先ポイント <strong>${maxPt}pt</strong> にすれば、最大エリア内順位のさらなる向上が見込まれます（あと <strong>+${addPt}pt</strong> 獲得可能）`;
+      document.getElementById('goal-banner').style.display = 'flex';
+    }
   }
 
   // KPIセクション描画
