@@ -885,11 +885,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script>
-// ===== モード判定 =====
-const IS_CS_MODE = new URLSearchParams(window.location.search).get('cs') === '1';
-
 // ===== ログ設定 =====
+const CS_INTERNAL_EMAIL = 'info@shinq-compass.jp'; // このメアドでログイン→社内判定
 const GAS_LOG_URL = 'https://script.google.com/macros/s/AKfycbyUQ7zwgR4lT5eHddLBYnA2Oob55Z63kh4vlHZM7ZaPCEwfNu6oqqFwKsd5zJ4tYOWa/exec'; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
+let isInternal = false; // ログイン時に社内/社外を判定して設定
 let loginTime = null;
 let logSent = false;
 const sessionClickedUrls = [];
