@@ -1032,9 +1032,13 @@ async function fetchSheet(sheetName, range = 'A1:BZ1200') {
 function isFreeTrialDateValid(row) {
   const dateVal = row[5]; // F列固定
   if (!dateVal) return false;
-  const date = new Date(String(dateVal).replace(/\//g, '-'));
+  let dateStr = String(dateVal).trim();
+  // YY/MM/DD 形式（2桁年）を YYYY/MM/DD に変換（例: 26/04/19 → 2026/04/19）
+  const m = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{2})$/);
+  if (m) dateStr = `20${m[1]}/${m[2]}/${m[3]}`;
+  const date = new Date(dateStr.replace(/\//g, '-'));
   if (isNaN(date.getTime())) return false;
-  // 99/12/30 など 2020年以前の日付はスプレッドシートのプレースホルダー（期限なし）として扱い表示する
+  // 2020年以前はプレースホルダーとして無条件表示
   if (date.getFullYear() < 2020) return true;
   const now = new Date();
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
