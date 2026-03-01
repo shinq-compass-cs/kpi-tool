@@ -1046,12 +1046,10 @@ function renderDashboard(d, sheetName) {
     document.getElementById('search-point').textContent = d.search_point;
     document.getElementById('point-badge').style.display = 'flex';
 
-    // 努力目標バナー（未設定の固定ポイント項目から追加取得可能pt を計算）
-    const addPt = calcAdditionalPoints(d);
-    if (addPt > 0) {
-      const maxPt = Number(d.search_point) + addPt;
+    // 努力目標バナー（同エリア他院データから到達可能順位を表示）
+    if (d.add_pt > 0 && d.potential_rank !== undefined) {
       document.getElementById('goal-text').innerHTML =
-        `検索優先ポイント <strong>${maxPt}pt</strong> にすれば、最大エリア内順位のさらなる向上が見込まれます（あと <strong>+${addPt}pt</strong> 獲得可能）`;
+        `検索優先ポイント <strong>${d.potential_max_pt}pt</strong> にすれば、最大エリア内順位 <strong>${d.potential_rank}位</strong> まで可能（あと <strong>+${d.add_pt}pt</strong> 獲得可能）`;
       document.getElementById('goal-banner').style.display = 'flex';
     }
   }
