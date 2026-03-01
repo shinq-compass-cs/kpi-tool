@@ -1259,11 +1259,13 @@ function renderAction(key) {
     return `<button class="action-link" onclick="handleActionClick('${link.action}')">${link.label}</button>`;
   }).join('');
 
+  const noteHtml = action.note ? `<div class="action-note">${action.note}</div>` : '';
   return `
     <div class="action-box">
       <div class="action-title">✅ アクション</div>
       <div>${action.text}</div>
       <div class="action-links">${links}</div>
+      ${noteHtml}
     </div>
   `;
 }
