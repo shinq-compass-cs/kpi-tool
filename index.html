@@ -1375,7 +1375,8 @@ function calcAdditionalPoints(d) {
 // maxPt を達成した場合に何位になるかを全行データから算出（VLOOKUP方式）
 function calcPotentialRank(area, maxPt, allRows, hm) {
   const areaIdx = hm['検索順位エリア'];
-  const ptIdx   = hm['検索優先ポイント'];
+  // シートにより列名が異なる（2602: 掲載優先ポイント、2601以前: 検索優先ポイント）
+  const ptIdx   = hm['検索優先ポイント'] ?? hm['掲載優先ポイント'];
   if (areaIdx === undefined || ptIdx === undefined) return null;
   const startRow = findHeaderRowIndex(allRows) + 1; // ヘッダー行をスキップ
   let countAbove = 0;
