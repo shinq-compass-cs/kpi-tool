@@ -966,72 +966,59 @@ async function fetchSheet(sheetName, range = 'A1:BZ1200') {
   return json.values || [];
 }
 
-function parseRow(row, isMonthly) {
-  const get = (idx) => {
+// ===== ヘッダーマップ構築（1行目の文字列 → 列インデックス） =====
+function buildHeaderMap(headerRow) {
+  const map = {};
+  if (!headerRow) return map;
+  for (let i = 0; i < headerRow.length; i++) {
+    const h = String(headerRow[i] || '').trim();
+    if (h) map[h] = i;
+  }
+  return map;
+}
+
+// ===== 行データをヘッダーマップで解析（VLOOKUP方式） =====
+function parseRowDynamic(row, hm) {
+  const get = (key) => {
+    const idx = hm[key];
+    if (idx === undefined) return null;
     const val = row[idx];
     if (val === undefined || val === null || val === '' || val === '#N/A') return null;
     const num = parseFloat(val);
     return isNaN(num) ? val : num;
   };
-
-  if (isMonthly) {
-    return {
-      salon_id: String(get(0) || '').trim(),
-      name: get(1),
-      email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
-      area: get(6),
-      area_rank: AREA_RANK_COL !== null ? get(AREA_RANK_COL) : null,
-      compass_plan: get(9),   // J列
-      yoyaku_plan:  get(17),  // R列
-      search_point: get(10),
-      access: get(12),
-      click: get(13),
-      net_reserve: get(14),
-      reserve_public: get(15),
-      review: get(23),
-      review_reply: get(24),
-      pickup_review: get(25),
-      review_parts: get(26),
-      reserve_public_flag: get(27),
-      reserve_gmb: get(28),
-      reserve_banner: get(29),
-      compass_link: get(30),
-      store_pr: get(31),
-      menu3: get(32),
-      menu_link: get(33),
-      guest_reserve: get(36),
-      deadline: get(37),
-    };
-  } else {
-    // 無料体験タブ
-    return {
-      salon_id: String(get(0) || '').trim(),
-      name: get(4),
-      email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
-      area: get(12),   // M列
-      area_rank: AREA_RANK_COL !== null ? get(AREA_RANK_COL) : null,
-      compass_plan: get(10),  // K列
-      yoyaku_plan:  get(11),  // L列
-      search_point: get(19),  // T列
-      access: get(13),
-      click: get(15),
-      net_reserve: get(17),
-      reserve_public: null,
-      review: get(37),
-      review_reply: get(38),
-      pickup_review: get(24),
-      review_parts: get(23),
-      reserve_public_flag: get(19),
-      reserve_gmb: get(20),
-      reserve_banner: get(21),
-      compass_link: get(22),
-      store_pr: get(25),
-      menu3: get(26),
-      menu_link: get(27),
-      guest_reserve: get(30),
-      deadline: get(31),
-    };
-  }
+  const emailIdx = hm['メールアドレス'];
+  return {
+    salon_id:          String(get('サロンID') || '').trim(),
+    name:              get('院名'),
+    email:             emailIdx !== undefined ? String(row[emailIdx] || '').trim().toLowerCase() : '',
+    login:             get('ログイン'),
+    compass_plan:      get('コンパス現在プラン'),
+    yoyaku_plan:       get('予約現在プラン'),
+    area:              get('検索順位エリア'),
+    area_rank:         get('エリア内ランキング'),
+    search_point:      get('検索優先ポイント'),
+    access:            get('アクセス数'),
+    click:             get('クリック数'),
+    net_reserve:       get('ネット予約数'),
+    reserve_public:    get('予約公開状態'),
+    reserve_gmb:       get('予約GMB'),
+    reserve_banner:    get('予約バナー'),
+    compass_link:      get('HP相互リンク'),
+    review_parts:      get('口コミパーツ'),
+    pickup_review:     get('口コミpickup'),
+    store_pr:          get('店舗PR情報登録'),
+    menu3:             get('メニュー3件以上登録'),
+    menu_link:         get('メニュー連携'),
+    guest_reserve:     get('ゲスト予約利用'),
+    deadline:          get('予約受付締切時間'),
+    calendar_count:    get('カレンダー登録件数'),
+    net_reserve_count: get('ネット予約件数'),
+    manual_count:      get('手動登録件数'),
+    block_count:       get('ブロック件数'),
+    review:            get('口コミ件数'),
+    review_reply:      get('口コミ返信数'),
+  };
 }
 
 // ===== ログイン処理 =====
