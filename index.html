@@ -1278,6 +1278,11 @@ async function handleLogin() {
     }
 
     currentData = found;
+    if (!IS_CS_MODE) {
+      loginTime = new Date();
+      logSent = false;
+      sessionClickedUrls.length = 0;
+    }
     renderDashboard(found, foundSheet);
 
   } catch (e) {
