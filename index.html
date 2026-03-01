@@ -1178,8 +1178,10 @@ async function handleLogin() {
           const row = rows[i];
           const id = String(row[idCol] || '').trim();
           if (id === salonId) {
+            const valid = isFreeTrialDateValid(row);
+            console.log('[DEBUG] 無料体験タブ発見 F列=', row[5], '→ 有効:', valid);
             // F列（index 5）が先月以前のデータは除外（99/12/30等のプレースホルダーは除外しない）
-            if (!isFreeTrialDateValid(row)) break;
+            if (!valid) break;
             found = parseRowDynamic(row, hm);
             foundSheet = FREE_TRIAL_SHEET;
             // 到達可能ポイント・順位を計算してデータに付加
