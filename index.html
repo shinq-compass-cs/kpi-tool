@@ -1181,6 +1181,11 @@ async function handleLogin() {
       }
     }
 
+    // 最新月別シートから有料院の平均値を計算（キャッシュ済みなら再計算しない）
+    if (!avgData && firstSheetRows && firstSheetHm) {
+      avgData = calcSheetAverages(firstSheetRows, firstSheetHm);
+    }
+
     // 月別に見つからなければ無料体験タブを検索
     if (!found) {
       const rows = await fetchSheet(FREE_TRIAL_SHEET);
