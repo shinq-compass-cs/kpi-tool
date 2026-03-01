@@ -1138,6 +1138,7 @@ async function handleLogin() {
     let foundSheet = null;
     trendData = [];
 
+    console.log('[DEBUG] 検索開始 salonId=', JSON.stringify(salonId), 'length=', salonId.length);
     // 月別タブを新しい順に検索（全月分のトレンドデータも収集）
     for (const sheet of MONTHLY_SHEETS) {
       const rows = await fetchSheet(sheet);
@@ -1145,6 +1146,7 @@ async function handleLogin() {
       const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
       const hm = buildHeaderMap(rows[headerIdx]);
       const idCol = hm['サロンID'] ?? 0;
+      console.log('[DEBUG]', sheet, '行数=', rows.length, 'idCol=', idCol);
       for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
         const id = String(rows[i][idCol] || '').trim();
         if (id === salonId) {
