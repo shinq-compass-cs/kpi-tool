@@ -742,7 +742,14 @@
     .summary-num { font-size: 22px; }
     .trend-grid { grid-template-columns: 1fr; }
     .login-card { padding: 32px 24px; }
-    .top-bar { padding: 0 12px; }
+    .top-bar {
+      padding: 8px 12px;
+      height: auto;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .top-bar-left { width: 100%; font-size: 13px; }
+    .top-bar-right { width: 100%; justify-content: flex-end; }
     .contact-btn.mail span { display: none; }
     .contact-btn.line { padding: 7px 10px; }
   }
