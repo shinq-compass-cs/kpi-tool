@@ -888,6 +888,12 @@
 // ===== モード判定 =====
 const IS_CS_MODE = new URLSearchParams(window.location.search).get('cs') === '1';
 
+// ===== ログ設定 =====
+const GAS_LOG_URL = ''; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
+let loginTime = null;
+let logSent = false;
+const sessionClickedUrls = [];
+
 // ===== 設定（ここを変更してください） =====
 const API_KEY = 'AIzaSyAK_wtY_WFgOkw3L55BkWpmCQuzmhDpsIw'; // ← 発行したAPIキーに置き換えてください
 const SPREADSHEET_ID = '1CiuXRdYG-lI_jWA4DiR_uXvYU9dgqTE1v-JWsZF1l_g';
