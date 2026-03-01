@@ -497,6 +497,67 @@
 
   .loading-text { font-size: 14px; font-weight: 500; }
 
+  /* ===== info型KPIアイテム ===== */
+  .kpi-item.info-item { background: var(--white); }
+  .kpi-status.info { background: var(--gray-100); color: var(--gray-400); font-size: 12px; }
+  .kpi-values .current.info { color: var(--primary); font-size: 16px; font-weight: 700; }
+
+  /* ===== アドバイスセクション ===== */
+  .advice-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .advice-header {
+    background: linear-gradient(90deg, #4a1a7a, #7c3aed);
+    color: white;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .advice-body { padding: 20px; }
+
+  .advice-item { margin-bottom: 16px; }
+  .advice-item:last-child { margin-bottom: 0; }
+
+  .advice-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .advice-label.situation { background: #e0f2fe; color: #0369a1; }
+  .advice-label.hypothesis { background: #fef3c7; color: #92400e; }
+  .advice-label.action-label { background: #dcfce7; color: #166534; }
+
+  .advice-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--gray-800);
+  }
+
+  .advice-cta {
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, #7c3aed, #4a1a7a);
+    border-radius: var(--radius-sm);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.6;
+  }
+
   /* ===== レスポンシブ ===== */
   @media (max-width: 600px) {
     .summary-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
@@ -578,6 +639,12 @@
     <!-- ニーズ別KPI -->
     <div id="kpi-sections"></div>
 
+    <!-- アドバイス -->
+    <div class="advice-section" id="advice-section" style="display:none;">
+      <div class="advice-header">💡 今月のアドバイス</div>
+      <div class="advice-body" id="advice-body"></div>
+    </div>
+
     <!-- トレンドグラフ -->
     <div class="trend-section" id="trend-section" style="display:none;">
       <div class="section-title">📈 月次トレンド（直近6ヶ月）</div>
@@ -617,6 +684,9 @@ const FREE_TRIAL_SHEET = '無料体験';
 // メールアドレスの列番号（A列=0、D列=3）
 const EMAIL_COL = 3;
 
+// エリア内ランキングの列番号（AV列=47）
+const AREA_RANK_COL = 47;
+
 // 担当者連絡先
 const LINE_URL = 'https://line.me/ti/p/@348cwzis';
 const MAIL_ADDRESS = 'info@shinq-compass.jp';
@@ -629,7 +699,6 @@ const KPI_DEFS = {
     theme: 'search',
     items: [
       { key: 'access', name: 'アクセス数', col: 12, threshold: 200, type: 'num', unit: '', searchPoint: false },
-      { key: 'ctr', name: 'クリック率', col: null, threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.click > 0 ? (d.click / d.access * 100) : null },
       { key: 'store_pr', name: '店舗PR情報登録', col: 31, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 100 },
       { key: 'reserve_public', name: '予約公開利用院', col: 27, threshold: 1, type: 'flag_str', unit: '', searchPoint: true, point: 50 },
       { key: 'reserve_gmb', name: '予約GMB設置', col: 28, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 50 },
@@ -642,6 +711,8 @@ const KPI_DEFS = {
     label: '👆 予約ボタンを押してもらう',
     theme: 'click',
     items: [
+      { key: 'click', name: 'クリック数', threshold: 20, type: 'num', unit: '回', searchPoint: false },
+      { key: 'ctr', name: 'クリック率', threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.access > 0 ? (d.click / d.access * 100) : null },
       { key: 'review', name: '口コミ件数', col: 23, threshold: 5, type: 'num', unit: '件', searchPoint: true, point: '1件ごと' },
       { key: 'review_reply', name: '口コミ返信件数', col: 24, threshold: 5, type: 'num', unit: '件', searchPoint: true, point: '1件ごと' },
       { key: 'pickup_review', name: 'PickUp口コミ', col: 25, threshold: 1, type: 'flag', unit: '', searchPoint: false },
@@ -654,7 +725,8 @@ const KPI_DEFS = {
     label: '📅 実際に予約してもらう',
     theme: 'reserve',
     items: [
-      { key: 'cvr', name: 'ネット予約率', col: null, threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.click > 0 ? (d.net_reserve / d.click * 100) : null },
+      { key: 'net_reserve', name: '予約数', threshold: 2, type: 'num', unit: '件', searchPoint: false },
+      { key: 'cvr', name: 'ネット予約率', threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.click > 0 ? (d.net_reserve / d.click * 100) : null },
       { key: 'menu_link', name: 'メニュー連携', col: 33, threshold: 1, type: 'flag', unit: '', searchPoint: false },
       { key: 'guest_reserve', name: 'ゲスト予約利用', col: 36, threshold: 1, type: 'flag', unit: '', searchPoint: false },
       { key: 'deadline', name: '予約受付締切時間', col: 37, threshold: 60, type: 'deadline', unit: '分', searchPoint: false },
@@ -804,6 +876,7 @@ function parseRow(row, isMonthly) {
       name: get(1),
       email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
       area: get(6),
+      area_rank: AREA_RANK_COL !== null ? get(AREA_RANK_COL) : null,
       search_point: get(10),
       access: get(12),
       click: get(13),
@@ -830,6 +903,7 @@ function parseRow(row, isMonthly) {
       name: get(4),
       email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
       area: get(11),
+      area_rank: AREA_RANK_COL !== null ? get(AREA_RANK_COL) : null,
       search_point: get(18),
       access: get(13),
       click: get(15),
@@ -913,9 +987,6 @@ async function handleLogin() {
     }
 
     // メールアドレス照合
-    console.log('[DEBUG] 入力メール:', email);
-    console.log('[DEBUG] シート取得メール:', found.email);
-    console.log('[DEBUG] シート名:', foundSheet);
     if (found.email !== email) {
       const err = document.getElementById('login-error');
       err.textContent = 'メールアドレスが一致しません。ご確認ください。';
@@ -942,7 +1013,13 @@ function renderDashboard(d, sheetName) {
   document.getElementById('salon-name').textContent = d.name || `サロンID: ${d.salon_id}`;
   document.getElementById('data-date').textContent = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
 
-  // エリア順位・ポイント
+  // エリア内ランキング
+  if (d.area_rank !== null && d.area_rank !== undefined) {
+    document.getElementById('area-rank').textContent = d.area_rank;
+    document.getElementById('rank-badge').style.display = 'flex';
+  }
+
+  // 検索優先ポイント
   if (d.search_point !== null) {
     document.getElementById('search-point').textContent = d.search_point;
     document.getElementById('point-badge').style.display = 'flex';
@@ -970,6 +1047,7 @@ function renderDashboard(d, sheetName) {
     needsDef.items.forEach(item => {
       let value = null;
       let achieved = false;
+      const isInfo = item.type === 'info';
 
       if (item.type === 'rate' && item.calc) {
         value = item.calc(d);
@@ -986,14 +1064,19 @@ function renderDashboard(d, sheetName) {
       } else if (item.type === 'deadline') {
         value = d[item.key];
         if (value !== null) achieved = value <= item.threshold;
+      } else if (isInfo) {
+        value = d[item.key];
       }
 
-      totalCount++;
-      if (achieved) totalAchieved++;
-      else totalUnachieved++;
+      // info型は達成カウントに含めない
+      if (!isInfo) {
+        totalCount++;
+        if (achieved) totalAchieved++;
+        else totalUnachieved++;
+      }
 
       const itemEl = document.createElement('div');
-      itemEl.className = `kpi-item ${achieved ? 'achieved' : 'unachieved'}`;
+      itemEl.className = isInfo ? 'kpi-item info-item' : `kpi-item ${achieved ? 'achieved' : 'unachieved'}`;
 
       // 値の表示テキスト
       let valueText = '';
@@ -1005,23 +1088,28 @@ function renderDashboard(d, sheetName) {
         valueText = achieved ? '設定済み ✓' : '未設定';
       } else if (item.type === 'deadline') {
         valueText = value !== null ? `${value}分 / 目標 ${item.threshold}分以内` : '―';
+      } else if (isInfo) {
+        valueText = value !== null ? `${value}${item.unit}` : '―';
       }
 
       const pointBadge = item.searchPoint
         ? `<span class="kpi-point-badge">★ ${item.point ? item.point + 'pt' : 'ポイント対象'}</span>`
         : '';
 
+      const statusIcon = isInfo ? '―' : (achieved ? '✓' : '!');
+      const statusClass = isInfo ? 'info' : (achieved ? 'ok' : 'ng');
+
       itemEl.innerHTML = `
-        <div class="kpi-status ${achieved ? 'ok' : 'ng'}">${achieved ? '✓' : '!'}</div>
+        <div class="kpi-status ${statusClass}">${statusIcon}</div>
         <div class="kpi-main">
           <div class="kpi-name-row">
             <span class="kpi-name">${item.name}</span>
             ${pointBadge}
           </div>
           <div class="kpi-values">
-            <span class="current ${achieved ? 'ok' : 'ng'}">${valueText}</span>
+            <span class="current ${statusClass}">${valueText}</span>
           </div>
-          ${!achieved && ACTIONS[item.key] ? renderAction(item.key) : ''}
+          ${!isInfo && !achieved && ACTIONS[item.key] ? renderAction(item.key) : ''}
         </div>
       `;
 
@@ -1045,6 +1133,9 @@ function renderDashboard(d, sheetName) {
   // 画面切り替え
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
+
+  // アドバイス描画
+  renderAdvice(d);
 
   // ライン問い合わせURL更新
   document.querySelector('.contact-btn.line').href = LINE_URL;
@@ -1075,6 +1166,107 @@ function handleActionClick(action) {
   if (action === 'scroll_click') document.getElementById('needs-click')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'scroll_reserve') document.getElementById('needs-reserve')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'show_qr') alert('QRコード表示機能は準備中です。担当者にご連絡ください。');
+}
+
+// ===== アドバイス生成 =====
+function generateAdvice(d) {
+  const access = d.access || 0;
+  const click = d.click || 0;
+  const net_reserve = d.net_reserve || 0;
+  const review = d.review || 0;
+  const ctr = access > 0 ? (click / access * 100) : 0;
+  const cvr = click > 0 ? (net_reserve / click * 100) : 0;
+
+  if (access < 100) {
+    return {
+      situation: `先月のアクセス数は${access}件でした。目標の200件に対して大きく下回っており、まずはポータルサイト上でページを見つけてもらう段階に課題があります。`,
+      hypothesis: `しんきゅうコンパス内での検索表示順位が低い可能性があります。検索優先ポイントを高めることで、より多くの患者さんの目に触れる機会が増えます。今が伸びしろを活かすチャンスです！`,
+      action: `今すぐできる対策として、①店舗PR情報の登録（+100pt）②ホームページへのコンパス相互リンク設置（+30pt）③GoogleビジネスプロフィールへのURL設置（+50pt）に取り組みましょう。これらを実施するだけで検索露出が大きく改善します。`,
+      cta: `✊ まず「しんきゅうコンパス管理画面」を開いて、店舗PR情報を今日中に登録してみましょう！`
+    };
+  }
+
+  if (access < 200) {
+    return {
+      situation: `先月のアクセス数は${access}件でした。目標の200件まであと${200 - access}件です。確実に伸びてきています。もう一押しです！`,
+      hypothesis: `掲載ページへのアクセス経路がまだ十分でない可能性があります。外部からの誘導を強化することで、目標達成が目前に見えてきます。`,
+      action: `ホームページへの予約バナー設置やGoogleビジネスプロフィールへのURL設置は、外部からの誘導に直結します。未設定の場合は、ぜひ今月中に設定しましょう。代行依頼も可能ですので、ご活用ください。`,
+      cta: `🚀 予約バナーを自院のホームページに設置して、アクセス200件突破を目指しましょう！`
+    };
+  }
+
+  if (ctr < 5) {
+    return {
+      situation: `アクセス数${access}件と目標を達成しています。一方、クリック率が${ctr.toFixed(1)}%と低く、ページを見た患者さんの多くが予約ボタンまで進んでいない状態です。`,
+      hypothesis: `掲載ページの「信頼感」が患者さんの予約意欲を高められていない可能性があります。口コミは、はじめて来院を検討する患者さんが最も参考にする情報です。`,
+      action: `口コミ件数を増やすことがクリック率改善への近道です。来院された患者さんに「口コミ投稿をお願いするカード」を渡す習慣をつけましょう。丁寧な返信も患者さんの信頼感を高める大切な要素です。`,
+      cta: `💬 今日から来院患者さんへの口コミのお願いを始めてみましょう！3件増えるだけでも効果が出ます。`
+    };
+  }
+
+  if (ctr < 10) {
+    return {
+      situation: `アクセス数${access}件・クリック率${ctr.toFixed(1)}%（目標10%）です。多くの患者さんがページを見てくれていますが、もう一段階、予約への背中を押す工夫が必要です。`,
+      hypothesis: `口コミの数・質がまだ十分でなく、患者さんが「ここで予約しよう」と決断するきっかけが不足している可能性があります。返信の有無も患者さんは見ています。`,
+      action: `口コミ全件への返信を徹底することで「丁寧な院」という印象が伝わります。また、PickUp口コミに特に印象的な患者さんの声を設定することも有効です。`,
+      cta: `✍️ まず、未返信の口コミに1件丁寧に返信してみましょう！それだけで患者さんの印象が変わります。`
+    };
+  }
+
+  if (cvr < 5) {
+    return {
+      situation: `アクセス・クリックは好調ですが、ネット予約率が${cvr.toFixed(1)}%（目標10%）と低い状態です。予約ボタンを押してくれた患者さんが、最後の一歩で離脱しています。`,
+      hypothesis: `受付時間外で予約できなかったり、予約操作で詰まってしまうケースが多い可能性があります。設定を少し見直すだけで予約完了率が大きく変わります。`,
+      action: `予約受付締切時間を短縮（60分以内に設定）することで、直前に決めた患者さんの予約を逃しません。ゲスト予約を有効にすることで、初診の方のハードルも下がります。`,
+      cta: `⚙️ 管理画面で予約受付の締切時間を確認し、できるだけ短縮してみましょう！`
+    };
+  }
+
+  if (cvr < 10) {
+    return {
+      situation: `各指標が順調に伸びています！ネット予約率${cvr.toFixed(1)}%（目標10%）まであと少しです。仕上げの一手を打ちましょう。`,
+      hypothesis: `メニュー連携やゲスト予約の設定によって、患者さんが予約を完了しやすい環境をさらに整えることができます。`,
+      action: `メニューとの連携設定を行うことで、患者さんが希望のメニューを選んでそのまま予約できる導線が完成します。あとひと押しで目標達成です！`,
+      cta: `📋 メニュー連携設定を確認して、予約率10%達成を目指しましょう！`
+    };
+  }
+
+  if (review < 5) {
+    return {
+      situation: `主要KPIはすべて好調です！口コミ件数は現在${review}件です。口コミをさらに積み重ねることで、さらに多くの新規患者さんを呼び込めます。`,
+      hypothesis: `口コミは検索優先ポイントにも加算されるため、ポータルサイト内での露出アップにも直結します。コツコツ積み上げることが長期的な集患の基盤になります。`,
+      action: `院内に口コミ依頼のPOPを設置したり、会計時に一言添えるだけで件数は着実に増えていきます。返信を丁寧に行うことで既存患者さんとの信頼関係も深まります。`,
+      cta: `📌 院内に口コミ依頼のPOPを1枚設置してみましょう！習慣化が集患の力になります。`
+    };
+  }
+
+  return {
+    situation: `素晴らしい！アクセス数${access}件・クリック率${ctr.toFixed(1)}%・ネット予約率${cvr.toFixed(1)}%・口コミ${review}件と、主要KPIがすべて良好な状態です。先生の日頃の取り組みが着実に実を結んでいます！`,
+    hypothesis: `現在の取り組みが患者さんに確実に届いています。この状態を維持しながら、ライバル院との差をさらに広げていきましょう。`,
+    action: `次のステップとして、口コミ返信の質を高めたり、メニューの説明文をより魅力的に見直すことで、さらなる予約率向上が期待できます。高みを目指し続けることが、選ばれ続ける院への道です。`,
+    cta: `🌟 この調子を維持しながら、口コミをさらに1件増やすことを今月の目標にしてみましょう！`
+  };
+}
+
+function renderAdvice(d) {
+  const advice = generateAdvice(d);
+  const body = document.getElementById('advice-body');
+  body.innerHTML = `
+    <div class="advice-item">
+      <div class="advice-label situation">現状</div>
+      <div class="advice-text">${advice.situation}</div>
+    </div>
+    <div class="advice-item">
+      <div class="advice-label hypothesis">仮説</div>
+      <div class="advice-text">${advice.hypothesis}</div>
+    </div>
+    <div class="advice-item">
+      <div class="advice-label action-label">対策</div>
+      <div class="advice-text">${advice.action}</div>
+    </div>
+    <div class="advice-cta">${advice.cta}</div>
+  `;
+  document.getElementById('advice-section').style.display = 'block';
 }
 
 // ===== トレンドチャート =====
