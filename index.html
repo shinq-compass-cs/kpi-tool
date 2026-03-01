@@ -1139,6 +1139,20 @@ function renderDashboard(d, sheetName) {
   document.getElementById('salon-name').textContent = d.name || `サロンID: ${d.salon_id}`;
   document.getElementById('data-date').textContent = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
 
+  // 契約プラン表示
+  if (d.compass_plan) {
+    document.getElementById('compass-plan-badge').textContent = 'コンパス：' + d.compass_plan;
+    const isPlatinaPlus = String(d.compass_plan).trim() === 'プラチナPLUS';
+    const yoyakuText = isPlatinaPlus
+      ? 'しんきゅう予約：プロプラン相当'
+      : (d.yoyaku_plan ? 'しんきゅう予約：' + d.yoyaku_plan : '');
+    if (yoyakuText) {
+      document.getElementById('yoyaku-plan-badge').textContent = yoyakuText;
+      document.getElementById('yoyaku-plan-badge').style.display = 'inline-flex';
+    }
+    document.getElementById('plan-row').style.display = 'flex';
+  }
+
   // エリア内ランキング
   if (d.area_rank !== null && d.area_rank !== undefined) {
     document.getElementById('area-rank').textContent = d.area_rank;
