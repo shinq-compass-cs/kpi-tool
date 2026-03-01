@@ -1397,6 +1397,7 @@ function renderDashboard(d, sheetName) {
     });
 
     section.appendChild(body);
+    if (window.innerWidth <= 600) section.classList.add('collapsed');
     sectionsEl.appendChild(section);
   });
 
