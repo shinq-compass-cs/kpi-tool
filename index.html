@@ -1129,8 +1129,9 @@ function renderDashboard(d, sheetName) {
 
   // 契約プラン表示
   if (d.compass_plan) {
-    document.getElementById('compass-plan-badge').textContent = 'コンパス：' + d.compass_plan;
-    const isPlatinaPlus = String(d.compass_plan).trim() === 'プラチナPLUS';
+    document.getElementById('compass-plan-badge').textContent = 'しんきゅうコンパス：' + d.compass_plan;
+    const planVal = String(d.compass_plan).trim();
+    const isPlatinaPlus = planVal === 'プラチナPLUSプラン' || planVal === 'プラチナPLUS';
     const yoyakuText = isPlatinaPlus
       ? 'しんきゅう予約：プロプラン相当'
       : (d.yoyaku_plan ? 'しんきゅう予約：' + d.yoyaku_plan : '');
