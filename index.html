@@ -885,6 +885,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script>
+// ===== モード判定 =====
+const IS_CS_MODE = new URLSearchParams(window.location.search).get('cs') === '1';
+
 // ===== 設定（ここを変更してください） =====
 const API_KEY = 'AIzaSyAK_wtY_WFgOkw3L55BkWpmCQuzmhDpsIw'; // ← 発行したAPIキーに置き換えてください
 const SPREADSHEET_ID = '1CiuXRdYG-lI_jWA4DiR_uXvYU9dgqTE1v-JWsZF1l_g';
