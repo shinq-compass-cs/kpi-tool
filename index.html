@@ -1095,9 +1095,10 @@ async function handleLogin() {
     if (!found) {
       const rows = await fetchSheet(FREE_TRIAL_SHEET);
       if (rows.length) {
-        const hm = buildHeaderMap(rows[0]);  // 1行目からヘッダーマップ構築
+        const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
+        const hm = buildHeaderMap(rows[headerIdx]);
         const idCol = hm['サロンID'] ?? 0;
-        for (let i = 1; i < rows.length; i++) {
+        for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
           const row = rows[i];
           const id = String(row[idCol] || '').trim();
           if (id === salonId) {
