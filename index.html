@@ -1251,22 +1251,13 @@ function generateAdvice(d) {
 }
 
 function renderAdvice(d) {
-  const advice = generateAdvice(d);
+  const actions = generateAdvice(d);
   const body = document.getElementById('advice-body');
   body.innerHTML = `
-    <div class="advice-item">
-      <div class="advice-label situation">現状</div>
-      <div class="advice-text">${advice.situation}</div>
-    </div>
-    <div class="advice-item">
-      <div class="advice-label hypothesis">仮説</div>
-      <div class="advice-text">${advice.hypothesis}</div>
-    </div>
-    <div class="advice-item">
-      <div class="advice-label action-label">対策</div>
-      <div class="advice-text">${advice.action}</div>
-    </div>
-    <div class="advice-cta">${advice.cta}</div>
+    <p class="advice-intro">集客につながる今すぐ出来る事</p>
+    <ol class="advice-actions">
+      ${actions.map(a => `<li>${a}</li>`).join('')}
+    </ol>
   `;
   document.getElementById('advice-section').style.display = 'block';
 }
