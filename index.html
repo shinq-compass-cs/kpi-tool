@@ -1434,7 +1434,10 @@ function renderDashboard(d, sheetName) {
     colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.M,
   });
-  document.getElementById('qr-section').style.display = 'block';
+  const qrSection = document.getElementById('qr-section');
+  qrSection.style.display = 'block';
+  if (window.innerWidth <= 600) qrSection.classList.add('collapsed');
+  qrSection.querySelector('.section-title').addEventListener('click', () => qrSection.classList.toggle('collapsed'));
 
   // ライン問い合わせURL更新
   document.querySelector('.contact-btn.line').href = LINE_URL;
