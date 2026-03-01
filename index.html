@@ -1034,6 +1034,8 @@ function isFreeTrialDateValid(row) {
   if (!dateVal) return false;
   const date = new Date(String(dateVal).replace(/\//g, '-'));
   if (isNaN(date.getTime())) return false;
+  // 99/12/30 など 2020年以前の日付はスプレッドシートのプレースホルダー（期限なし）として扱い表示する
+  if (date.getFullYear() < 2020) return true;
   const now = new Date();
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   return date >= firstOfMonth;
