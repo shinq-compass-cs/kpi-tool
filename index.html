@@ -1366,8 +1366,28 @@ function renderDashboard(d, sheetName) {
   // アドバイス描画
   renderAdvice(d);
 
+  // 口コミQRコード生成
+  const reviewUrl = `https://www.shinq-compass.jp/salon/review/add/${d.salon_id}`;
+  const urlEl = document.getElementById('qr-review-url');
+  urlEl.href = reviewUrl;
+  urlEl.textContent = reviewUrl;
+  const canvas = document.getElementById('qr-canvas');
+  canvas.dataset.salonId = d.salon_id;
+  QRCode.toCanvas(canvas, reviewUrl, { width: 200, margin: 2, color: { dark: '#1a1a1a', light: '#ffffff' } });
+  document.getElementById('qr-section').style.display = 'block';
+
   // ライン問い合わせURL更新
   document.querySelector('.contact-btn.line').href = LINE_URL;
+}
+
+// ===== QRコードダウンロード =====
+function downloadQR() {
+  const canvas = document.getElementById('qr-canvas');
+  const salonId = canvas.dataset.salonId || 'salon';
+  const link = document.createElement('a');
+  link.download = `kuchikomi-qr-${salonId}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
 }
 
 function renderAction(key) {
