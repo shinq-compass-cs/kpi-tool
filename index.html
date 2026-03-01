@@ -1863,12 +1863,12 @@ function getDeviceInfo() {
 }
 
 function trackUrl(url) {
-  if (IS_CS_MODE || !url || sessionClickedUrls.length >= 10) return;
+  if (isInternal || !url || sessionClickedUrls.length >= 10) return;
   sessionClickedUrls.push(url);
 }
 
 function sendLoginLog() {
-  if (IS_CS_MODE || !currentData || logSent || !GAS_LOG_URL) return;
+  if (isInternal || !currentData || logSent || !GAS_LOG_URL) return;
   logSent = true;
   const payload = {
     datetime: loginTime
