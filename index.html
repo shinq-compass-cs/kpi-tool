@@ -912,9 +912,9 @@ function parseRow(row, isMonthly) {
       salon_id: String(get(0) || '').trim(),
       name: get(4),
       email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
-      area: get(11),
+      area: get(12),   // M列
       area_rank: AREA_RANK_COL !== null ? get(AREA_RANK_COL) : null,
-      search_point: get(18),
+      search_point: get(19),  // T列
       access: get(13),
       click: get(15),
       net_reserve: get(17),
