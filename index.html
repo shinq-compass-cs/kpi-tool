@@ -1320,14 +1320,15 @@ function calcAdditionalPoints(d) {
 }
 
 // ===== 同エリア内での到達可能順位を計算 =====
-// maxPt を達成した場合に何位になるかを全行データから算出
-function calcPotentialRank(area, maxPt, allRows, isMonthly) {
-  const areaCol = isMonthly ? 6 : 12;   // 月別:G列 / 無料体験:M列
-  const ptCol   = isMonthly ? 10 : 19;  // 月別:K列 / 無料体験:T列
+// maxPt を達成した場合に何位になるかを全行データから算出（VLOOKUP方式）
+function calcPotentialRank(area, maxPt, allRows, hm) {
+  const areaIdx = hm['検索順位エリア'];
+  const ptIdx   = hm['検索優先ポイント'];
+  if (areaIdx === undefined || ptIdx === undefined) return null;
   let countAbove = 0;
   for (let i = 1; i < allRows.length; i++) {
-    const rowArea = String(allRows[i][areaCol] || '').trim();
-    const rowPt   = parseFloat(allRows[i][ptCol]);
+    const rowArea = String(allRows[i][areaIdx] || '').trim();
+    const rowPt   = parseFloat(allRows[i][ptIdx]);
     if (rowArea === String(area || '').trim() && !isNaN(rowPt) && rowPt > maxPt) {
       countAbove++;
     }
