@@ -966,6 +966,18 @@ async function fetchSheet(sheetName, range = 'A1:BZ1200') {
   return json.values || [];
 }
 
+// ===== 無料体験タブの日付フィルター =====
+// F列（index 5）の日付が当月1日以降の行のみ有効とする
+function isFreeTrialDateValid(row) {
+  const dateVal = row[5]; // F列固定
+  if (!dateVal) return false;
+  const date = new Date(String(dateVal).replace(/\//g, '-'));
+  if (isNaN(date.getTime())) return false;
+  const now = new Date();
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  return date >= firstOfMonth;
+}
+
 // ===== ヘッダーマップ構築（1行目の文字列 → 列インデックス） =====
 function buildHeaderMap(headerRow) {
   const map = {};
