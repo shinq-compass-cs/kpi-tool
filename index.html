@@ -721,13 +721,30 @@
   .goal-banner strong { color: #7c3aed; font-size: 15px; }
 
   /* ===== レスポンシブ ===== */
+  .qr-section .section-title {
+    cursor: pointer;
+    justify-content: space-between;
+    user-select: none;
+  }
+  .qr-section .section-title::after { content: '▲'; font-size: 11px; opacity: 0.7; transition: transform 0.2s; }
+  .qr-section.collapsed .section-title::after { transform: rotate(-180deg); }
+  .qr-section.collapsed .qr-body { display: none; }
+
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #aaa;
+    padding: 24px 16px 32px;
+  }
+
   @media (max-width: 600px) {
     .summary-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
     .summary-num { font-size: 22px; }
     .trend-grid { grid-template-columns: 1fr; }
     .login-card { padding: 32px 24px; }
     .top-bar { padding: 0 12px; }
-    .contact-btn span { display: none; }
+    .contact-btn.mail span { display: none; }
+    .contact-btn.line { padding: 7px 10px; }
   }
 </style>
 </head>
