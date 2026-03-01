@@ -1412,6 +1412,7 @@ function renderAdvice(d) {
       if (link.url) return `<a href="${link.url}" target="_blank" class="advice-action-btn">${link.label}</a>`;
       return `<button class="advice-action-btn" onclick="handleActionClick('${link.action}')">${link.label}</button>`;
     }).join('');
+    const cardNoteHtml = action.note ? `<p class="advice-card-note">${action.note}</p>` : '';
     return `
       <div class="advice-card">
         <div class="advice-card-head">
@@ -1421,6 +1422,7 @@ function renderAdvice(d) {
         </div>
         <p class="advice-card-desc">${rich.desc}</p>
         <div class="advice-card-btns">${btns}</div>
+        ${cardNoteHtml}
       </div>`;
   }).join('');
 
