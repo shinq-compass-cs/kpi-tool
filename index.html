@@ -1451,6 +1451,18 @@ function handleActionClick(action) {
   if (action === 'scroll_reserve') document.getElementById('needs-reserve')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'show_qr') document.getElementById('qr-section')?.scrollIntoView({ behavior: 'smooth' });
   if (action === 'download_review_pdf') downloadReviewPdf();
+  if (action === 'open_hp_form') openHpForm();
+}
+
+function openHpForm() {
+  if (!currentData) return;
+  const formId   = '1Xm-0ULXoIcQtr23dwomu0PVXHkeoJH1b_L-npW3EBY8';
+  const idEntry  = '970932025';
+  const nameEntry= '1538708697';
+  const url = `https://docs.google.com/forms/d/${formId}/viewform?usp=pp_url` +
+    `&entry.${idEntry}=${encodeURIComponent(currentData.salon_id || '')}` +
+    `&entry.${nameEntry}=${encodeURIComponent(currentData.name || '')}`;
+  window.open(url, '_blank');
 }
 
 async function downloadReviewPdf() {
