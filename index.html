@@ -1081,16 +1081,11 @@ async function handleLogin() {
       if (!rows.length) continue;
       const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
       const hm = buildHeaderMap(rows[headerIdx]);
-      console.log('[KPI-DEBUG] sheet:', sheet, 'headerIdx:', headerIdx);
-      console.log('[KPI-DEBUG] headerRow raw:', JSON.stringify(rows[headerIdx]));
-      console.log('[KPI-DEBUG] headerMap keys:', Object.keys(hm));
       const idCol = hm['サロンID'] ?? 0;
       for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
         const id = String(rows[i][idCol] || '').trim();
         if (id === salonId) {
-          console.log('[KPI-DEBUG] found salon row raw:', JSON.stringify(rows[i]));
           const data = parseRowDynamic(rows[i], hm);
-          console.log('[KPI-DEBUG] parsed data:', JSON.stringify(data));
           // 最初に見つかった（最新）シートのデータをメインデータとして使用
           if (!found) {
             found = data;
