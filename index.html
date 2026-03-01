@@ -1836,6 +1836,13 @@ document.getElementById('salon-id-input').addEventListener('keydown', e => {
 document.getElementById('email-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') handleLogin();
 });
+
+// ===== CSモード初期化 =====
+if (IS_CS_MODE) {
+  document.getElementById('email-label').style.display = 'none';
+  document.getElementById('email-input').style.display = 'none';
+  document.querySelector('.login-subtitle').textContent = '社内専用';
+}
 </script>
 </body>
 </html>
