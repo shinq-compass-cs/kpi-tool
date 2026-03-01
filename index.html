@@ -1850,6 +1850,50 @@ document.getElementById('email-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') handleLogin();
 });
 
+// ===== ログ送信 =====
+function getDeviceInfo() {
+  const ua = navigator.userAgent;
+  const type = /iPhone|Android.*Mobile/.test(ua) ? 'スマホ'
+    : /iPad|Android/.test(ua) ? 'タブレット' : 'PC';
+  const browser = /Edg\//.test(ua) ? 'Edge'
+    : /Chrome\//.test(ua) ? 'Chrome'
+    : /Safari\//.test(ua) ? 'Safari'
+    : /Firefox\//.test(ua) ? 'Firefox' : 'その他';
+  return `${type}/${browser}`;
+}
+
+function trackUrl(url) {
+  if (IS_CS_MODE || !url || sessionClickedUrls.length >= 10) return;
+  sessionClickedUrls.push(url);
+}
+
+function sendLoginLog() {
+  if (IS_CS_MODE || !currentData || logSent || !GAS_LOG_URL) return;
+  logSent = true;
+  const payload = {
+    datetime: loginTime
+      ? loginTime.toLocaleString('ja-JP')
+      : new Date().toLocaleString('ja-JP'),
+    salon_id:   currentData.salon_id || '',
+    salon_name: currentData.name     || '',
+    device:     getDeviceInfo(),
+    urls:       sessionClickedUrls.slice(0, 10)
+  };
+  const fd = new FormData();
+  fd.append('data', JSON.stringify(payload));
+  navigator.sendBeacon(GAS_LOG_URL, fd);
+}
+
+// ダッシュボード内の外部リンククリックを追跡
+document.getElementById('dashboard').addEventListener('click', (e) => {
+  if (IS_CS_MODE) return;
+  const a = e.target.closest('a[href]');
+  if (a && /^https?:/.test(a.href)) trackUrl(a.href);
+});
+
+// タブを閉じた場合のフォールバック送信
+window.addEventListener('beforeunload', () => sendLoginLog());
+
 // ===== CSモード初期化 =====
 if (IS_CS_MODE) {
   document.getElementById('email-label').style.display = 'none';
