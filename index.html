@@ -1518,6 +1518,7 @@ function openHpForm() {
   const url = `https://docs.google.com/forms/d/e/${hashId}/viewform?usp=pp_url` +
     `&entry.${idEntry}=${encodeURIComponent(currentData.salon_id || '')}` +
     `&entry.${nameEntry}=${encodeURIComponent(currentData.name || '')}`;
+  trackUrl(url);
   window.open(url, '_blank');
 }
 
