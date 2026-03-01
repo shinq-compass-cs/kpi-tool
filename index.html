@@ -1493,13 +1493,11 @@ async function downloadReviewPdf() {
   const qrImageBytes = await fetch(qrDataUrl).then(r => r.arrayBuffer());
   const qrImage = await pdfDoc.embedPng(qrImageBytes);
 
-  // 空欄サイズ・位置 (右下の四角形に合わせて調整)
-  const qrSize = 108;      // QR描画サイズ（ポイント）: 約38mm
-  const marginRight = 28;  // 右端からの余白
-  const marginBottom = 28; // 下端からの余白
+  // 2ページ目右下の空欄枠（x:570-710, y:80-220）の中央に配置
+  const qrSize = 120;  // 枠140ptに対して上下左右10ptの余白
   page2.drawImage(qrImage, {
-    x: width - qrSize - marginRight,
-    y: marginBottom,
+    x: 580,
+    y: 90,
     width: qrSize,
     height: qrSize,
   });
