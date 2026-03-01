@@ -523,8 +523,10 @@
     <div class="login-title">KPIフォローツール</div>
     <label class="login-label">サロンID</label>
     <input type="text" id="salon-id-input" class="login-input" placeholder="例：12345" />
+    <label class="login-label">メールアドレス</label>
+    <input type="email" id="email-input" class="login-input" placeholder="例：info@example.com" />
     <button class="login-btn" onclick="handleLogin()">ダッシュボードを表示</button>
-    <div class="login-error" id="login-error">サロンIDが見つかりませんでした。番号をご確認ください。</div>
+    <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
@@ -605,12 +607,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 // ===== 設定（ここを変更してください） =====
-const API_KEY = 'AIzaSyAK_wtY_WFgOkw3L55BkWpmCQuzmhDpsIw'; // ← 発行したAPIキーに置き換えてください
+const API_KEY = 'AIzaSyB4Ll_RyY62htH9TwnV3ZxJiEybkEpiHCg'; // ← 発行したAPIキーに置き換えてください
 const SPREADSHEET_ID = '1CiuXRdYG-lI_jWA4DiR_uXvYU9dgqTE1v-JWsZF1l_g';
 
 // 月別タブ（新しい順に追加していく。毎月先頭に追加してください）
 const MONTHLY_SHEETS = ['2602', '2601', '2512'];
 const FREE_TRIAL_SHEET = '無料体験';
+
+// メールアドレスの列番号（A列=0、D列=3）
+const EMAIL_COL = 3;
 
 // 担当者連絡先
 const LINE_URL = 'https://line.me/ti/p/@348cwzis';
@@ -797,6 +802,7 @@ function parseRow(row, isMonthly) {
     return {
       salon_id: String(get(0) || '').trim(),
       name: get(1),
+      email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
       area: get(6),
       search_point: get(10),
       access: get(12),
@@ -822,6 +828,7 @@ function parseRow(row, isMonthly) {
     return {
       salon_id: String(get(0) || '').trim(),
       name: get(4),
+      email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
       area: get(11),
       search_point: get(18),
       access: get(13),
@@ -848,7 +855,13 @@ function parseRow(row, isMonthly) {
 // ===== ログイン処理 =====
 async function handleLogin() {
   const salonId = document.getElementById('salon-id-input').value.trim();
-  if (!salonId) return;
+  const email = document.getElementById('email-input').value.trim().toLowerCase();
+  if (!salonId || !email) {
+    const err = document.getElementById('login-error');
+    err.textContent = 'サロンIDとメールアドレスを入力してください。';
+    err.style.display = 'block';
+    return;
+  }
 
   showLoading(true);
   document.getElementById('login-error').style.display = 'none';
@@ -892,7 +905,18 @@ async function handleLogin() {
     }
 
     if (!found) {
-      document.getElementById('login-error').style.display = 'block';
+      const err = document.getElementById('login-error');
+      err.textContent = 'サロンIDが見つかりませんでした。番号をご確認ください。';
+      err.style.display = 'block';
+      showLoading(false);
+      return;
+    }
+
+    // メールアドレス照合
+    if (found.email !== email) {
+      const err = document.getElementById('login-error');
+      err.textContent = 'メールアドレスが一致しません。ご確認ください。';
+      err.style.display = 'block';
       showLoading(false);
       return;
     }
@@ -1103,6 +1127,7 @@ function handleLogout() {
   Object.values(charts).forEach(c => c.destroy());
   charts = {};
   document.getElementById('salon-id-input').value = '';
+  document.getElementById('email-input').value = '';
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('kpi-sections').innerHTML = '';
@@ -1111,6 +1136,9 @@ function handleLogout() {
 
 // Enterキーでログイン
 document.getElementById('salon-id-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('email-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') handleLogin();
 });
 </script>
