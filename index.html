@@ -1015,6 +1015,8 @@ function parseRow(row, isMonthly) {
       email: String(row[EMAIL_COL] || '').trim().toLowerCase(),
       area: get(12),   // M列
       area_rank: AREA_RANK_COL !== null ? get(AREA_RANK_COL) : null,
+      compass_plan: get(10),  // K列
+      yoyaku_plan:  get(11),  // L列
       search_point: get(19),  // T列
       access: get(13),
       click: get(15),
