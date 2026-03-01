@@ -296,6 +296,16 @@
     border-radius: var(--radius) var(--radius) 0 0;
     font-size: 15px;
     font-weight: 700;
+    cursor: pointer;
+    justify-content: space-between;
+    user-select: none;
+  }
+  .needs-header-label { display: flex; align-items: center; gap: 10px; }
+  .needs-chevron { font-size: 11px; opacity: 0.8; transition: transform 0.2s; }
+  .needs-section.collapsed .needs-chevron { transform: rotate(-90deg); }
+  .needs-section.collapsed .needs-body { display: none; }
+  .needs-section.collapsed .needs-header {
+    border-radius: var(--radius);
   }
 
   .needs-header.search { background: linear-gradient(90deg, #1a3a5c, #2563EB); color: white; }
