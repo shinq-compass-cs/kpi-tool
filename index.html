@@ -1177,15 +1177,15 @@ function parseRowDynamic(row, hm) {
 // ===== ログイン処理 =====
 async function handleLogin() {
   const salonId = document.getElementById('salon-id-input').value.trim();
-  const email = IS_CS_MODE ? null : document.getElementById('email-input').value.trim().toLowerCase();
-  if (!salonId || (!IS_CS_MODE && !email)) {
+  const email = document.getElementById('email-input').value.trim().toLowerCase();
+  if (!salonId || !email) {
     const err = document.getElementById('login-error');
-    err.textContent = IS_CS_MODE
-      ? 'サロンIDを入力してください。'
-      : 'サロンIDとメールアドレスを入力してください。';
+    err.textContent = 'サロンIDとメールアドレスを入力してください。';
     err.style.display = 'block';
     return;
   }
+  // 社内判定：CS専用メアドでログインした場合はメール照合をスキップ
+  const loginIsInternal = (email === CS_INTERNAL_EMAIL);
 
   showLoading(true);
   document.getElementById('login-error').style.display = 'none';
