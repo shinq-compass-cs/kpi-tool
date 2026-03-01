@@ -889,7 +889,7 @@
 const IS_CS_MODE = new URLSearchParams(window.location.search).get('cs') === '1';
 
 // ===== ログ設定 =====
-const GAS_LOG_URL = ''; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
+const GAS_LOG_URL = 'https://script.google.com/macros/s/AKfycbyUQ7zwgR4lT5eHddLBYnA2Oob55Z63kh4vlHZM7ZaPCEwfNu6oqqFwKsd5zJ4tYOWa/exec'; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
 let loginTime = null;
 let logSent = false;
 const sessionClickedUrls = [];
@@ -1881,7 +1881,7 @@ function sendLoginLog() {
   };
   const fd = new FormData();
   fd.append('data', JSON.stringify(payload));
-  navigator.sendBeacon(GAS_LOG_URL, fd);
+  fetch(GAS_LOG_URL, { method: 'POST', body: fd, mode: 'no-cors', keepalive: true });
 }
 
 // ダッシュボード内の外部リンククリックを追跡
