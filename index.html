@@ -1375,6 +1375,23 @@ async function handleLogin() {
       logSent = false;
       sessionClickedUrls.length = 0;
     }
+
+    // 同エリア院データを収集（ヒートマップ用）
+    areaRows = [];
+    if (firstSheetRows && firstSheetHm && found.area) {
+      const areaVal = String(found.area).trim();
+      const areaIdx = firstSheetHm['検索順位エリア'];
+      if (areaIdx !== undefined) {
+        const hi = findHeaderRowIndex(firstSheetRows);
+        for (let i = hi + 1; i < firstSheetRows.length; i++) {
+          const rowArea = String(firstSheetRows[i][areaIdx] || '').trim();
+          if (rowArea === areaVal) {
+            areaRows.push(parseRowDynamic(firstSheetRows[i], firstSheetHm));
+          }
+        }
+      }
+    }
+
     renderDashboard(found, foundSheet);
 
   } catch (e) {
