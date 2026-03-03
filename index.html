@@ -2043,6 +2043,7 @@ function handleLogout() {
   currentData = null;
   trendData = [];
   avgData = null;
+  areaRows = [];
   Object.values(charts).forEach(c => c.destroy());
   charts = {};
   document.getElementById('salon-id-input').value = '';
@@ -2052,6 +2053,8 @@ function handleLogout() {
   document.getElementById('kpi-sections').innerHTML = '';
   document.getElementById('trend-section').style.display = 'none';
   document.getElementById('qr-section').style.display = 'none';
+  document.getElementById('area-heatmap').style.display = 'none';
+  document.getElementById('salon-link-row').style.display = 'none';
 }
 
 // Enterキーでログイン
