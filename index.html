@@ -1693,7 +1693,8 @@ function renderDashboard(d, sheetName) {
         achieved = value == 1;
       } else if (item.type === 'flag_str') {
         value = d[item.key];
-        achieved = value == 1 || value === '公開';
+        achieved = value == 1 || value === '公開' ||
+          (item.key === 'reserve_public' && isPlatinaPlus);
       } else if (item.type === 'deadline') {
         value = d[item.key];
         if (value !== null) achieved = value <= item.threshold;
