@@ -1583,6 +1583,7 @@ async function handleLogin() {
       logSent = false;
       sessionClickedUrls.length = 0;
     }
+    saveSession(salonId, email);
 
     // 同エリア院データを収集（ヒートマップ用）
     areaRows = [];
