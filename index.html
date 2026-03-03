@@ -1570,13 +1570,6 @@ function renderDashboard(d, sheetName) {
   // ライン問い合わせURL更新
   document.querySelector('.contact-btn.line').href = LINE_URL;
 
-  // 院リンクバナー更新
-  if (d.salon_id) {
-    document.getElementById('link-compass').href = `https://www.shinq-compass.jp/salon/detail/${d.salon_id}`;
-    document.getElementById('link-reserve').href = `https://www.shinq-compass.jp/salon/reserve/${d.salon_id}`;
-    document.getElementById('salon-link-row').style.display = 'flex';
-  }
-
   // エリア比較ヒートマップ描画
   renderAreaHeatmap(d);
 }
