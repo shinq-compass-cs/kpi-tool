@@ -2339,6 +2339,7 @@ function renderTrendCharts() {
 
 // ===== ログアウト =====
 function handleLogout() {
+  clearSession();
   sendLoginLog();
   currentData = null;
   trendData = [];
