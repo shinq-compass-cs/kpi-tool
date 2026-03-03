@@ -2085,7 +2085,7 @@ function renderAreaHeatmap(d) {
 
     return `
       <div class="${rowClass}">
-        <div class="hm-name">${item.name}</div>
+        <div class="hm-name">${item.name}${item.pt ? `<span class="hm-pt">+${item.pt}pt</span>` : ''}</div>
         <div class="hm-bar-wrap"><div class="hm-bar" style="width:${item.rate}%"></div></div>
         <div class="hm-rate">${item.rate}%</div>
         <div class="hm-self ${selfClass}">${selfIcon}</div>
