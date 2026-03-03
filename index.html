@@ -1374,7 +1374,8 @@ function extractValue(cell) {
 async function fetchSheet(sheetName, range = 'A1:BZ1200') {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}!${range}?key=${API_KEY}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`シート取得失敗: ${sheetName}`);
+  // シートが存在しない場合（400/404）はエラーをthrowせず空配列を返す
+  if (!res.ok) return [];
   const json = await res.json();
   return json.values || [];
 }
