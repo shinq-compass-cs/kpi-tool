@@ -1082,6 +1082,103 @@
   </div>
 </div>
 
+<!-- ===== 代行依頼モーダル ===== -->
+<div class="delegate-overlay" id="delegate-overlay" style="display:none;" onclick="if(event.target===this)closeDelegateModal()">
+  <div class="delegate-modal">
+    <div class="delegate-modal-header">
+      <span class="delegate-modal-title">🛠️ 代行設置 依頼フォーム</span>
+      <button class="delegate-modal-close" onclick="closeDelegateModal()">×</button>
+    </div>
+    <div class="delegate-modal-body">
+
+      <!-- 院情報（自動入力） -->
+      <div class="delegate-salon-info" id="delegate-salon-info">院名・サロンIDを読み込み中...</div>
+
+      <!-- 依頼内容 -->
+      <div>
+        <div class="delegate-section-title">■ 依頼内容（複数選択可）</div>
+        <div class="delegate-check-list">
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-banner" value="予約バナー設置">
+            予約バナーをホームページに設置する <span class="delegate-pt">+50pt</span>
+          </label>
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-link" value="コンパス相互リンク設置">
+            コンパス相互リンクをホームページに設置する <span class="delegate-pt">+30pt</span>
+          </label>
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-parts" value="口コミパーツ設置">
+            口コミパーツをホームページに埋め込む <span class="delegate-pt">+30pt</span>
+          </label>
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="toggleGbpField()">
+            GoogleビジネスプロフィールにしんきゅうURLを設置する <span class="delegate-pt">+50pt</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ホームページのログイン情報 -->
+      <div id="hp-cred-section">
+        <div class="delegate-section-title">■ ホームページのログイン情報</div>
+        <div class="delegate-field">
+          <label>ホームページのURL（公開URL）</label>
+          <input type="url" id="del-hp-url" placeholder="https://www.example.com">
+        </div>
+        <div class="delegate-field">
+          <label>管理画面のログインページURL</label>
+          <input type="url" id="del-admin-url" placeholder="https://www.example.com/wp-admin">
+        </div>
+        <div class="delegate-field">
+          <label>ログインID（ユーザー名）<span style="color:var(--danger)">*</span></label>
+          <input type="text" id="del-login-id" placeholder="ログインID" autocomplete="off">
+        </div>
+        <div class="delegate-field">
+          <label>ログインパスワード<span style="color:var(--danger)">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="del-password" placeholder="パスワード" autocomplete="off">
+            <button type="button" class="pw-toggle" onclick="togglePwVisibility()" title="表示/非表示">👁</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GBP URL（GBPチェック時のみ表示） -->
+      <div id="gbp-field-section" style="display:none;">
+        <div class="delegate-section-title">■ GBP URL</div>
+        <div class="delegate-field">
+          <label>GoogleビジネスプロフィールのURL</label>
+          <input type="url" id="del-gbp-url" placeholder="Googleマップで自院を検索してURLをコピー">
+        </div>
+      </div>
+
+      <!-- 掲載位置 -->
+      <div id="position-section">
+        <div class="delegate-section-title">■ ホームページへの掲載位置</div>
+        <div class="delegate-radio-list">
+          <label class="delegate-radio-label">
+            <input type="radio" name="position" value="一任する" checked> 集客が最大化する形で一任する
+          </label>
+          <label class="delegate-radio-label">
+            <input type="radio" name="position" value="トップページ下部"> トップページの一番下あたりにまとめる
+          </label>
+          <label class="delegate-radio-label">
+            <input type="radio" name="position" value="指定する" onchange="togglePositionDetail(this)"> 場所を指定する
+          </label>
+        </div>
+        <div class="delegate-field" id="position-detail-field" style="display:none; margin-top:10px;">
+          <label>掲載位置の詳細</label>
+          <input type="text" id="del-position-detail" placeholder="例：トップページのスタッフ紹介の下">
+        </div>
+      </div>
+
+      <div class="delegate-msg" id="delegate-msg"></div>
+    </div>
+    <div class="delegate-modal-footer">
+      <button class="delegate-cancel-btn" onclick="closeDelegateModal()">キャンセル</button>
+      <button class="delegate-submit-btn" id="delegate-submit-btn" onclick="submitDelegateForm()">送信する</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
