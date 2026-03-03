@@ -2365,6 +2365,34 @@ document.getElementById('email-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') handleLogin();
 });
 
+// ===== セッション保持（2時間） =====
+const SESSION_KEY = 'kpi_session';
+const SESSION_TIMEOUT = 2 * 60 * 60 * 1000; // 2時間
+
+function saveSession(salonId, email) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    salon_id: salonId,
+    email:    email,
+    expires:  Date.now() + SESSION_TIMEOUT,
+  }));
+}
+
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+(function restoreSession() {
+  const raw = localStorage.getItem(SESSION_KEY);
+  if (!raw) return;
+  try {
+    const s = JSON.parse(raw);
+    if (!s.expires || Date.now() > s.expires) { clearSession(); return; }
+    document.getElementById('salon-id-input').value = s.salon_id;
+    document.getElementById('email-input').value    = s.email;
+    handleLogin();
+  } catch { clearSession(); }
+})();
+
 // ===== ログ送信 =====
 function getDeviceInfo() {
   const ua = navigator.userAgent;
