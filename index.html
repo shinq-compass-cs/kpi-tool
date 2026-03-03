@@ -1576,19 +1576,37 @@ async function handleLogin() {
     }
     saveSession(salonId, email);
 
-    // 同エリア院データを収集（ヒートマップ用）
+    // 同エリア院データを収集（ヒートマップ用）- 最新月次タブ + 無料体験タブの両方を参照
     areaRows = [];
-    if (firstSheetRows && firstSheetHm && found.area) {
+    if (found.area) {
       const areaVal = String(found.area).trim();
-      const areaIdx = firstSheetHm['検索順位エリア'];
-      if (areaIdx !== undefined) {
-        const hi = findHeaderRowIndex(firstSheetRows);
-        for (let i = hi + 1; i < firstSheetRows.length; i++) {
-          const rowArea = String(firstSheetRows[i][areaIdx] || '').trim();
-          if (rowArea === areaVal) {
-            areaRows.push(parseRowDynamic(firstSheetRows[i], firstSheetHm));
+
+      // 指定エリアの行をareaRowsに追加（salon_id重複は除外）
+      const collectAreaRows = (allRows, hm) => {
+        const areaIdx = hm['検索順位エリア'];
+        if (areaIdx === undefined) return;
+        const hi = findHeaderRowIndex(allRows);
+        for (let i = hi + 1; i < allRows.length; i++) {
+          const rowArea = String(allRows[i][areaIdx] || '').trim();
+          if (rowArea !== areaVal) continue;
+          const parsed = parseRowDynamic(allRows[i], hm);
+          if (!areaRows.some(r => String(r.salon_id).trim() === String(parsed.salon_id).trim())) {
+            areaRows.push(parsed);
           }
         }
+      };
+
+      // 最新月次タブから収集
+      if (firstSheetRows && firstSheetHm) {
+        collectAreaRows(firstSheetRows, firstSheetHm);
+      }
+
+      // 無料体験タブから収集（月次タブにいない院を追加）
+      const freeTrialRows = await fetchSheet(FREE_TRIAL_SHEET);
+      if (freeTrialRows.length) {
+        const ftHi = findHeaderRowIndex(freeTrialRows);
+        const ftHm = buildHeaderMap(freeTrialRows[ftHi]);
+        collectAreaRows(freeTrialRows, ftHm);
       }
     }
 
