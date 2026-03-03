@@ -737,6 +737,88 @@
     padding: 24px 16px 32px;
   }
 
+  /* ===== 院リンクバナー ===== */
+  .salon-link-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .salon-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 13px;
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-decoration: none;
+    background: var(--gray-50);
+    transition: all 0.2s;
+  }
+  .salon-link-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+  /* ===== エリア比較ヒートマップ ===== */
+  .heatmap-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .heatmap-section-header {
+    background: linear-gradient(90deg, #1a3a5c, #2c5282);
+    color: white;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .heatmap-chevron { font-size: 11px; opacity: 0.8; transition: transform 0.2s; }
+  .heatmap-section.collapsed .heatmap-chevron { transform: rotate(-90deg); }
+  .heatmap-section.collapsed .heatmap-body { display: none; }
+  .heatmap-body { padding: 16px 20px 20px; }
+  .hm-legend {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--gray-600);
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .hm-legend-item { display: flex; align-items: center; gap: 4px; }
+  .hm-legend-bar { width: 28px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #3d6699, #5a8abf); }
+  .heatmap-row {
+    display: grid;
+    grid-template-columns: 148px 1fr 38px 64px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 12px;
+  }
+  .heatmap-row:last-child { border-bottom: none; }
+  .heatmap-row.gap { background: #fff8f5; margin: 0 -20px; padding: 7px 20px; }
+  .hm-name { font-size: 12px; color: var(--gray-800); font-weight: 500; }
+  .hm-bar-wrap { background: var(--gray-100); border-radius: 4px; height: 10px; overflow: hidden; }
+  .hm-bar { height: 100%; background: linear-gradient(90deg, #3d6699, #5a8abf); border-radius: 4px; }
+  .hm-rate { font-size: 12px; font-weight: 700; color: var(--gray-600); text-align: right; }
+  .hm-self {
+    font-size: 11px; font-weight: 700; text-align: center;
+    padding: 2px 6px; border-radius: 10px;
+  }
+  .hm-self.ok { background: var(--accent-light); color: var(--accent); }
+  .hm-self.ng { background: var(--danger-light); color: var(--danger); }
+  .hm-diff { font-size: 11px; color: var(--danger); font-weight: 600; }
+  .hm-diff.plus { color: var(--accent); }
+
   @media (max-width: 600px) {
     .summary-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
     .summary-num { font-size: 22px; }
@@ -752,6 +834,8 @@
     .top-bar-right { width: 100%; justify-content: flex-end; }
     .contact-btn.mail span { display: none; }
     .contact-btn.line { padding: 7px 10px; }
+    .heatmap-row { grid-template-columns: 110px 1fr 34px 54px; }
+    .hm-diff { display: none; }
   }
 </style>
 </head>
