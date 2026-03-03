@@ -1407,15 +1407,19 @@ async function handleLogin() {
 function renderDashboard(d, sheetName) {
   // 院名・日付
   document.getElementById('salon-name').textContent = d.name || `サロンID: ${d.salon_id}`;
-  // データ参照元 ｜ 表示日時 ｜ 契約プランを1行で表示
+  // データ参照元 ｜ 表示日時 ｜ 契約プラン（リンク付き）を1行で表示
   let dateStr = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
   if (d.compass_plan) {
-    dateStr += ` ｜ しんきゅうコンパス：${d.compass_plan}`;
+    const compassUrl = `https://www.shinq-compass.jp/salon/detail/${d.salon_id}`;
+    dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${d.compass_plan}</a>`;
     const isPlatinaPlus = String(d.compass_plan).trim() === 'プラチナPLUSプラン' || String(d.compass_plan).trim() === 'プラチナPLUS';
     const yoyakuText = isPlatinaPlus ? 'プロプラン相当' : (d.yoyaku_plan || '');
-    if (yoyakuText) dateStr += ` ｜ しんきゅう予約：${yoyakuText}`;
+    if (yoyakuText) {
+      const reserveUrl = `https://www.shinq-compass.jp/salon/reserve/${d.salon_id}`;
+      dateStr += ` ｜ <a href="${reserveUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅう予約：${yoyakuText}</a>`;
+    }
   }
-  document.getElementById('data-date').textContent = dateStr;
+  document.getElementById('data-date').innerHTML = dateStr;
 
   // エリア内ランキング
   if (d.area_rank !== null && d.area_rank !== undefined) {
