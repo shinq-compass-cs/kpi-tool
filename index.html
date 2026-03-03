@@ -2047,12 +2047,17 @@ function renderAreaHeatmap(d) {
     return false;
   };
 
-  // 自院データ：無料体験タブ等で列が欠損している場合、areaRows内の同一salon_idの月次データを優先使用
+  // 自院データ：areaRows内の同一salon_idの月次データを優先使用（無料体験タブ等で列が欠損している場合の補完）
   const selfRow = areaRows.find(r => String(r.salon_id).trim() === String(d.salon_id).trim()) || d;
 
+  // 自院がareaRowsに含まれていない場合（無料体験タブ経由など）、分母・分子の計算に自院を追加する
+  const inArea = areaRows.some(r => String(r.salon_id).trim() === String(d.salon_id).trim());
+  const calcRows = inArea ? areaRows : [...areaRows, d];
+  const calcTotal = calcRows.length;
+
   const rows = items.map(item => {
-    const achievedCount = areaRows.filter(r => isAchieved(r, item)).length;
-    const rate = Math.round(achievedCount / total * 100);
+    const achievedCount = calcRows.filter(r => isAchieved(r, item)).length;
+    const rate = Math.round(achievedCount / calcTotal * 100);
     const selfAchieved = isAchieved(selfRow, item);
     return { ...item, achievedCount, rate, selfAchieved };
   });
