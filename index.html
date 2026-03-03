@@ -1834,16 +1834,109 @@ function handleActionClick(action) {
   if (action === 'open_hp_form') openHpForm();
 }
 
+// ===== 代行依頼モーダル =====
 function openHpForm() {
   if (!currentData) return;
-  const hashId   = '1FAIpQLSfzJ9bcUTeSO35VK3t-iyG_2UTZWCGJ84q0Ake2l_c7LNWmtQ';
-  const idEntry  = '414957000';
-  const nameEntry= '941398320';
-  const url = `https://docs.google.com/forms/d/e/${hashId}/viewform?usp=pp_url` +
-    `&entry.${idEntry}=${encodeURIComponent(currentData.salon_id || '')}` +
-    `&entry.${nameEntry}=${encodeURIComponent(currentData.name || '')}`;
-  trackUrl(url);
-  window.open(url, '_blank');
+  // 院情報を自動入力
+  document.getElementById('delegate-salon-info').textContent =
+    `院名：${currentData.name || '―'}　／　サロンID：${currentData.salon_id || '―'}`;
+  // フォームをリセット
+  ['chk-banner','chk-link','chk-parts','chk-gbp'].forEach(id => {
+    document.getElementById(id).checked = false;
+  });
+  document.getElementById('del-hp-url').value = '';
+  document.getElementById('del-admin-url').value = '';
+  document.getElementById('del-login-id').value = '';
+  document.getElementById('del-password').value = '';
+  document.getElementById('del-gbp-url').value = '';
+  document.getElementById('del-position-detail').value = '';
+  document.querySelector('input[name="position"][value="一任する"]').checked = true;
+  document.getElementById('gbp-field-section').style.display = 'none';
+  document.getElementById('position-detail-field').style.display = 'none';
+  const msg = document.getElementById('delegate-msg');
+  msg.style.display = 'none';
+  document.getElementById('delegate-submit-btn').disabled = false;
+  // モーダル表示
+  document.getElementById('delegate-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDelegateModal() {
+  document.getElementById('delegate-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function toggleGbpField() {
+  const show = document.getElementById('chk-gbp').checked;
+  document.getElementById('gbp-field-section').style.display = show ? 'block' : 'none';
+}
+
+function togglePositionDetail(radio) {
+  document.getElementById('position-detail-field').style.display =
+    radio.checked && radio.value === '指定する' ? 'block' : 'none';
+}
+
+function togglePwVisibility() {
+  const pw = document.getElementById('del-password');
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+}
+
+async function submitDelegateForm() {
+  // 依頼種別チェック
+  const types = ['chk-banner','chk-link','chk-parts','chk-gbp']
+    .filter(id => document.getElementById(id).checked)
+    .map(id => document.getElementById(id).value);
+  if (types.length === 0) {
+    showDelegateMsg('依頼内容を1つ以上選択してください。', 'error');
+    return;
+  }
+  // HP系が含まれる場合はID/PW必須
+  const needsHp = types.some(t => t !== 'GBP予約URL設置');
+  const loginId = document.getElementById('del-login-id').value.trim();
+  const password = document.getElementById('del-password').value;
+  if (needsHp && (!loginId || !password)) {
+    showDelegateMsg('ログインIDとパスワードをご入力ください。', 'error');
+    return;
+  }
+
+  const position = document.querySelector('input[name="position"]:checked')?.value || '一任する';
+  const payload = {
+    datetime:        new Date().toLocaleString('ja-JP'),
+    salon_id:        currentData?.salon_id || '',
+    salon_name:      currentData?.name     || '',
+    types,
+    hp_url:          document.getElementById('del-hp-url').value.trim(),
+    admin_url:       document.getElementById('del-admin-url').value.trim(),
+    login_id:        loginId,
+    password,
+    gbp_url:         document.getElementById('del-gbp-url').value.trim(),
+    position,
+    position_detail: document.getElementById('del-position-detail').value.trim(),
+  };
+
+  const btn = document.getElementById('delegate-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  try {
+    if (!DELEGATE_GAS_URL) throw new Error('送信先URLが未設定です（DELEGATE_GAS_URL）');
+    const fd = new FormData();
+    fd.append('data', JSON.stringify(payload));
+    await fetch(DELEGATE_GAS_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+    showDelegateMsg('✅ 送信完了しました。担当者より3営業日以内にご連絡いたします。', 'success');
+    setTimeout(closeDelegateModal, 3000);
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '送信する';
+    showDelegateMsg('送信に失敗しました。時間をおいて再試行してください。', 'error');
+  }
+}
+
+function showDelegateMsg(text, type) {
+  const el = document.getElementById('delegate-msg');
+  el.textContent = text;
+  el.className = `delegate-msg ${type}`;
+  el.style.display = 'block';
 }
 
 async function downloadReviewPdf() {
