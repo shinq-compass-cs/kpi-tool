@@ -1622,10 +1622,15 @@ function renderDashboard(d, sheetName) {
     const compassUrl = `https://www.shinq-compass.jp/salon/detail/${d.salon_id}`;
     dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${d.compass_plan}</a>`;
     const isPlatinaPlus = String(d.compass_plan).trim() === 'プラチナPLUSプラン' || String(d.compass_plan).trim() === 'プラチナPLUS';
-    const yoyakuText = isPlatinaPlus ? 'プロプラン相当' : (d.yoyaku_plan || '');
-    if (yoyakuText) {
+    const yoyakuLabel = isPlatinaPlus ? 'プロプラン相当' : (d.yoyaku_plan || '');
+    if (yoyakuLabel) {
       const reserveUrl = `https://www.shinq-compass.jp/salon/reserve/${d.salon_id}`;
-      dateStr += ` ｜ <a href="${reserveUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅう予約：${yoyakuText}</a>`;
+      const isPublic = d.reserve_public == 1 || d.reserve_public === '公開';
+      if (isPublic) {
+        dateStr += ` ｜ <a href="${reserveUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅう予約：${yoyakuLabel}</a>`;
+      } else {
+        dateStr += ` ｜ <span class="plan-link" style="opacity:0.65;cursor:default;pointer-events:none;">しんきゅう予約：非公開</span>`;
+      }
     }
   }
   document.getElementById('data-date').innerHTML = dateStr;
