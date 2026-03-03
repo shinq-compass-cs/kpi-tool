@@ -2047,10 +2047,13 @@ function renderAreaHeatmap(d) {
     return false;
   };
 
+  // 自院データ：無料体験タブ等で列が欠損している場合、areaRows内の同一salon_idの月次データを優先使用
+  const selfRow = areaRows.find(r => String(r.salon_id).trim() === String(d.salon_id).trim()) || d;
+
   const rows = items.map(item => {
     const achievedCount = areaRows.filter(r => isAchieved(r, item)).length;
     const rate = Math.round(achievedCount / total * 100);
-    const selfAchieved = isAchieved(d, item);
+    const selfAchieved = isAchieved(selfRow, item);
     return { ...item, achievedCount, rate, selfAchieved };
   });
 
