@@ -1605,6 +1605,9 @@ async function handleLogin() {
 
 // ===== ダッシュボード描画 =====
 function renderDashboard(d, sheetName) {
+  // プラチナPLUS判定（関数全体で使用するため先頭で宣言）
+  const isPlatinaPlus = String(d.compass_plan || '').trim() === 'プラチナPLUSプラン' || String(d.compass_plan || '').trim() === 'プラチナPLUS';
+
   // 院名・日付
   document.getElementById('salon-name').textContent = d.name || `サロンID: ${d.salon_id}`;
   // データ参照元 ｜ 表示日時 ｜ 契約プラン（リンク付き）を1行で表示
@@ -1612,7 +1615,6 @@ function renderDashboard(d, sheetName) {
   if (d.compass_plan) {
     const compassUrl = `https://www.shinq-compass.jp/salon/detail/${d.salon_id}`;
     dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${d.compass_plan}</a>`;
-    const isPlatinaPlus = String(d.compass_plan).trim() === 'プラチナPLUSプラン' || String(d.compass_plan).trim() === 'プラチナPLUS';
     const reserveUrl = `https://www.shinq-compass.jp/salon/reserve/${d.salon_id}`;
     if (isPlatinaPlus) {
       // プラチナPLUS：公開状態に関わらず常にリンク付きで表示
