@@ -1134,7 +1134,8 @@ const ACTIONS = {
 let currentData = null;
 let trendData = [];
 let charts = {};
-let avgData = null; // 有料院平均値キャッシュ
+let avgData = null;   // 有料院平均値キャッシュ
+let areaRows = [];    // 同エリア院の解析済みデータ
 
 // ===== ユーティリティ =====
 function formatSheetName(name) {
