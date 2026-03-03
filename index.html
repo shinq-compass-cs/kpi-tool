@@ -2020,26 +2020,35 @@ function renderAreaHeatmap(d) {
 
   // 比較対象KPI一覧
   const items = [
-    { key: 'store_pr',       name: '店舗PR情報登録',     type: 'flag' },
-    { key: 'reserve_public', name: '予約公開',            type: 'flag_str' },
-    { key: 'reserve_gmb',    name: '予約GMB設置',         type: 'flag' },
-    { key: 'reserve_banner', name: '予約バナー設置',      type: 'flag' },
-    { key: 'compass_link',   name: 'コンパス相互リンク',  type: 'flag' },
-    { key: 'review_parts',   name: '口コミパーツ設置',    type: 'flag' },
+    { key: 'store_pr',       name: '店舗PR情報登録',     type: 'flag',     pt: 100 },
+    { key: 'reserve_public', name: '予約公開',            type: 'flag_str', pt: 50 },
+    { key: 'reserve_gmb',    name: '予約GMB設置',         type: 'flag',     pt: 50 },
+    { key: 'reserve_banner', name: '予約バナー設置',      type: 'flag',     pt: 50 },
+    { key: 'compass_link',   name: 'コンパス相互リンク',  type: 'flag',     pt: 30 },
+    { key: 'review_parts',   name: '口コミパーツ設置',    type: 'flag',     pt: 30 },
+    { key: 'review',         name: '口コミ5件以上',       type: 'num',      threshold: 5,  pt: '1件ごと' },
+    { key: 'review_reply',   name: '口コミ返信5件以上',   type: 'num',      threshold: 5,  pt: '1件ごと' },
     { key: 'pickup_review',  name: 'PickUp口コミ',        type: 'flag' },
     { key: 'menu3',          name: 'メニュー3件以上',     type: 'flag' },
     { key: 'guest_reserve',  name: 'ゲスト予約',          type: 'flag' },
     { key: 'menu_link',      name: 'メニュー連携',        type: 'flag' },
-    { key: 'review',         name: '口コミ5件以上',       type: 'num',      threshold: 5 },
-    { key: 'review_reply',   name: '口コミ返信5件以上',   type: 'num',      threshold: 5 },
     { key: 'deadline',       name: '予約締切60分以内',    type: 'deadline', threshold: 60 },
   ];
+
+  // プラチナPLUS判定（しんきゅう予約プロプラン付帯のため予約公開を達成扱い）
+  const isPlatinaRow = (row) => {
+    const plan = String(row.compass_plan || '').trim();
+    return plan === 'プラチナPLUSプラン' || plan === 'プラチナPLUS';
+  };
 
   // 各項目について達成判定
   const isAchieved = (row, item) => {
     const v = row[item.key];
     if (item.type === 'flag')     return Number(v) >= 1;
-    if (item.type === 'flag_str') return v == 1 || v === '公開';
+    if (item.type === 'flag_str') {
+      if (item.key === 'reserve_public' && isPlatinaRow(row)) return true;
+      return v == 1 || v === '公開';
+    }
     if (item.type === 'num')      return v !== null && v >= item.threshold;
     if (item.type === 'deadline') return v !== null && v <= item.threshold;
     return false;
