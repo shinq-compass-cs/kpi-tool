@@ -1495,64 +1495,39 @@ async function handleLogin() {
     let foundSheet = null;
     trendData = [];
 
-    // 月別タブを新しい順に検索（全月分のトレンドデータも収集）
+    // === Step1: 最新月次タブのみ取得・検索 ===
+    const latestSheet = monthlySheetName(0);
+    const latestRows = await fetchSheet(latestSheet);
     let firstSheetRows = null, firstSheetHm = null;
-    for (const sheet of MONTHLY_SHEETS) {
-      const rows = await fetchSheet(sheet);
-      if (!rows.length) continue;
-      const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
-      const hm = buildHeaderMap(rows[headerIdx]);
-      // 最新シート（先頭）の全行データを平均値計算用に保持
-      if (!firstSheetRows) { firstSheetRows = rows; firstSheetHm = hm; }
-      const idCol = hm['サロンID'] ?? 0;
-      for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
-        const id = String(rows[i][idCol] || '').trim();
-        if (id === salonId) {
-          const data = parseRowDynamic(rows[i], hm);
-          // 最初に見つかった（最新）シートのデータをメインデータとして使用
-          if (!found) {
-            found = data;
-            foundSheet = sheet;
-            // 到達可能ポイント・順位を計算してデータに付加
-            const addPt = calcAdditionalPoints(found);
-            const maxPt = Number(found.search_point || 0) + addPt;
-            found.add_pt = addPt;
-            found.potential_max_pt = maxPt;
-            found.potential_rank = calcPotentialRank(found.area, maxPt, rows, hm);
-          }
-          // 全月分をトレンド用に収集（古い順になるようunshiftで先頭追加）
-          trendData.unshift({ sheet, data });
+    if (latestRows.length) {
+      const hi = findHeaderRowIndex(latestRows);
+      firstSheetHm = buildHeaderMap(latestRows[hi]);
+      firstSheetRows = latestRows;
+      const idCol = firstSheetHm['サロンID'] ?? 0;
+      for (let i = hi + 1; i < latestRows.length; i++) {
+        if (String(latestRows[i][idCol] || '').trim() === salonId) {
+          found = parseRowDynamic(latestRows[i], firstSheetHm);
+          foundSheet = latestSheet;
           break;
         }
       }
     }
 
-    // 最新月別シートから有料院の平均値を計算（キャッシュ済みなら再計算しない）
-    if (!avgData && firstSheetRows && firstSheetHm) {
-      avgData = calcSheetAverages(firstSheetRows, firstSheetHm);
-    }
-
-    // 月別に見つからなければ無料体験タブを検索
+    // === Step2: 最新月次で見つからなければ無料体験タブを検索 ===
+    let freeTrialRows = null, freeTrialHm = null;
     if (!found) {
       const rows = await fetchSheet(FREE_TRIAL_SHEET);
       if (rows.length) {
-        const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
-        const hm = buildHeaderMap(rows[headerIdx]);
-        const idCol = hm['サロンID'] ?? 0;
-        for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
+        const hi = findHeaderRowIndex(rows);
+        freeTrialHm = buildHeaderMap(rows[hi]);
+        freeTrialRows = rows;
+        const idCol = freeTrialHm['サロンID'] ?? 0;
+        for (let i = hi + 1; i < rows.length; i++) {
           const row = rows[i];
-          const id = String(row[idCol] || '').trim();
-          if (id === salonId) {
-            // F列（index 5）が先月以前のデータは除外（YY/MM/DD形式・プレースホルダーも考慮）
+          if (String(row[idCol] || '').trim() === salonId) {
             if (!isFreeTrialDateValid(row)) break;
-            found = parseRowDynamic(row, hm);
+            found = parseRowDynamic(row, freeTrialHm);
             foundSheet = FREE_TRIAL_SHEET;
-            // 到達可能ポイント・順位を計算してデータに付加
-            const addPt = calcAdditionalPoints(found);
-            const maxPt = Number(found.search_point || 0) + addPt;
-            found.add_pt = addPt;
-            found.potential_max_pt = maxPt;
-            found.potential_rank = calcPotentialRank(found.area, maxPt, rows, hm);
             break;
           }
         }
@@ -1576,6 +1551,47 @@ async function handleLogin() {
       return;
     }
 
+    // 到達可能ポイント・順位を計算（最新月次優先、なければ無料体験タブで代替）
+    {
+      const refRows = firstSheetRows || freeTrialRows;
+      const refHm   = firstSheetHm   || freeTrialHm;
+      const addPt = calcAdditionalPoints(found);
+      const maxPt = Number(found.search_point || 0) + addPt;
+      found.add_pt = addPt;
+      found.potential_max_pt = maxPt;
+      found.potential_rank = refRows ? calcPotentialRank(found.area, maxPt, refRows, refHm) : null;
+    }
+
+    // === Step3: 月次推移データ収集（最新月から遡る、3連続ミスで打ち切り、最大2年分） ===
+    {
+      let missCount = 0;
+      for (let offset = 0; offset <= 24; offset++) {
+        if (missCount >= 3) break;
+        const sheet = monthlySheetName(offset);
+        // offset=0（最新月次）は取得済みのデータを再利用
+        const rows = (offset === 0) ? latestRows : await fetchSheet(sheet);
+        if (!rows || !rows.length) { missCount++; continue; }
+        const hi = findHeaderRowIndex(rows);
+        const hm = (offset === 0 && firstSheetHm) ? firstSheetHm : buildHeaderMap(rows[hi]);
+        const idCol = hm['サロンID'] ?? 0;
+        let foundInSheet = false;
+        for (let i = hi + 1; i < rows.length; i++) {
+          if (String(rows[i][idCol] || '').trim() === salonId) {
+            trendData.unshift({ sheet, data: parseRowDynamic(rows[i], hm) });
+            foundInSheet = true;
+            missCount = 0;
+            break;
+          }
+        }
+        if (!foundInSheet) missCount++;
+      }
+    }
+
+    // 有料院平均値を計算（最新月次タブから、キャッシュ済みなら再計算しない）
+    if (!avgData && firstSheetRows && firstSheetHm) {
+      avgData = calcSheetAverages(firstSheetRows, firstSheetHm);
+    }
+
     currentData = found;
     isInternal = loginIsInternal;
     if (!isInternal) {
@@ -1585,7 +1601,7 @@ async function handleLogin() {
     }
     saveSession(salonId, email);
 
-    // 同エリア院データを収集（ヒートマップ用）- 最新月次タブ + 無料体験タブの両方を参照
+    // === Step4: 同エリア院データを収集（最新月次タブ + 無料体験タブ） ===
     areaRows = [];
     if (found.area) {
       const areaVal = String(found.area).trim();
@@ -1605,17 +1621,21 @@ async function handleLogin() {
         }
       };
 
-      // 最新月次タブから収集
       if (firstSheetRows && firstSheetHm) {
         collectAreaRows(firstSheetRows, firstSheetHm);
       }
 
-      // 無料体験タブから収集（月次タブにいない院を追加）
-      const freeTrialRows = await fetchSheet(FREE_TRIAL_SHEET);
-      if (freeTrialRows.length) {
-        const ftHi = findHeaderRowIndex(freeTrialRows);
-        const ftHm = buildHeaderMap(freeTrialRows[ftHi]);
-        collectAreaRows(freeTrialRows, ftHm);
+      // 無料体験タブ（ログイン検索で取得済みなら再利用、未取得なら新規取得）
+      if (!freeTrialRows) {
+        const rows = await fetchSheet(FREE_TRIAL_SHEET);
+        if (rows.length) {
+          const hi = findHeaderRowIndex(rows);
+          freeTrialHm = buildHeaderMap(rows[hi]);
+          freeTrialRows = rows;
+        }
+      }
+      if (freeTrialRows && freeTrialRows.length && freeTrialHm) {
+        collectAreaRows(freeTrialRows, freeTrialHm);
       }
     }
 
