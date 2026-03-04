@@ -1,0 +1,2481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>サンプル表示（38290）｜しんきゅうコンパス</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2c4a72;
+    --primary-light: #3d6699;
+    --accent: #2e8a6e;
+    --accent-light: #e4f2ee;
+    --warning: #b07a3a;
+    --warning-light: #f4ede0;
+    --danger: #a84545;
+    --danger-light: #f0e8e8;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* ===== ログイン画面 ===== */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2c4a72 0%, #3d6699 50%, #2e8a6e 100%);
+    padding: 20px;
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .login-logo {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-400);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .login-subtitle {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 28px;
+  }
+
+  .login-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: var(--gray-800);
+    transition: border-color 0.2s;
+    outline: none;
+    margin-bottom: 20px;
+  }
+
+  .login-input:focus { border-color: var(--primary-light); }
+
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .login-btn:hover { background: var(--primary-light); transform: translateY(-1px); }
+  .login-btn:active { transform: translateY(0); }
+
+  .login-error {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--danger-light);
+    border-radius: var(--radius-sm);
+    color: var(--danger);
+    font-size: 13px;
+    display: none;
+  }
+
+  /* ===== ダッシュボード ===== */
+  #dashboard { display: none; }
+
+  .top-bar {
+    background: var(--primary);
+    color: var(--white);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+  }
+
+  .top-bar-left {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .top-bar-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .contact-btn:hover { opacity: 0.85; }
+  .contact-btn.line { background: #06C755; color: white; }
+  .contact-btn.mail { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+
+  .logout-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .logout-btn:hover { background: rgba(255,255,255,0.15); }
+
+  .main-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* ===== ヘッダーカード ===== */
+  .header-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--primary);
+  }
+
+  .salon-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+
+  .data-date {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 16px;
+  }
+
+  .rank-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .rank-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .rank-badge .rank-num {
+    font-size: 24px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .search-point-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ===== 達成状況サマリー ===== */
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .summary-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .summary-num {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .summary-label { font-size: 12px; color: var(--gray-600); }
+  .summary-card.achieved .summary-num { color: var(--accent); }
+  .summary-card.unachieved .summary-num { color: var(--danger); }
+  .summary-card.total .summary-num { color: var(--primary); }
+
+  /* ===== ニーズセクション ===== */
+  .needs-section {
+    margin-bottom: 20px;
+  }
+
+  .needs-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    justify-content: space-between;
+    user-select: none;
+  }
+  .needs-header-label { display: flex; align-items: center; gap: 10px; }
+  .needs-chevron { font-size: 11px; opacity: 0.8; transition: transform 0.2s; }
+  .needs-section.collapsed .needs-chevron { transform: rotate(-90deg); }
+  .needs-section.collapsed .needs-body { display: none; }
+  .needs-section.collapsed .needs-header {
+    border-radius: var(--radius);
+  }
+
+  .needs-header.search { background: linear-gradient(90deg, #1e3352, #3d6699); color: white; }
+  .needs-header.click { background: linear-gradient(90deg, #1a4a3a, #2e8a6e); color: white; }
+  .needs-header.reserve { background: linear-gradient(90deg, #4a3020, #b07a3a); color: white; }
+
+  .needs-emoji { font-size: 20px; }
+
+  .needs-body {
+    background: var(--white);
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ===== KPIアイテム ===== */
+  .kpi-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.15s;
+  }
+
+  .kpi-item:last-child { border-bottom: none; }
+  .kpi-item:hover { background: var(--gray-50); }
+  .kpi-item.unachieved { background: #f5f7fa; }
+
+  .kpi-status {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .kpi-status.ok { background: var(--accent-light); color: var(--accent); }
+  .kpi-status.ng { background: var(--danger-light); color: var(--danger); }
+
+  .kpi-main { flex: 1; min-width: 0; }
+
+  .kpi-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+  }
+
+  .kpi-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  .kpi-point-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: #dce8f5;
+    color: #2d4a6e;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  .kpi-values {
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  .kpi-values .current {
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+
+  .kpi-values .current.ok { color: var(--accent); }
+  .kpi-values .current.ng { color: var(--danger); }
+
+  /* ===== アクションボックス ===== */
+  .action-box {
+    margin: 8px 0 4px 0;
+    padding: 12px 14px;
+    background: var(--warning-light);
+    border-left: 3px solid var(--warning);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13px;
+    color: var(--gray-800);
+  }
+
+  .action-title {
+    font-weight: 700;
+    color: var(--warning);
+    margin-bottom: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .action-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: var(--white);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .action-link:hover {
+    background: var(--warning);
+    color: white;
+  }
+
+  .action-link.primary {
+    background: var(--warning);
+    color: white;
+  }
+
+  .action-link.primary:hover { opacity: 0.85; }
+
+  /* ===== 口コミQRコード ===== */
+  .qr-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px 24px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .qr-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .qr-canvas-wrap {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  #qr-container {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    background: #fff;
+  }
+  .qr-download-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 9px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+  }
+  .qr-download-btn:hover { opacity: 0.85; }
+  .qr-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+  }
+  .qr-info-label {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 2px;
+  }
+  .qr-review-url {
+    font-size: 13px;
+    color: var(--primary);
+    word-break: break-all;
+    text-decoration: none;
+  }
+  .qr-review-url:hover { text-decoration: underline; }
+  .qr-hint {
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+
+  /* ===== トレンドグラフエリア ===== */
+  .trend-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .trend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .trend-chart-wrap {
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+  }
+
+  .trend-chart-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+  }
+
+  canvas { width: 100% !important; }
+
+  /* ===== ローディング ===== */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(44,74,114,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    color: white;
+    gap: 16px;
+  }
+
+  .spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { font-size: 14px; font-weight: 500; }
+
+  /* ===== info型KPIアイテム ===== */
+  .kpi-item.info-item { background: var(--white); }
+  .kpi-status.info { background: var(--gray-100); color: var(--gray-400); font-size: 12px; }
+  .kpi-values .current.info { color: var(--primary); font-size: 16px; font-weight: 700; }
+
+  /* ===== アドバイスセクション ===== */
+  .advice-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .advice-header {
+    background: linear-gradient(90deg, #2a3a6a, #4a65b0);
+    color: white;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .advice-body { padding: 16px 20px 20px; }
+
+  .advice-intro {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a65b0;
+    margin: 0 0 14px;
+    letter-spacing: 0.04em;
+  }
+
+  .advice-cards { display: flex; flex-direction: column; gap: 14px; }
+
+  .advice-card {
+    border: 1.5px solid #ccd9f0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .advice-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: linear-gradient(90deg, #f0f4fa, #e8eef8);
+    flex-wrap: wrap;
+  }
+
+  .advice-card-num {
+    width: 22px;
+    height: 22px;
+    background: #4a65b0;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .advice-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e2d52;
+    flex: 1;
+  }
+
+  .advice-card-pt {
+    font-size: 11px;
+    font-weight: 700;
+    background: #dce8f5;
+    color: #2d4a6e;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .advice-card-desc {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--gray-800);
+    padding: 10px 14px 8px;
+    margin: 0;
+  }
+
+  .advice-card-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 14px 12px;
+  }
+
+  .advice-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1.5px solid #4a65b0;
+    color: #4a65b0;
+    background: white;
+    transition: background 0.15s, color 0.15s;
+  }
+  .advice-action-btn:first-child {
+    background: #4a65b0;
+    color: white;
+    border-color: #4a65b0;
+  }
+  .advice-action-btn:hover { opacity: 0.85; }
+
+  .action-note, .advice-card-note {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-top: 6px;
+  }
+
+  /* ===== 努力目標バナー ===== */
+  .goal-banner {
+    background: linear-gradient(135deg, #134e4a 0%, #0f766e 60%, #0d9488 100%);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 8px 0 4px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.88);
+    line-height: 1.9;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 16px rgba(44,82,130,0.35);
+  }
+  .goal-banner .goal-icon { font-size: 28px; flex-shrink: 0; }
+  .goal-banner strong {
+    color: #ffd166;
+    font-size: 20px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  /* ===== レスポンシブ ===== */
+  .qr-section .section-title {
+    cursor: pointer;
+    justify-content: space-between;
+    user-select: none;
+  }
+  .qr-section .section-title::after { content: '▲'; font-size: 11px; opacity: 0.7; transition: transform 0.2s; }
+  .qr-section.collapsed .section-title::after { transform: rotate(-180deg); }
+  .qr-section.collapsed .qr-body { display: none; }
+
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #aaa;
+    padding: 24px 16px 32px;
+  }
+
+  /* ===== 代行依頼モーダル ===== */
+  .delegate-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .delegate-modal {
+    background: var(--white);
+    border-radius: var(--radius);
+    width: 100%; max-width: 520px;
+    max-height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .delegate-modal-header {
+    background: var(--primary);
+    color: white;
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .delegate-modal-title { font-size: 15px; font-weight: 700; }
+  .delegate-modal-close {
+    background: none; border: none; color: white;
+    font-size: 20px; cursor: pointer; line-height: 1;
+    opacity: 0.8;
+  }
+  .delegate-modal-close:hover { opacity: 1; }
+  .delegate-modal-body {
+    padding: 20px; overflow-y: auto; flex: 1;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .delegate-salon-info {
+    font-size: 13px; color: var(--gray-600);
+    background: var(--gray-50); padding: 10px 14px;
+    border-radius: var(--radius-sm);
+  }
+  .delegate-section-title {
+    font-size: 12px; font-weight: 700;
+    color: var(--primary); margin-bottom: 10px;
+    padding-bottom: 4px; border-bottom: 1px solid var(--gray-200);
+  }
+  .delegate-check-list { display: flex; flex-direction: column; gap: 8px; }
+  .delegate-check-label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; cursor: pointer;
+  }
+  .delegate-check-label input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; accent-color: var(--primary); }
+  .delegate-pt { font-size: 11px; font-weight: 700; color: var(--accent); }
+  .delegate-field { margin-bottom: 12px; }
+  .delegate-field label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 5px; }
+  .delegate-field input[type="text"],
+  .delegate-field input[type="url"],
+  .delegate-field input[type="password"],
+  .delegate-field textarea {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+    font-size: 14px; font-family: 'Noto Sans JP', sans-serif;
+    outline: none; transition: border-color 0.2s;
+  }
+  .delegate-field input:focus, .delegate-field textarea:focus { border-color: var(--primary-light); }
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 44px; }
+  .pw-toggle {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    font-size: 16px; color: var(--gray-400); line-height: 1;
+  }
+  .pw-toggle:hover { color: var(--gray-600); }
+  .delegate-radio-list { display: flex; flex-direction: column; gap: 8px; }
+  .delegate-radio-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; cursor: pointer;
+  }
+  .delegate-radio-label input[type="radio"] { width: 15px; height: 15px; accent-color: var(--primary); }
+  .delegate-modal-footer {
+    padding: 16px 20px; border-top: 1px solid var(--gray-100);
+    display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0;
+  }
+  .delegate-cancel-btn {
+    padding: 10px 20px; border: 1.5px solid var(--gray-200);
+    background: white; border-radius: var(--radius-sm);
+    font-size: 14px; cursor: pointer; color: var(--gray-600);
+  }
+  .delegate-submit-btn {
+    padding: 10px 24px; background: var(--primary);
+    color: white; border: none; border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .delegate-submit-btn:hover { background: var(--primary-light); }
+  .delegate-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .delegate-msg {
+    font-size: 13px; text-align: center;
+    padding: 10px 14px; border-radius: var(--radius-sm);
+    display: none;
+  }
+  .delegate-msg.success { background: var(--accent-light); color: var(--accent); }
+  .delegate-msg.error   { background: var(--danger-light);  color: var(--danger); }
+
+  /* ===== プランリンク ===== */
+  .plan-link { color: var(--primary-light); text-decoration: none; font-weight: 600; }
+  .plan-link:hover { text-decoration: underline; }
+
+  /* ===== 院リンクバナー ===== */
+  .salon-link-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .salon-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 13px;
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-decoration: none;
+    background: var(--gray-50);
+    transition: all 0.2s;
+  }
+  .salon-link-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+  /* ===== エリア比較ヒートマップ ===== */
+  .heatmap-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .heatmap-section-header {
+    background: linear-gradient(90deg, #1a3a5c, #2c5282);
+    color: white;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .heatmap-chevron { font-size: 11px; opacity: 0.8; transition: transform 0.2s; }
+  .heatmap-section.collapsed .heatmap-chevron { transform: rotate(-90deg); }
+  .heatmap-section.collapsed .heatmap-body { display: none; }
+  .heatmap-body { padding: 16px 20px 20px; }
+  .hm-legend {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--gray-600);
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .hm-legend-item { display: flex; align-items: center; gap: 4px; }
+  .hm-legend-bar { width: 28px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #3d6699, #5a8abf); }
+  .heatmap-row {
+    display: grid;
+    grid-template-columns: 148px 1fr 38px 64px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 12px;
+  }
+  .heatmap-row:last-child { border-bottom: none; }
+  .heatmap-row.gap { background: #fff8f5; margin: 0 -20px; padding: 7px 20px; }
+  .hm-name { font-size: 12px; color: var(--gray-800); font-weight: 500; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+  .hm-pt { font-size: 10px; font-weight: 700; color: var(--accent); background: var(--accent-light); padding: 1px 5px; border-radius: 4px; white-space: nowrap; }
+  .hm-bar-wrap { background: var(--gray-100); border-radius: 4px; height: 10px; overflow: hidden; }
+  .hm-bar { height: 100%; background: linear-gradient(90deg, #3d6699, #5a8abf); border-radius: 4px; }
+  .hm-rate { font-size: 12px; font-weight: 700; color: var(--gray-600); text-align: right; }
+  .hm-self {
+    font-size: 11px; font-weight: 700; text-align: center;
+    padding: 2px 6px; border-radius: 10px;
+  }
+  .hm-self.ok { background: var(--accent-light); color: var(--accent); }
+  .hm-self.ng { background: var(--danger-light); color: var(--danger); }
+  .hm-diff { font-size: 11px; color: var(--danger); font-weight: 600; }
+  .hm-diff.plus { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .summary-row { grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .summary-num { font-size: 22px; }
+    .trend-grid { grid-template-columns: 1fr; }
+    .login-card { padding: 32px 24px; }
+    .top-bar {
+      padding: 8px 12px;
+      height: auto;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .top-bar-left { width: 100%; font-size: 13px; }
+    .top-bar-right { width: 100%; justify-content: flex-end; }
+    .contact-btn.mail span { display: none; }
+    .contact-btn.line { padding: 7px 10px; }
+    .heatmap-row { grid-template-columns: 110px 1fr 34px 54px; }
+    .hm-diff { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== ローディング ===== -->
+<div class="loading-overlay" id="loading" style="display:none;">
+  <div class="spinner"></div>
+  <div class="loading-text">データを読み込んでいます...</div>
+</div>
+
+<!-- ===== ログイン画面 ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">しんきゅうコンパス</div>
+    <div class="login-title">集客フォローツール</div>
+    <div class="login-subtitle">有料院限定</div>
+    <label class="login-label">サロンID</label>
+    <input type="text" id="salon-id-input" class="login-input" placeholder="例：12345" />
+    <label class="login-label" id="email-label">メールアドレス</label>
+    <input type="email" id="email-input" class="login-input" placeholder="例：info@example.com" />
+    <button class="login-btn" onclick="handleLogin()">ダッシュボードを表示</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ===== ダッシュボード ===== -->
+<div id="dashboard">
+  <div class="top-bar">
+    <div class="top-bar-left">集客フォローツール</div>
+    <div class="top-bar-right">
+      <a href="#" target="_blank" class="contact-btn line">LINE相談</a>
+      <a href="mailto:info@shinq-compass.jp" class="contact-btn mail">✉️ <span>メール相談</span></a>
+      <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- ヘッダーカード -->
+    <div class="header-card">
+      <div class="salon-name" id="salon-name">―</div>
+      <div class="data-date" id="data-date">データ取得中...</div>
+      <div class="rank-row">
+        <div class="rank-badge" id="rank-badge" style="display:none;">
+          <span>エリア内順位</span>
+          <span class="rank-num" id="area-rank">―</span>
+          <span>位</span>
+        </div>
+        <div class="search-point-badge" id="point-badge" style="display:none;">
+          ⭐ 検索優先ポイント：<strong id="search-point">―</strong> pt
+        </div>
+      </div>
+    </div>
+
+    <!-- 努力目標バナー -->
+    <div class="goal-banner" id="goal-banner" style="display:none;">
+      <span class="goal-icon">🎯</span>
+      <span id="goal-text"></span>
+    </div>
+
+    <!-- 達成サマリー -->
+    <div class="summary-row">
+      <div class="summary-card achieved">
+        <div class="summary-num" id="achieved-count">―</div>
+        <div class="summary-label">達成中</div>
+      </div>
+      <div class="summary-card unachieved">
+        <div class="summary-num" id="unachieved-count">―</div>
+        <div class="summary-label">未達・未設定</div>
+      </div>
+      <div class="summary-card total">
+        <div class="summary-num" id="total-count">―</div>
+        <div class="summary-label">取り組み項目数</div>
+      </div>
+    </div>
+
+    <!-- アドバイス -->
+    <div class="advice-section" id="advice-section" style="display:none;">
+      <div class="advice-header">💡 今月のアドバイス</div>
+      <div class="advice-body" id="advice-body"></div>
+    </div>
+
+    <!-- エリア比較ヒートマップ -->
+    <div class="heatmap-section" id="area-heatmap" style="display:none;"></div>
+
+    <!-- ニーズ別KPI -->
+    <div id="kpi-sections"></div>
+
+    <!-- 口コミQRコード -->
+    <div class="qr-section" id="qr-section" style="display:none;">
+      <div class="section-title">📷 口コミ投稿 QRコード</div>
+      <div class="qr-body">
+        <div class="qr-canvas-wrap">
+          <div id="qr-container"></div>
+          <button class="qr-download-btn" onclick="downloadQR()">⬇ ダウンロード</button>
+        </div>
+        <div class="qr-info">
+          <div class="qr-info-label">口コミ投稿URL</div>
+          <a id="qr-review-url" class="qr-review-url" href="" target="_blank" rel="noopener"></a>
+          <p class="qr-hint">このQRコードをスキャンすると、しんきゅうコンパスの口コミ投稿ページに直接アクセスできます。院内への掲示やチラシへの印刷にご活用ください。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- トレンドグラフ -->
+    <div class="trend-section" id="trend-section" style="display:none;">
+      <div class="section-title">📈 月次トレンド（直近6ヶ月）</div>
+      <div class="trend-grid">
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">アクセス数</div>
+          <canvas id="chart-access"></canvas>
+        </div>
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">クリック率（%）</div>
+          <canvas id="chart-ctr"></canvas>
+        </div>
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">ネット予約率（%）</div>
+          <canvas id="chart-cvr"></canvas>
+        </div>
+        <div class="trend-chart-wrap">
+          <div class="trend-chart-title">口コミ件数</div>
+          <canvas id="chart-review"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Copyright &copy; shinq-compass.jp All Rights Reserved.</div>
+  </div>
+</div>
+
+<!-- ===== 代行依頼モーダル ===== -->
+<div class="delegate-overlay" id="delegate-overlay" style="display:none;" onclick="if(event.target===this)closeDelegateModal()">
+  <div class="delegate-modal">
+    <div class="delegate-modal-header">
+      <span class="delegate-modal-title">🛠️ 代行設置 依頼フォーム</span>
+      <button class="delegate-modal-close" onclick="closeDelegateModal()">×</button>
+    </div>
+    <div class="delegate-modal-body">
+
+      <!-- 院情報（自動入力） -->
+      <div class="delegate-salon-info" id="delegate-salon-info">院名・サロンIDを読み込み中...</div>
+
+      <!-- 依頼内容 -->
+      <div>
+        <div class="delegate-section-title">■ 依頼内容（複数選択可）</div>
+        <div class="delegate-check-list">
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-banner" value="予約バナー設置">
+            予約バナーをホームページに設置する <span class="delegate-pt">+50pt</span>
+          </label>
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-link" value="コンパス相互リンク設置">
+            コンパス相互リンクをホームページに設置する <span class="delegate-pt">+30pt</span>
+          </label>
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-parts" value="口コミパーツ設置">
+            口コミパーツをホームページに埋め込む <span class="delegate-pt">+30pt</span>
+          </label>
+          <label class="delegate-check-label">
+            <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="toggleGbpField()">
+            GoogleビジネスプロフィールにしんきゅうURLを設置する <span class="delegate-pt">+50pt</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ホームページのログイン情報 -->
+      <div id="hp-cred-section">
+        <div class="delegate-section-title">■ ホームページのログイン情報</div>
+        <div class="delegate-field">
+          <label>ホームページのURL（公開URL）</label>
+          <input type="url" id="del-hp-url" placeholder="https://www.example.com">
+        </div>
+        <div class="delegate-field">
+          <label>管理画面のログインページURL</label>
+          <input type="url" id="del-admin-url" placeholder="https://www.example.com/wp-admin">
+        </div>
+        <div class="delegate-field">
+          <label>ログインID（ユーザー名）<span style="color:var(--danger)">*</span></label>
+          <input type="text" id="del-login-id" placeholder="ログインID" autocomplete="off">
+        </div>
+        <div class="delegate-field">
+          <label>ログインパスワード<span style="color:var(--danger)">*</span></label>
+          <div class="pw-wrap">
+            <input type="password" id="del-password" placeholder="パスワード" autocomplete="off">
+            <button type="button" class="pw-toggle" onclick="togglePwVisibility()" title="表示/非表示">👁</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GBP URL（GBPチェック時のみ表示） -->
+      <div id="gbp-field-section" style="display:none;">
+        <div class="delegate-section-title">■ GBP URL</div>
+        <div class="delegate-field">
+          <label>GoogleビジネスプロフィールのURL</label>
+          <input type="url" id="del-gbp-url" placeholder="Googleマップで自院を検索してURLをコピー">
+        </div>
+      </div>
+
+      <!-- 掲載位置 -->
+      <div id="position-section">
+        <div class="delegate-section-title">■ ホームページへの掲載位置</div>
+        <div class="delegate-radio-list">
+          <label class="delegate-radio-label">
+            <input type="radio" name="position" value="一任する" checked> 集客が最大化する形で一任する
+          </label>
+          <label class="delegate-radio-label">
+            <input type="radio" name="position" value="トップページ下部"> トップページの一番下あたりにまとめる
+          </label>
+          <label class="delegate-radio-label">
+            <input type="radio" name="position" value="指定する" onchange="togglePositionDetail(this)"> 場所を指定する
+          </label>
+        </div>
+        <div class="delegate-field" id="position-detail-field" style="display:none; margin-top:10px;">
+          <label>掲載位置の詳細</label>
+          <input type="text" id="del-position-detail" placeholder="例：トップページのスタッフ紹介の下">
+        </div>
+      </div>
+
+      <div class="delegate-msg" id="delegate-msg"></div>
+    </div>
+    <div class="delegate-modal-footer">
+      <button class="delegate-cancel-btn" onclick="closeDelegateModal()">キャンセル</button>
+      <button class="delegate-submit-btn" id="delegate-submit-btn" onclick="submitDelegateForm()">送信する</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+// ===== ログ設定 =====
+const CS_INTERNAL_EMAIL = 'info@shinq-compass.jp'; // このメアドでログイン→社内判定
+const GAS_LOG_URL = 'https://script.google.com/macros/s/AKfycbyUQ7zwgR4lT5eHddLBYnA2Oob55Z63kh4vlHZM7ZaPCEwfNu6oqqFwKsd5zJ4tYOWa/exec'; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
+const DELEGATE_GAS_URL = 'https://script.google.com/macros/s/AKfycbw4Pm3pzkGnF4443l4O-5wGb-aW0wYP3cTLUgGEuQhCYmpVtpC8O7lp4qfispNynmsq/exec';
+let isInternal = false; // ログイン時に社内/社外を判定して設定
+let loginTime = null;
+let logSent = false;
+const sessionClickedUrls = [];
+
+// ===== 設定（ここを変更してください） =====
+const API_KEY = 'AIzaSyAK_wtY_WFgOkw3L55BkWpmCQuzmhDpsIw'; // ← 発行したAPIキーに置き換えてください
+const SPREADSHEET_ID = '1CiuXRdYG-lI_jWA4DiR_uXvYU9dgqTE1v-JWsZF1l_g';
+
+// 月別タブ（新しい順に追加していく。毎月先頭に追加してください）
+const MONTHLY_SHEETS = ['2603', '2602', '2601', '2512'];
+const FREE_TRIAL_SHEET = '無料体験';
+
+// デモ表示用定数（sample.html専用）
+const DEMO_SALON_ID = '38290';
+
+// 担当者連絡先
+const LINE_URL = 'https://line.me/ti/p/@348cwzis';
+const MAIL_ADDRESS = 'info@shinq-compass.jp';
+
+// ===== KPI定義 =====
+const KPI_DEFS = {
+  // ニーズ1: 検索で見つけてもらう
+  search: {
+    label: '🔍 患者さんに検索で見つけてもらうために',
+    theme: 'search',
+    items: [
+      { key: 'access', name: 'アクセス数', col: 12, threshold: 200, type: 'num', unit: '', searchPoint: false },
+      { key: 'store_pr', name: '店舗PR情報登録', col: 31, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 100 },
+      { key: 'reserve_public', name: '予約公開利用院', col: 27, threshold: 1, type: 'flag_str', unit: '', searchPoint: true, point: 50 },
+      { key: 'reserve_gmb', name: '予約GMB設置', col: 28, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 50 },
+      { key: 'reserve_banner', name: '予約バナー設置', col: 29, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 50 },
+      { key: 'compass_link', name: 'コンパス相互リンク設置', col: 30, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 30 },
+    ]
+  },
+  // ニーズ2: 予約ボタンを押してもらう
+  click: {
+    label: '👆 患者さんに予約ボタンを押してもらうために',
+    theme: 'click',
+    items: [
+      { key: 'click', name: 'クリック数', threshold: 20, type: 'num', unit: '回', searchPoint: false },
+      { key: 'ctr', name: 'クリック率', threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.access > 0 ? (d.click / d.access * 100) : null },
+      { key: 'review', name: '口コミ件数', col: 23, threshold: 5, type: 'num', unit: '件', searchPoint: true, point: '1件ごと' },
+      { key: 'review_reply', name: '口コミ返信件数', col: 24, threshold: 5, type: 'num', unit: '件', searchPoint: true, point: '1件ごと' },
+      { key: 'pickup_review', name: 'PickUp口コミ', col: 25, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+      { key: 'review_parts', name: '口コミパーツ設置', col: 26, threshold: 1, type: 'flag', unit: '', searchPoint: true, point: 30 },
+      { key: 'menu3', name: 'メニュー3件以上登録', col: 32, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+    ]
+  },
+  // ニーズ3: 実際に予約してもらう
+  reserve: {
+    label: '📅 患者さんに実際に予約してもらうために',
+    theme: 'reserve',
+    items: [
+      { key: 'net_reserve', name: '予約数', threshold: 2, type: 'num', unit: '件', searchPoint: false },
+      { key: 'cvr', name: 'ネット予約率', threshold: 10, type: 'rate', unit: '%', searchPoint: false, calc: (d) => d.click > 0 ? (d.net_reserve / d.click * 100) : null },
+      { key: 'menu_link', name: 'メニュー連携', col: 33, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+      { key: 'guest_reserve', name: 'ゲスト予約利用', col: 36, threshold: 1, type: 'flag', unit: '', searchPoint: false },
+      { key: 'deadline', name: '予約受付締切時間', col: 37, threshold: 60, type: 'deadline', unit: '分', searchPoint: false },
+    ]
+  }
+};
+
+// ===== アクション定義 =====
+const ACTIONS = {
+  access: {
+    text: 'アクセスを増やすために、以下の施策を実施しましょう。',
+    links: [
+      { label: '🔍 検索ポイント対象の取り組みを確認する', action: 'scroll_search' },
+      { label: '🔗 予約導線の取り組みを確認する', action: 'scroll_reserve' },
+    ]
+  },
+  ctr: {
+    text: 'クリック率を上げるために、口コミを強化して患者さんの反応を高めましょう。',
+    links: [{ label: '💬 口コミ関連の取り組みを確認する', action: 'scroll_click' }]
+  },
+  review: {
+    text: '口コミを増やすために、以下のツールをご活用ください。',
+    note: '※ 口コミ代理投稿用紙は各院7枚まで（通算）となっております。',
+    links: [
+      { label: '📄 口コミ代理投稿用紙をダウンロード', url: 'https://shinq-compass-cs.github.io/kpi-tool/docs/kuchikomi.pdf' },
+      { label: '📱 QRコードを表示する', action: 'show_qr' },
+      { label: '📋 院内設置用PDF（3枚）をダウンロード', action: 'download_review_pdf' },
+    ]
+  },
+  review_reply: {
+    text: '口コミへの返信を増やしましょう。返信ひな形生成ツールも活用できます。',
+    links: [
+      { label: '💬 口コミ返信ページへ', url: 'https://www.shinq-compass.jp/mypage/mypage_review/' },
+      { label: '✍️ 返信ひな形を自動生成する', url: 'https://example.com/reply-tool' },
+    ]
+  },
+  pickup_review: {
+    text: 'PickUp口コミを設定して、患者さんの印象的な声を目立たせましょう。',
+    links: [{ label: '⚙️ PickUp口コミの設定ページへ', url: 'https://www.shinq-compass.jp/mypage/mypage_review/' }]
+  },
+  review_parts: {
+    text: '口コミパーツをホームページに設置して、患者さんに信頼感を与えましょう。',
+    links: [
+      { label: '🛠️ 代行設置を依頼する', action: 'open_hp_form' },
+      { label: '📋 自分で設置する場合はこちら', url: 'https://www.shinq-compass.jp/mypage/mypage_widget/' },
+    ]
+  },
+  store_pr: {
+    text: '店舗PR情報を登録して、検索優先ポイントを獲得しましょう（+100pt）。',
+    links: [{ label: '⚙️ 店舗PR情報の設定ページへ', url: 'https://www.shinq-compass.jp/mypage/mypage_edit/' }]
+  },
+  menu3: {
+    text: 'メニューを3件以上登録して、患者さんに選ばれやすくしましょう。',
+    links: [{ label: '⚙️ メニュー登録の設定ページへ', url: 'https://www.shinq-compass.jp/mypage/yoyaku/setting/menu' }]
+  },
+  reserve_public: {
+    text: 'しんきゅう予約を公開設定にして、ネット予約を受け付けましょう（+50pt）。',
+    links: [{ label: '⚙️ 予約公開の設定ページへ', url: 'https://www.shinq-compass.jp/mypage/yoyaku/' }]
+  },
+  reserve_gmb: {
+    text: 'GoogleビジネスプロフィールにしんきゅうURLを設置して、アクセスを増やしましょう（+50pt）。',
+    links: [
+      { label: '🛠️ 代行設置を依頼する', action: 'open_hp_form' },
+      { label: '📋 自分で設定する場合はこちら', url: 'https://www.shinq-compass.jp/mypage/view/323' },
+    ]
+  },
+  reserve_banner: {
+    text: '予約バナーをホームページに設置して、予約への導線を強化しましょう（+50pt）。',
+    links: [
+      { label: '🛠️ 代行設置を依頼する', action: 'open_hp_form' },
+      { label: '📋 自分で設置する場合はこちら', url: 'https://www.shinq-compass.jp/mypage/view/323' },
+    ]
+  },
+  compass_link: {
+    text: 'ホームページにコンパスへの相互リンクを設置して、検索優先ポイントを獲得しましょう（+30pt）。',
+    links: [
+      { label: '🛠️ 代行設置を依頼する', action: 'open_hp_form' },
+      { label: '📋 自分で設置する場合はこちら', url: 'https://www.shinq-compass.jp/info/link' },
+    ]
+  },
+  menu_link: {
+    text: 'メニュー連携を設定して、患者さんがスムーズに予約できるようにしましょう。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  guest_reserve: {
+    text: 'ゲスト予約を有効にして、初診の患者さんが予約しやすくしましょう。',
+    links: [{ label: '⚙️ ゲスト予約設定のページへ', url: 'https://www.shinq-compass.jp/mypage/yoyaku/setting/rule/' }]
+  },
+  deadline: {
+    text: '予約受付締切を1時間以内に設定して、直前の予約を取りこぼさないようにしましょう。',
+    links: [{ label: '⚙️ しんきゅうコンパス設定ページへ', url: 'https://admin.shinq-compass.jp/' }]
+  },
+  cvr: {
+    text: 'ネット予約率を上げるために、予約設定の取り組みを進めましょう。',
+    links: [{ label: '📅 予約設定の取り組みを確認する', action: 'scroll_reserve' }]
+  },
+};
+
+// ===== グローバル変数 =====
+let currentData = null;
+let trendData = [];
+let charts = {};
+let avgData = null;   // 有料院平均値キャッシュ
+let areaRows = [];    // 同エリア院の解析済みデータ
+
+// ===== ユーティリティ =====
+function formatSheetName(name) {
+  // 'YYMM' 形式のシート名を '20YY年M月分' に変換
+  if (/^\d{4}$/.test(name)) {
+    const year = 2000 + parseInt(name.slice(0, 2));
+    const month = parseInt(name.slice(2));
+    return `${year}年${month}月分`;
+  }
+  return name;
+}
+
+function showLoading(show) {
+  document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+
+function extractValue(cell) {
+  if (cell === null || cell === undefined) return null;
+  const str = String(cell);
+  const match = str.match(/,"([^"]*?)"\)$/);
+  if (match) return match[1];
+  const match2 = str.match(/,([\d.]+)\)$/);
+  if (match2) return parseFloat(match2[1]);
+  return str;
+}
+
+async function fetchSheet(sheetName, range = 'A1:BZ1200') {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}!${range}?key=${API_KEY}`;
+  const res = await fetch(url);
+  // シートが存在しない場合（400/404）はエラーをthrowせず空配列を返す
+  if (!res.ok) return [];
+  const json = await res.json();
+  return json.values || [];
+}
+
+// ===== 無料体験タブの行有効チェック =====
+// F列（index 5）に何らかの値が入っていれば有効（管理者がタブから行を削除することで失効管理）
+function isFreeTrialDateValid(row) {
+  const dateVal = row[5]; // F列固定
+  return !!dateVal;
+}
+
+// ===== ヘッダー行を自動検出（先頭から最大5行を走査して「サロンID」を含む行を探す） =====
+function findHeaderRowIndex(rows) {
+  for (let i = 0; i < Math.min(rows.length, 5); i++) {
+    if (rows[i] && rows[i].some(cell => String(cell || '').trim() === 'サロンID')) {
+      return i;
+    }
+  }
+  return 0; // 見つからなければ先頭行にフォールバック
+}
+
+// ===== ヘッダーマップ構築（改行を除去して正規化） =====
+function buildHeaderMap(headerRow) {
+  const map = {};
+  if (!headerRow) return map;
+  for (let i = 0; i < headerRow.length; i++) {
+    // セル内の改行を除去してキーを正規化（初出を優先）
+    const h = String(headerRow[i] || '').replace(/\n/g, '').trim();
+    if (h && !(h in map)) map[h] = i;
+  }
+  return map;
+}
+
+// ===== 行データをヘッダーマップで解析（VLOOKUP方式） =====
+function parseRowDynamic(row, hm) {
+  const getVal = (idx) => {
+    if (idx === undefined) return null;
+    const val = row[idx];
+    if (val === undefined || val === null || val === '' || val === '#N/A') return null;
+    const num = parseFloat(val);
+    return isNaN(num) ? val : num;
+  };
+
+  // 複数候補キーで検索：完全一致 → 前方一致（「アクセス数」→「アクセス数（30日）」）→ 次候補
+  const findIdx = (...keys) => {
+    for (const key of keys) {
+      if (hm[key] !== undefined) return hm[key];
+      const found = Object.keys(hm).find(k => k.startsWith(key) && k !== key);
+      if (found !== undefined) return hm[found];
+    }
+    return undefined;
+  };
+  const get = (...keys) => getVal(findIdx(...keys));
+
+  const emailIdx = findIdx('メールアドレス');
+  return {
+    salon_id:          String(getVal(findIdx('サロンID')) || '').trim(),
+    name:              get('院名'),
+    email:             emailIdx !== undefined ? String(row[emailIdx] || '').trim().toLowerCase() : '',
+    login:             get('ログイン'),
+    // シートにより列名が異なる項目は複数候補を指定
+    compass_plan:      get('コンパス現在プラン', 'しんきゅうコンパス：プラン'),
+    yoyaku_plan:       get('予約現在プラン', 'しんきゅう予約：現在のプラン'),
+    area:              get('検索順位エリア'),
+    area_rank:         get('エリア内ランキング'),
+    search_point:      get('検索優先ポイント', '掲載優先ポイント'),   // 2602は「掲載優先ポイント」
+    access:            get('アクセス数'),                            // 前方一致で「アクセス数（30日）」にも対応
+    click:             get('クリック数', '予約ボタンクリック数'),      // 2601は「予約ボタンクリック数」
+    net_reserve:       get('ネット予約数'),
+    reserve_public:    get('予約公開状態', '予約公開利用院'),          // 2601は「予約公開利用院」
+    reserve_gmb:       get('予約GMB'),
+    reserve_banner:    get('予約バナー'),                            // 前方一致で「予約バナー設置18800」も対応
+    compass_link:      get('HP相互リンク', 'コンパス相互リンク設置'),  // 2601は「コンパス相互リンク設置」
+    review_parts:      get('口コミパーツ'),                          // 前方一致で「口コミパーツ設置」「口コミパーツ(30点)」も対応
+    pickup_review:     get('口コミpickup', 'PickUp口コミ'),           // 2601は「PickUp口コミ」
+    store_pr:          get('店舗PR情報登録'),
+    menu3:             get('メニュー3件以上登録'),
+    menu_link:         get('メニュー連携'),
+    guest_reserve:     get('ゲスト予約利用'),
+    deadline:          get('予約受付締切時間'),
+    calendar_count:    get('カレンダー登録件数'),
+    net_reserve_count: get('ネット予約件数', 'ネット予約'),            // 2601は「ネット予約」
+    manual_count:      get('手動登録件数', '手動登録'),               // 2601は「手動登録」
+    block_count:       get('ブロック件数', 'ブロック'),               // 2601は「ブロック」
+    review:            get('口コミ件数', '口コミ5件以上'),            // 実態は件数値が格納されている
+    review_reply:      get('口コミ返信数', '口コミ返信５件以上'),
+  };
+}
+
+// ===== ログイン処理 =====
+async function handleLogin() {
+  const salonId = document.getElementById('salon-id-input').value.trim();
+  const email = document.getElementById('email-input').value.trim().toLowerCase();
+  if (!salonId || !email) {
+    const err = document.getElementById('login-error');
+    err.textContent = 'サロンIDとメールアドレスを入力してください。';
+    err.style.display = 'block';
+    return;
+  }
+  // 社内判定：CS専用メアドでログインした場合はメール照合をスキップ
+  const loginIsInternal = (email === CS_INTERNAL_EMAIL);
+
+  showLoading(true);
+  document.getElementById('login-error').style.display = 'none';
+
+  try {
+    let found = null;
+    let foundSheet = null;
+    trendData = [];
+
+    // 月別タブを新しい順に検索（全月分のトレンドデータも収集）
+    let firstSheetRows = null, firstSheetHm = null;
+    for (const sheet of MONTHLY_SHEETS) {
+      const rows = await fetchSheet(sheet);
+      if (!rows.length) continue;
+      const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
+      const hm = buildHeaderMap(rows[headerIdx]);
+      // 最新シート（先頭）の全行データを平均値計算用に保持
+      if (!firstSheetRows) { firstSheetRows = rows; firstSheetHm = hm; }
+      const idCol = hm['サロンID'] ?? 0;
+      for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
+        const id = String(rows[i][idCol] || '').trim();
+        if (id === salonId) {
+          const data = parseRowDynamic(rows[i], hm);
+          // 最初に見つかった（最新）シートのデータをメインデータとして使用
+          if (!found) {
+            found = data;
+            foundSheet = sheet;
+            // 到達可能ポイント・順位を計算してデータに付加
+            const addPt = calcAdditionalPoints(found);
+            const maxPt = Number(found.search_point || 0) + addPt;
+            found.add_pt = addPt;
+            found.potential_max_pt = maxPt;
+            found.potential_rank = calcPotentialRank(found.area, maxPt, rows, hm);
+          }
+          // 全月分をトレンド用に収集（古い順になるようunshiftで先頭追加）
+          trendData.unshift({ sheet, data });
+          break;
+        }
+      }
+    }
+
+    // 最新月別シートから有料院の平均値を計算（キャッシュ済みなら再計算しない）
+    if (!avgData && firstSheetRows && firstSheetHm) {
+      avgData = calcSheetAverages(firstSheetRows, firstSheetHm);
+    }
+
+    // 月別に見つからなければ無料体験タブを検索
+    if (!found) {
+      const rows = await fetchSheet(FREE_TRIAL_SHEET);
+      if (rows.length) {
+        const headerIdx = findHeaderRowIndex(rows);          // ヘッダー行を自動検出
+        const hm = buildHeaderMap(rows[headerIdx]);
+        const idCol = hm['サロンID'] ?? 0;
+        for (let i = headerIdx + 1; i < rows.length; i++) { // データ行はヘッダー行の次から
+          const row = rows[i];
+          const id = String(row[idCol] || '').trim();
+          if (id === salonId) {
+            // F列（index 5）が先月以前のデータは除外（YY/MM/DD形式・プレースホルダーも考慮）
+            if (!isFreeTrialDateValid(row)) break;
+            found = parseRowDynamic(row, hm);
+            foundSheet = FREE_TRIAL_SHEET;
+            // 到達可能ポイント・順位を計算してデータに付加
+            const addPt = calcAdditionalPoints(found);
+            const maxPt = Number(found.search_point || 0) + addPt;
+            found.add_pt = addPt;
+            found.potential_max_pt = maxPt;
+            found.potential_rank = calcPotentialRank(found.area, maxPt, rows, hm);
+            break;
+          }
+        }
+      }
+    }
+
+    if (!found) {
+      const err = document.getElementById('login-error');
+      err.textContent = 'サロンIDが見つかりませんでした。番号をご確認ください。';
+      err.style.display = 'block';
+      showLoading(false);
+      return;
+    }
+
+    // メールアドレス照合（社内メアドの場合はスキップ）
+    if (!loginIsInternal && found.email !== email) {
+      const err = document.getElementById('login-error');
+      err.textContent = 'メールアドレスが一致しません。ご確認ください。';
+      err.style.display = 'block';
+      showLoading(false);
+      return;
+    }
+
+    currentData = found;
+    isInternal = loginIsInternal;
+    if (!isInternal) {
+      loginTime = new Date();
+      logSent = false;
+      sessionClickedUrls.length = 0;
+    }
+    saveSession(salonId, email);
+
+    // 同エリア院データを収集（ヒートマップ用）- 最新月次タブ + 無料体験タブの両方を参照
+    areaRows = [];
+    if (found.area) {
+      const areaVal = String(found.area).trim();
+
+      // 指定エリアの行をareaRowsに追加（salon_id重複は除外）
+      const collectAreaRows = (allRows, hm) => {
+        const areaIdx = hm['検索順位エリア'];
+        if (areaIdx === undefined) return;
+        const hi = findHeaderRowIndex(allRows);
+        for (let i = hi + 1; i < allRows.length; i++) {
+          const rowArea = String(allRows[i][areaIdx] || '').trim();
+          if (rowArea !== areaVal) continue;
+          const parsed = parseRowDynamic(allRows[i], hm);
+          if (!areaRows.some(r => String(r.salon_id).trim() === String(parsed.salon_id).trim())) {
+            areaRows.push(parsed);
+          }
+        }
+      };
+
+      // 最新月次タブから収集
+      if (firstSheetRows && firstSheetHm) {
+        collectAreaRows(firstSheetRows, firstSheetHm);
+      }
+
+      // 無料体験タブから収集（月次タブにいない院を追加）
+      const freeTrialRows = await fetchSheet(FREE_TRIAL_SHEET);
+      if (freeTrialRows.length) {
+        const ftHi = findHeaderRowIndex(freeTrialRows);
+        const ftHm = buildHeaderMap(freeTrialRows[ftHi]);
+        collectAreaRows(freeTrialRows, ftHm);
+      }
+    }
+
+    renderDashboard(found, foundSheet);
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('login-error').textContent = 'データの読み込みに失敗しました。時間をおいて再試行してください。';
+    document.getElementById('login-error').style.display = 'block';
+  }
+
+  showLoading(false);
+}
+
+// ===== ダッシュボード描画 =====
+function renderDashboard(d, sheetName) {
+  // プラチナPLUS判定（関数全体で使用するため先頭で宣言）
+  const isPlatinaPlus = String(d.compass_plan || '').trim() === 'プラチナPLUSプラン' || String(d.compass_plan || '').trim() === 'プラチナPLUS';
+
+  // 院名・日付
+  document.getElementById('salon-name').textContent = d.name || `サロンID: ${d.salon_id}`;
+  // データ参照元 ｜ 表示日時 ｜ 契約プラン（リンク付き）を1行で表示
+  let dateStr = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
+  if (d.compass_plan) {
+    const compassUrl = `https://www.shinq-compass.jp/salon/detail/${d.salon_id}`;
+    dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${d.compass_plan}</a>`;
+    const reserveUrl = `https://www.shinq-compass.jp/salon/reserve/${d.salon_id}`;
+    if (isPlatinaPlus) {
+      // プラチナPLUS：公開状態に関わらず常にリンク付きで表示
+      dateStr += ` ｜ <a href="${reserveUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅう予約：プロプラン相当</a>`;
+    } else if (d.yoyaku_plan) {
+      const isPublic = d.reserve_public == 1 || d.reserve_public === '公開';
+      if (isPublic) {
+        dateStr += ` ｜ <a href="${reserveUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅう予約：${d.yoyaku_plan}</a>`;
+      } else {
+        dateStr += ` ｜ <span class="plan-link" style="opacity:0.65;cursor:default;pointer-events:none;">しんきゅう予約：非公開</span>`;
+      }
+    }
+  }
+  document.getElementById('data-date').innerHTML = dateStr;
+
+  // エリア内ランキング
+  if (d.area_rank !== null && d.area_rank !== undefined) {
+    document.getElementById('area-rank').textContent = d.area_rank;
+    document.getElementById('rank-badge').style.display = 'flex';
+  }
+
+  // 検索優先ポイント
+  if (d.search_point !== null) {
+    document.getElementById('search-point').textContent = d.search_point;
+    document.getElementById('point-badge').style.display = 'flex';
+
+    // 努力目標バナー（同エリア他院データから到達可能順位を表示）
+    if (d.add_pt > 0 && d.potential_rank !== undefined) {
+      document.getElementById('goal-text').innerHTML =
+        `検索優先ポイント <strong>${d.potential_max_pt}pt</strong> にすれば、最大エリア内順位 <strong>${d.potential_rank}位</strong> まで可能（あと <strong>+${d.add_pt}pt</strong> 獲得可能）`;
+      document.getElementById('goal-banner').style.display = 'flex';
+    }
+  }
+
+  // KPIセクション描画
+  let totalAchieved = 0, totalUnachieved = 0, totalCount = 0;
+
+  const sectionsEl = document.getElementById('kpi-sections');
+  sectionsEl.innerHTML = '';
+
+  Object.entries(KPI_DEFS).forEach(([needsKey, needsDef]) => {
+    const section = document.createElement('div');
+    section.className = 'needs-section';
+    section.id = `needs-${needsKey}`;
+
+    const header = document.createElement('div');
+    header.className = `needs-header ${needsDef.theme}`;
+    header.innerHTML = `<span class="needs-header-label"><span class="needs-emoji"></span><span>${needsDef.label}</span></span><span class="needs-chevron">▼</span>`;
+    header.addEventListener('click', () => section.classList.toggle('collapsed'));
+    section.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'needs-body';
+
+    needsDef.items.forEach(item => {
+      let value = null;
+      let achieved = false;
+      const isInfo = item.type === 'info';
+
+      if (item.type === 'rate' && item.calc) {
+        value = item.calc(d);
+        if (value !== null) achieved = value >= item.threshold;
+      } else if (item.type === 'num') {
+        value = d[item.key];
+        if (value !== null) achieved = value >= item.threshold;
+      } else if (item.type === 'flag') {
+        value = d[item.key];
+        achieved = value == 1;
+      } else if (item.type === 'flag_str') {
+        value = d[item.key];
+        achieved = value == 1 || value === '公開' ||
+          (item.key === 'reserve_public' && isPlatinaPlus);
+      } else if (item.type === 'deadline') {
+        value = d[item.key];
+        if (value !== null) achieved = value <= item.threshold;
+      } else if (isInfo) {
+        value = d[item.key];
+      }
+
+      // info型は達成カウントに含めない
+      if (!isInfo) {
+        totalCount++;
+        if (achieved) totalAchieved++;
+        else totalUnachieved++;
+      }
+
+      const itemEl = document.createElement('div');
+      itemEl.className = isInfo ? 'kpi-item info-item' : `kpi-item ${achieved ? 'achieved' : 'unachieved'}`;
+
+      // 値の表示テキスト
+      let valueText = '';
+      if (item.type === 'rate') {
+        valueText = value !== null ? `${value.toFixed(1)}% / 目標 ${item.threshold}%` : '―';
+      } else if (item.type === 'num') {
+        valueText = value !== null ? `${value}${item.unit} / 目標 ${item.threshold}${item.unit}` : '―';
+      } else if (item.type === 'flag' || item.type === 'flag_str') {
+        valueText = achieved ? '設定済み ✓' : '未設定';
+      } else if (item.type === 'deadline') {
+        valueText = value !== null ? `${value}分 / 目標 ${item.threshold}分以内` : '―';
+      } else if (isInfo) {
+        valueText = value !== null ? `${value}${item.unit}` : '―';
+      }
+
+      const pointBadge = item.searchPoint
+        ? `<span class="kpi-point-badge">★ ${item.point ? item.point + 'pt' : 'ポイント対象'}</span>`
+        : '';
+
+      const statusIcon = isInfo ? '―' : (achieved ? '✓' : '!');
+      const statusClass = isInfo ? 'info' : (achieved ? 'ok' : 'ng');
+
+      itemEl.innerHTML = `
+        <div class="kpi-status ${statusClass}">${statusIcon}</div>
+        <div class="kpi-main">
+          <div class="kpi-name-row">
+            <span class="kpi-name">${item.name}</span>
+            ${pointBadge}
+          </div>
+          <div class="kpi-values">
+            <span class="current ${statusClass}">${valueText}</span>
+          </div>
+          ${!isInfo && !achieved && ACTIONS[item.key] ? renderAction(item.key) : ''}
+        </div>
+      `;
+
+      body.appendChild(itemEl);
+    });
+
+    section.appendChild(body);
+    if (window.innerWidth <= 600) section.classList.add('collapsed');
+    sectionsEl.appendChild(section);
+  });
+
+  // サマリー更新
+  document.getElementById('achieved-count').textContent = totalAchieved;
+  document.getElementById('unachieved-count').textContent = totalUnachieved;
+  document.getElementById('total-count').textContent = totalCount;
+
+  // トレンドグラフ
+  if (trendData.length >= 2) {
+    renderTrendCharts();
+  }
+
+  // 画面切り替え
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  // アドバイス描画
+  renderAdvice(d);
+
+  // 口コミQRコード生成（qrcodejs ライブラリ使用）
+  const reviewUrl = `https://www.shinq-compass.jp/salon/review/add/${d.salon_id}`;
+  const urlEl = document.getElementById('qr-review-url');
+  urlEl.href = reviewUrl;
+  urlEl.textContent = reviewUrl;
+  const container = document.getElementById('qr-container');
+  container.innerHTML = '';           // 前回のQRをクリア
+  container.dataset.salonId = d.salon_id;
+  new QRCode(container, {
+    text: reviewUrl,
+    width: 200,
+    height: 200,
+    colorDark: '#1a1a1a',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M,
+  });
+  const qrSection = document.getElementById('qr-section');
+  qrSection.style.display = 'block';
+  if (window.innerWidth <= 600) qrSection.classList.add('collapsed');
+  qrSection.querySelector('.section-title').addEventListener('click', () => qrSection.classList.toggle('collapsed'));
+
+  // ライン問い合わせURL更新
+  document.querySelector('.contact-btn.line').href = LINE_URL;
+
+  // エリア比較ヒートマップ描画
+  renderAreaHeatmap(d);
+}
+
+// ===== QRコードダウンロード =====
+function downloadQR() {
+  const container = document.getElementById('qr-container');
+  const salonId = container.dataset.salonId || 'salon';
+  // qrcodejs はブラウザ環境では canvas を生成する
+  const canvas = container.querySelector('canvas');
+  if (!canvas) return;
+  const link = document.createElement('a');
+  link.download = `kuchikomi-qr-${salonId}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function renderAction(key) {
+  const action = ACTIONS[key];
+  if (!action) return '';
+
+  const links = action.links.map(link => {
+    if (link.url) {
+      return `<a href="${link.url}" target="_blank" class="action-link primary">${link.label}</a>`;
+    }
+    return `<button class="action-link" onclick="handleActionClick('${link.action}')">${link.label}</button>`;
+  }).join('');
+
+  const noteHtml = action.note ? `<div class="action-note">${action.note}</div>` : '';
+  return `
+    <div class="action-box">
+      <div class="action-title">✅ アクション</div>
+      <div>${action.text}</div>
+      <div class="action-links">${links}</div>
+      ${noteHtml}
+    </div>
+  `;
+}
+
+function handleActionClick(action) {
+  if (action === 'scroll_search') document.getElementById('needs-search')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'scroll_click') document.getElementById('needs-click')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'scroll_reserve') document.getElementById('needs-reserve')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'show_qr') document.getElementById('qr-section')?.scrollIntoView({ behavior: 'smooth' });
+  if (action === 'download_review_pdf') downloadReviewPdf();
+  if (action === 'open_hp_form') openHpForm();
+}
+
+// ===== 代行依頼モーダル =====
+function openHpForm() {
+  if (!currentData) return;
+  // 院情報を自動入力
+  document.getElementById('delegate-salon-info').textContent =
+    `院名：${currentData.name || '―'}　／　サロンID：${currentData.salon_id || '―'}`;
+  // フォームをリセット
+  ['chk-banner','chk-link','chk-parts','chk-gbp'].forEach(id => {
+    document.getElementById(id).checked = false;
+  });
+  document.getElementById('del-hp-url').value = '';
+  document.getElementById('del-admin-url').value = '';
+  document.getElementById('del-login-id').value = '';
+  document.getElementById('del-password').value = '';
+  document.getElementById('del-gbp-url').value = '';
+  document.getElementById('del-position-detail').value = '';
+  document.querySelector('input[name="position"][value="一任する"]').checked = true;
+  document.getElementById('gbp-field-section').style.display = 'none';
+  document.getElementById('position-detail-field').style.display = 'none';
+  const msg = document.getElementById('delegate-msg');
+  msg.style.display = 'none';
+  document.getElementById('delegate-submit-btn').disabled = false;
+  // モーダル表示
+  document.getElementById('delegate-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDelegateModal() {
+  document.getElementById('delegate-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function toggleGbpField() {
+  const show = document.getElementById('chk-gbp').checked;
+  document.getElementById('gbp-field-section').style.display = show ? 'block' : 'none';
+}
+
+function togglePositionDetail(radio) {
+  document.getElementById('position-detail-field').style.display =
+    radio.checked && radio.value === '指定する' ? 'block' : 'none';
+}
+
+function togglePwVisibility() {
+  const pw = document.getElementById('del-password');
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+}
+
+async function submitDelegateForm() {
+  // 依頼種別チェック
+  const types = ['chk-banner','chk-link','chk-parts','chk-gbp']
+    .filter(id => document.getElementById(id).checked)
+    .map(id => document.getElementById(id).value);
+  if (types.length === 0) {
+    showDelegateMsg('依頼内容を1つ以上選択してください。', 'error');
+    return;
+  }
+  // HP系が含まれる場合はID/PW必須
+  const needsHp = types.some(t => t !== 'GBP予約URL設置');
+  const loginId = document.getElementById('del-login-id').value.trim();
+  const password = document.getElementById('del-password').value;
+  if (needsHp && (!loginId || !password)) {
+    showDelegateMsg('ログインIDとパスワードをご入力ください。', 'error');
+    return;
+  }
+
+  const position = document.querySelector('input[name="position"]:checked')?.value || '一任する';
+  const payload = {
+    datetime:        new Date().toLocaleString('ja-JP'),
+    salon_id:        currentData?.salon_id || '',
+    salon_name:      currentData?.name     || '',
+    email:           '',
+    types,
+    hp_url:          document.getElementById('del-hp-url').value.trim(),
+    admin_url:       document.getElementById('del-admin-url').value.trim(),
+    login_id:        loginId,
+    password,
+    gbp_url:         document.getElementById('del-gbp-url').value.trim(),
+    position,
+    position_detail: document.getElementById('del-position-detail').value.trim(),
+  };
+
+  const btn = document.getElementById('delegate-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  try {
+    if (!DELEGATE_GAS_URL) throw new Error('送信先URLが未設定です（DELEGATE_GAS_URL）');
+    const fd = new FormData();
+    fd.append('data', JSON.stringify(payload));
+    await fetch(DELEGATE_GAS_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+    showDelegateMsg('✅ 送信完了しました。担当者より3営業日以内にご連絡いたします。', 'success');
+    setTimeout(closeDelegateModal, 3000);
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '送信する';
+    showDelegateMsg('送信に失敗しました。時間をおいて再試行してください。', 'error');
+  }
+}
+
+function showDelegateMsg(text, type) {
+  const el = document.getElementById('delegate-msg');
+  el.textContent = text;
+  el.className = `delegate-msg ${type}`;
+  el.style.display = 'block';
+}
+
+async function downloadReviewPdf() {
+  if (!currentData) return;
+  const salonId = currentData.salon_id;
+  const reviewUrl = `https://www.shinq-compass.jp/salon/review/add/${salonId}`;
+
+  // QRコードを非表示divに生成してcanvasデータを取得
+  const tempDiv = document.createElement('div');
+  tempDiv.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+  document.body.appendChild(tempDiv);
+  new QRCode(tempDiv, {
+    text: reviewUrl,
+    width: 200, height: 200,
+    colorDark: '#1a1a1a', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M,
+  });
+  const qrCanvas = tempDiv.querySelector('canvas');
+  const qrDataUrl = qrCanvas.toDataURL('image/png');
+  document.body.removeChild(tempDiv);
+
+  // pdf-lib でベースPDFを読み込み
+  if (!window.PDFLib) { alert('PDF生成ライブラリの読み込みに失敗しました。リロードして再試行してください。'); return; }
+  const { PDFDocument } = window.PDFLib;
+  const pdfUrl = 'https://shinq-compass-cs.github.io/kpi-tool/docs/post%20a%20review.pdf';
+  let pdfBytes;
+  try {
+    pdfBytes = await fetch(pdfUrl).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); });
+  } catch (e) {
+    alert('PDFの読み込みに失敗しました: ' + e.message);
+    return;
+  }
+  const pdfDoc = await PDFDocument.load(pdfBytes);
+  const pages = pdfDoc.getPages();
+  if (pages.length < 2) { alert('PDFページ数が不足しています'); return; }
+
+  // 2ページ目右下の空欄にQRコードを埋め込む
+  const page2 = pages[1];
+  const { width, height } = page2.getSize();
+  const qrImageBytes = await fetch(qrDataUrl).then(r => r.arrayBuffer());
+  const qrImage = await pdfDoc.embedPng(qrImageBytes);
+
+  // 2ページ目右下の空欄枠（x:570-710, y:80-220）の中央に配置
+  const qrSize = 120;  // 枠140ptに対して上下左右10ptの余白
+  page2.drawImage(qrImage, {
+    x: 580,
+    y: 90,
+    width: qrSize,
+    height: qrSize,
+  });
+
+  // ダウンロード
+  const modifiedBytes = await pdfDoc.save();
+  const blob = new Blob([modifiedBytes], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `院内設置用QR_${salonId}.pdf`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+// ===== エリア比較ヒートマップ描画 =====
+function renderAreaHeatmap(d) {
+  const el = document.getElementById('area-heatmap');
+  if (!el) return;
+
+  const total = areaRows.length;
+  if (total < 2) { el.style.display = 'none'; return; }
+
+  const areaName = d.area || 'エリア';
+
+  // 比較対象KPI一覧
+  const items = [
+    { key: 'store_pr',       name: '店舗PR情報登録',     type: 'flag',     pt: 100 },
+    { key: 'reserve_public', name: '予約公開',            type: 'flag_str', pt: 50 },
+    { key: 'reserve_gmb',    name: '予約GMB設置',         type: 'flag',     pt: 50 },
+    { key: 'reserve_banner', name: '予約バナー設置',      type: 'flag',     pt: 50 },
+    { key: 'compass_link',   name: 'コンパス相互リンク',  type: 'flag',     pt: 30 },
+    { key: 'review_parts',   name: '口コミパーツ設置',    type: 'flag',     pt: 30 },
+    { key: 'review',         name: '口コミ5件以上',       type: 'num',      threshold: 5,  pt: '1件ごと' },
+    { key: 'review_reply',   name: '口コミ返信5件以上',   type: 'num',      threshold: 5,  pt: '1件ごと' },
+    { key: 'pickup_review',  name: 'PickUp口コミ',        type: 'flag' },
+    { key: 'menu3',          name: 'メニュー3件以上',     type: 'flag' },
+    { key: 'guest_reserve',  name: 'ゲスト予約',          type: 'flag' },
+    { key: 'menu_link',      name: 'メニュー連携',        type: 'flag' },
+    { key: 'deadline',       name: '予約締切60分以内',    type: 'deadline', threshold: 60 },
+  ];
+
+  // プラチナPLUS判定（しんきゅう予約プロプラン付帯のため予約公開を達成扱い）
+  const isPlatinaRow = (row) => {
+    const plan = String(row.compass_plan || '').trim();
+    return plan === 'プラチナPLUSプラン' || plan === 'プラチナPLUS';
+  };
+
+  // 各項目について達成判定
+  const isAchieved = (row, item) => {
+    const v = row[item.key];
+    if (item.type === 'flag')     return Number(v) >= 1;
+    if (item.type === 'flag_str') {
+      if (item.key === 'reserve_public' && isPlatinaRow(row)) return true;
+      return v == 1 || v === '公開';
+    }
+    if (item.type === 'num')      return v !== null && v >= item.threshold;
+    if (item.type === 'deadline') return v !== null && v <= item.threshold;
+    return false;
+  };
+
+  // 自院データ：areaRows内の同一salon_idの行を優先使用（月次タブのデータが優先、なければdをそのまま使用）
+  const selfRow = areaRows.find(r => String(r.salon_id).trim() === String(d.salon_id).trim()) || d;
+
+  const rows = items.map(item => {
+    const achievedCount = areaRows.filter(r => isAchieved(r, item)).length;
+    const rate = Math.round(achievedCount / total * 100);
+    const selfAchieved = isAchieved(selfRow, item);
+    return { ...item, achievedCount, rate, selfAchieved };
+  });
+
+  // 並び順: 自院未達かつエリア実施率が高い順 → 自院達成順
+  rows.sort((a, b) => {
+    if (!a.selfAchieved && b.selfAchieved) return -1;
+    if (a.selfAchieved && !b.selfAchieved) return 1;
+    return b.rate - a.rate;
+  });
+
+  const rowsHtml = rows.map(item => {
+    const isGap = !item.selfAchieved && item.rate >= 50;
+    const rowClass = isGap ? 'heatmap-row gap' : 'heatmap-row';
+    const selfIcon = item.selfAchieved ? '✓ 達成' : '✗ 未達';
+    const selfClass = item.selfAchieved ? 'ok' : 'ng';
+
+    let diffHtml = '';
+    if (!item.selfAchieved && item.achievedCount > 0) {
+      diffHtml = `<div class="hm-diff">← ${item.achievedCount}/${total}院が実施</div>`;
+    } else if (item.selfAchieved && item.rate < 50) {
+      diffHtml = `<div class="hm-diff plus">エリア内で上位</div>`;
+    } else {
+      diffHtml = '<div class="hm-diff"></div>';
+    }
+
+    return `
+      <div class="${rowClass}">
+        <div class="hm-name">${item.name}${item.pt ? `<span class="hm-pt">+${item.pt}pt</span>` : ''}</div>
+        <div class="hm-bar-wrap"><div class="hm-bar" style="width:${item.rate}%"></div></div>
+        <div class="hm-rate">${item.rate}%</div>
+        <div class="hm-self ${selfClass}">${selfIcon}</div>
+        ${diffHtml}
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="heatmap-section-header" onclick="this.closest('.heatmap-section').classList.toggle('collapsed')">
+      <span>📍 ${areaName}エリア 取り組み実施状況（全${total}院）</span>
+      <span class="heatmap-chevron">▼</span>
+    </div>
+    <div class="heatmap-body">
+      <p style="font-size:12px;color:#4a5568;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;margin-bottom:12px;line-height:1.7;">
+        💡 競合が取り組んでいない項目を先に実施して、差をつけましょう。<br>
+        <span style="color:#718096;">「✗ 未達」かつエリア実施率が低い項目ほど、先行者メリットが得られます。</span>
+      </p>
+      <div class="hm-legend">
+        <span class="hm-legend-item"><span class="hm-legend-bar"></span> エリア実施率</span>
+        <span class="hm-legend-item"><span class="hm-self ok" style="font-size:11px;padding:1px 6px;border-radius:8px;">✓ 達成</span> 自院達成済み</span>
+        <span class="hm-legend-item"><span class="hm-self ng" style="font-size:11px;padding:1px 6px;border-radius:8px;">✗ 未達</span> 自院未達・未設定</span>
+      </div>
+      ${rowsHtml}
+    </div>
+  `;
+  el.style.display = 'block';
+}
+
+// ===== 追加取得可能ポイント計算 =====
+function calcAdditionalPoints(d) {
+  const isPlatinaPlus = String(d.compass_plan || '').trim() === 'プラチナPLUSプラン' ||
+                        String(d.compass_plan || '').trim() === 'プラチナPLUS';
+  const items = [
+    { key: 'store_pr',       point: 100, type: 'flag' },
+    { key: 'reserve_public', point: 50,  type: 'flag_str' },
+    { key: 'reserve_gmb',    point: 50,  type: 'flag' },
+    { key: 'reserve_banner', point: 50,  type: 'flag' },
+    { key: 'compass_link',   point: 30,  type: 'flag' },
+    { key: 'review_parts',   point: 30,  type: 'flag' },
+  ];
+  let add = 0;
+  for (const item of items) {
+    const val = d[item.key];
+    const achieved = item.type === 'flag'
+      ? (Number(val) >= 1)
+      : (val == 1 || val === '公開') || (item.key === 'reserve_public' && isPlatinaPlus);
+    if (!achieved) add += item.point;
+  }
+  return add;
+}
+
+// ===== 同エリア内での到達可能順位を計算 =====
+// maxPt を達成した場合に何位になるかを全行データから算出（VLOOKUP方式）
+// ===== 有料院平均値計算（最新月別シート全行） =====
+function calcSheetAverages(allRows, hm) {
+  const hi = findHeaderRowIndex(allRows);
+  const acc = [], ctr = [], cvr = [], rev = [];
+  for (let i = hi + 1; i < allRows.length; i++) {
+    const d = parseRowDynamic(allRows[i], hm);
+    if (d.access > 0)  acc.push(d.access);
+    if (d.access > 0 && d.click != null)  ctr.push(d.click / d.access * 100);
+    if (d.click > 0 && d.net_reserve != null) cvr.push(d.net_reserve / d.click * 100);
+    if (d.review != null && d.review >= 0)  rev.push(d.review);
+  }
+  const avg = arr => arr.length ? parseFloat((arr.reduce((s,v)=>s+v,0)/arr.length).toFixed(1)) : null;
+  return { access: avg(acc), ctr: avg(ctr), cvr: avg(cvr), review: avg(rev) };
+}
+
+function calcPotentialRank(area, maxPt, allRows, hm) {
+  const areaIdx = hm['検索順位エリア'];
+  // シートにより列名が異なる（2602: 掲載優先ポイント、2601以前: 検索優先ポイント）
+  const ptIdx   = hm['検索優先ポイント'] ?? hm['掲載優先ポイント'];
+  if (areaIdx === undefined || ptIdx === undefined) return null;
+  const startRow = findHeaderRowIndex(allRows) + 1; // ヘッダー行をスキップ
+  let countAbove = 0;
+  for (let i = startRow; i < allRows.length; i++) {
+    const rowArea = String(allRows[i][areaIdx] || '').trim();
+    const rowPt   = parseFloat(allRows[i][ptIdx]);
+    if (rowArea === String(area || '').trim() && !isNaN(rowPt) && rowPt > maxPt) {
+      countAbove++;
+    }
+  }
+  return countAbove + 1;
+}
+
+// ===== アドバイス用リッチ定義 =====
+const ADVICE_RICH = {
+  store_pr: {
+    icon: '🏪', title: '店舗PR情報を登録する', pt: '+100pt',
+    desc: '検索結果に院の特長・強みを掲載し、患者さんに選ばれる確率を高めます。登録するだけで検索優先ポイントが +100pt 加算され、エリア内での露出が大きく向上します。',
+  },
+  reserve_public: {
+    icon: '📅', title: 'ネット予約を公開設定にする', pt: '+50pt',
+    desc: '24時間いつでも予約を受け付けられる状態にすることで、機会損失をゼロにします。予約公開は検索優先ポイント +50pt の獲得にも直結します。',
+  },
+  reserve_gmb: {
+    icon: '📍', title: 'GoogleビジネスプロフィールにURLを設置する', pt: '+50pt',
+    desc: 'Google検索・マップから直接コンパスへの導線を作ります。外部からの新規流入が増え、アクセス数アップに直結。検索優先ポイントも +50pt 獲得できます。',
+  },
+  reserve_banner: {
+    icon: '🔗', title: 'ホームページに予約バナーを設置する', pt: '+50pt',
+    desc: '自院のホームページからコンパスへの予約導線を設置します。既存・新規患者からのアクセスが増加し、検索優先ポイント +50pt も獲得できます。',
+  },
+  compass_link: {
+    icon: '🔄', title: 'ホームページに相互リンクを設置する', pt: '+30pt',
+    desc: 'コンパスとホームページを相互リンクで結ぶことで、SEO効果と検索優先ポイント +30pt が得られます。設置は代行依頼も可能です。',
+  },
+  review_parts: {
+    icon: '⭐', title: '口コミパーツをホームページに設置する', pt: '+30pt',
+    desc: '患者さんの生の声をホームページに表示することで、初めて訪れる方の信頼感が高まります。検索優先ポイント +30pt にも加算されます。',
+  },
+  review: {
+    icon: '💬', title: '口コミを増やす（目標5件）', pt: '1件ごと加算',
+    desc: '口コミはクリック率に直結する最重要指標です。来院患者さんへの声掛けやカード配布を習慣化し、1件ずつ着実に積み上げましょう。口コミ1件ごとにポイントも加算されます。',
+  },
+  review_reply: {
+    icon: '✍️', title: '口コミに返信する（目標5件）', pt: '1件ごと加算',
+    desc: '返信は「丁寧な院」という信頼感を患者さんに伝えます。全件返信を徹底することで、クリック率の改善と新規患者への安心感につながります。',
+  },
+  pickup_review: {
+    icon: '🌟', title: 'PickUp口コミを設定する', pt: null,
+    desc: 'もっとも印象的な口コミをトップに表示する設定です。初めて訪れた患者さんが最初に目にする情報として、来院の決め手になります。',
+  },
+  menu3: {
+    icon: '📋', title: 'メニューを3件以上登録する', pt: null,
+    desc: 'メニューが充実していると、患者さんが自分に合った施術を見つけやすくなります。3件以上の登録でクリック率・予約率アップが期待できます。',
+  },
+  deadline: {
+    icon: '⏰', title: '予約受付締切時間を短縮する（目標60分以内）', pt: null,
+    desc: '「直前に予約したい」患者さんを逃さないために、受付締切を短縮しましょう。60分以内に設定することで、当日・翌日予約の取りこぼしを防げます。',
+  },
+  menu_link: {
+    icon: '🍽️', title: 'メニュー連携を設定する', pt: null,
+    desc: 'メニューを予約と連携させることで、患者さんが希望の施術をそのまま予約できる導線が完成します。予約率（CVR）の向上に直接つながります。',
+  },
+  guest_reserve: {
+    icon: '👤', title: 'ゲスト予約を有効にする', pt: null,
+    desc: '会員登録なしで予約できるようにすることで、初診の患者さんのハードルを大幅に下げられます。新規患者の獲得に特に効果的です。',
+  },
+};
+
+// 優先度順（検索優先ポイント→口コミ→予約設定の順）
+const ADVICE_PRIORITY = [
+  'store_pr', 'reserve_public', 'reserve_gmb', 'reserve_banner',
+  'compass_link', 'review_parts', 'review', 'review_reply',
+  'pickup_review', 'menu3', 'deadline', 'menu_link', 'guest_reserve',
+];
+
+// ===== アドバイス生成（未達成KPIから優先度順に最大3件を選出） =====
+function generateAdvice(d) {
+  const unachieved = new Set();
+  for (const [, def] of Object.entries(KPI_DEFS)) {
+    for (const item of def.items) {
+      if (item.type === 'info' || item.type === 'rate') continue;
+      let achieved = false;
+      if (item.type === 'num')         achieved = d[item.key] !== null && d[item.key] >= item.threshold;
+      else if (item.type === 'flag')   achieved = Number(d[item.key]) >= 1;
+      else if (item.type === 'flag_str') {
+        const _isPlatina = String(d.compass_plan||'').trim() === 'プラチナPLUSプラン' || String(d.compass_plan||'').trim() === 'プラチナPLUS';
+        achieved = d[item.key] == 1 || d[item.key] === '公開' || (item.key === 'reserve_public' && _isPlatina);
+      }
+      else if (item.type === 'deadline') achieved = d[item.key] !== null && d[item.key] <= item.threshold;
+      if (!achieved) unachieved.add(item.key);
+    }
+  }
+  return ADVICE_PRIORITY.filter(k => unachieved.has(k) && ACTIONS[k] && ADVICE_RICH[k]).slice(0, 3);
+}
+
+function renderAdvice(d) {
+  const keys = generateAdvice(d);
+  const body = document.getElementById('advice-body');
+
+  if (keys.length === 0) {
+    body.innerHTML = `<p class="advice-intro">🎉 すべての推奨項目を達成中です！この調子を維持しましょう。</p>`;
+    document.getElementById('advice-section').style.display = 'block';
+    return;
+  }
+
+  const cards = keys.map((key, i) => {
+    const rich = ADVICE_RICH[key];
+    const action = ACTIONS[key];
+    const ptBadge = rich.pt ? `<span class="advice-card-pt">★ ${rich.pt}</span>` : '';
+    const btns = action.links.map(link => {
+      if (link.url) return `<a href="${link.url}" target="_blank" class="advice-action-btn">${link.label}</a>`;
+      return `<button class="advice-action-btn" onclick="handleActionClick('${link.action}')">${link.label}</button>`;
+    }).join('');
+    const cardNoteHtml = action.note ? `<p class="advice-card-note">${action.note}</p>` : '';
+    return `
+      <div class="advice-card">
+        <div class="advice-card-head">
+          <span class="advice-card-num">${i + 1}</span>
+          <span class="advice-card-title">${rich.icon} ${rich.title}</span>
+          ${ptBadge}
+        </div>
+        <p class="advice-card-desc">${rich.desc}</p>
+        <div class="advice-card-btns">${btns}</div>
+        ${cardNoteHtml}
+      </div>`;
+  }).join('');
+
+  body.innerHTML = `
+    <p class="advice-intro">未対応の中から優先度の高い3項目をピックアップしました</p>
+    <div class="advice-cards">${cards}</div>
+  `;
+  document.getElementById('advice-section').style.display = 'block';
+}
+
+// ===== トレンドチャート =====
+function renderTrendCharts() {
+  document.getElementById('trend-section').style.display = 'block';
+
+  const labels = trendData.map(t => formatSheetName(t.sheet));
+  const accessData = trendData.map(t => t.data.access || 0);
+  const ctrData = trendData.map(t => t.data.click && t.data.access ? parseFloat((t.data.click / t.data.access * 100).toFixed(1)) : 0);
+  const cvrData = trendData.map(t => t.data.net_reserve && t.data.click ? parseFloat((t.data.net_reserve / t.data.click * 100).toFixed(1)) : 0);
+  const reviewData = trendData.map(t => t.data.review || 0);
+
+  const makeChart = (id, data, color, label, avgVal) => {
+    if (charts[id]) charts[id].destroy();
+    const ctx = document.getElementById(id)?.getContext('2d');
+    if (!ctx) return;
+    const datasets = [{
+      label,
+      data,
+      borderColor: color,
+      backgroundColor: color + '18',
+      tension: 0,          // 直線
+      fill: true,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      borderWidth: 2,
+    }];
+    // 有料院平均ライン
+    if (avgVal !== null && avgVal !== undefined) {
+      datasets.push({
+        label: '有料院平均',
+        data: labels.map(() => avgVal),
+        borderColor: '#94a3b8',
+        borderDash: [5, 4],
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+      });
+    }
+    charts[id] = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false }, // カーソル位置の全データセット値を表示
+        plugins: {
+          legend: {
+            display: avgVal !== null && avgVal !== undefined,
+            labels: { boxWidth: 24, font: { size: 11 }, color: '#64748b' }
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}`
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  };
+
+  const av = avgData || {};
+  makeChart('chart-access', accessData, '#0f4c81', 'アクセス数',    av.access ?? null);
+  makeChart('chart-ctr',    ctrData,    '#2563EB', 'クリック率(%)', av.ctr    ?? null);
+  makeChart('chart-cvr',    cvrData,    '#e67e22', 'ネット予約率(%)',av.cvr    ?? null);
+  makeChart('chart-review', reviewData, '#00a86b', '口コミ件数',    av.review ?? null);
+}
+
+// ===== ログアウト =====
+function handleLogout() {
+  clearSession();
+  sendLoginLog();
+  currentData = null;
+  trendData = [];
+  avgData = null;
+  areaRows = [];
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+  document.getElementById('salon-id-input').value = '';
+  document.getElementById('email-input').value = '';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('kpi-sections').innerHTML = '';
+  document.getElementById('trend-section').style.display = 'none';
+  document.getElementById('qr-section').style.display = 'none';
+  document.getElementById('area-heatmap').style.display = 'none';
+}
+
+// Enterキーでログイン
+document.getElementById('salon-id-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('email-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
+
+// ===== セッション保持（2時間） =====
+const SESSION_KEY = 'kpi_session';
+const SESSION_TIMEOUT = 2 * 60 * 60 * 1000; // 2時間
+
+function saveSession(salonId, email) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    salon_id: salonId,
+    email:    email,
+    expires:  Date.now() + SESSION_TIMEOUT,
+  }));
+}
+
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+// DEMOモード：常に DEMO_SALON_ID を自動表示（ログイン不要）
+(function restoreSession() {
+  document.getElementById('salon-id-input').value = DEMO_SALON_ID;
+  document.getElementById('email-input').value    = CS_INTERNAL_EMAIL;
+  handleLogin();
+})();
+
+// ===== ログ送信 =====
+function getDeviceInfo() {
+  const ua = navigator.userAgent;
+  const type = /iPhone|Android.*Mobile/.test(ua) ? 'スマホ'
+    : /iPad|Android/.test(ua) ? 'タブレット' : 'PC';
+  const browser = /Edg\//.test(ua) ? 'Edge'
+    : /Chrome\//.test(ua) ? 'Chrome'
+    : /Safari\//.test(ua) ? 'Safari'
+    : /Firefox\//.test(ua) ? 'Firefox' : 'その他';
+  return `${type}/${browser}`;
+}
+
+function trackUrl(url) {
+  if (isInternal || !url || sessionClickedUrls.length >= 10) return;
+  sessionClickedUrls.push(url);
+}
+
+function sendLoginLog() {
+  if (isInternal || !currentData || logSent || !GAS_LOG_URL) return;
+  logSent = true;
+  const payload = {
+    datetime: loginTime
+      ? loginTime.toLocaleString('ja-JP')
+      : new Date().toLocaleString('ja-JP'),
+    salon_id:   currentData.salon_id || '',
+    salon_name: currentData.name     || '',
+    device:     getDeviceInfo(),
+    urls:       sessionClickedUrls.slice(0, 10)
+  };
+  const fd = new FormData();
+  fd.append('data', JSON.stringify(payload));
+  fetch(GAS_LOG_URL, { method: 'POST', body: fd, mode: 'no-cors', keepalive: true });
+}
+
+// ダッシュボード内の外部リンククリックを追跡
+document.getElementById('dashboard').addEventListener('click', (e) => {
+  if (isInternal) return;
+  const a = e.target.closest('a[href]');
+  if (a && /^https?:/.test(a.href)) trackUrl(a.href);
+});
+
+// タブを閉じた場合のフォールバック送信
+window.addEventListener('beforeunload', () => sendLoginLog());
+
+</script>
+</body>
+</html>
