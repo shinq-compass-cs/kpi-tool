@@ -1198,9 +1198,17 @@ const sessionClickedUrls = [];
 const API_KEY = 'AIzaSyAK_wtY_WFgOkw3L55BkWpmCQuzmhDpsIw'; // ← 発行したAPIキーに置き換えてください
 const SPREADSHEET_ID = '1CiuXRdYG-lI_jWA4DiR_uXvYU9dgqTE1v-JWsZF1l_g';
 
-// 月別タブ（新しい順に追加していく。毎月先頭に追加してください）
-const MONTHLY_SHEETS = ['2603', '2602', '2601', '2512'];
 const FREE_TRIAL_SHEET = '無料体験';
+
+// 月次タブ名を自動生成（YYMM形式。offsetMonths=0→最新月、1→1か月前、…）
+function monthlySheetName(offsetMonths) {
+  const d = new Date();
+  d.setDate(1); // 月初に固定してから月を引く（月末付近の誤算防止）
+  d.setMonth(d.getMonth() - offsetMonths);
+  const yy = String(d.getFullYear()).slice(-2);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  return yy + mm;
+}
 
 // 担当者連絡先
 const LINE_URL = 'https://line.me/ti/p/@348cwzis';
