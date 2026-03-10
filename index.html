@@ -2158,6 +2158,34 @@ function renderAreaHeatmap(d) {
   el.style.display = 'block';
 }
 
+// ===== プラン別・口コミポイント定義 =====
+// プレミアム:  口コミ3pt（上限300pt）/ 返信2pt（上限200pt）
+// プラチナ系:  口コミ5pt（上限500pt）/ 返信3pt（上限300pt）
+function getReviewPlanPts(compassPlan) {
+  const plan = String(compassPlan || '').trim();
+  const isPlatina = plan.includes('プラチナ');
+  return isPlatina
+    ? { reviewPt: 5, replyPt: 3, reviewCapPt: 500, replyCapPt: 300 }
+    : { reviewPt: 3, replyPt: 2, reviewCapPt: 300, replyCapPt: 200 };
+}
+
+// ===== エリア内1位のポイントを取得 =====
+function calcFirstPlacePt(area, allRows, hm) {
+  const areaIdx = hm['検索順位エリア'];
+  const ptIdx   = hm['検索優先ポイント'] ?? hm['掲載優先ポイント'];
+  if (areaIdx === undefined || ptIdx === undefined) return null;
+  const hi = findHeaderRowIndex(allRows);
+  let maxPt = 0;
+  for (let i = hi + 1; i < allRows.length; i++) {
+    const rowArea = String(allRows[i][areaIdx] || '').trim();
+    const rowPt   = parseFloat(allRows[i][ptIdx]);
+    if (rowArea === String(area || '').trim() && !isNaN(rowPt)) {
+      maxPt = Math.max(maxPt, rowPt);
+    }
+  }
+  return maxPt;
+}
+
 // ===== 追加取得可能ポイント計算 =====
 function calcAdditionalPoints(d) {
   const isPlatinaPlus = String(d.compass_plan || '').trim() === 'プラチナPLUSプラン' ||
