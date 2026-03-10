@@ -3020,10 +3020,12 @@ function openReport() {
   const sections = generateRuleBasedSections(d);
   renderReportSlides(d, sections, false);
 
-  // AI読み込み
-  if (d.detail_url && ADVISOR_GAS_URL) {
+  // AI読み込み（detail_urlがなければsalon_idから自動生成）
+  const detailUrl = d.detail_url
+    || (d.salon_id ? 'https://www.shinq-compass.jp/salon/detail/' + d.salon_id : null);
+  if (detailUrl && ADVISOR_GAS_URL) {
     document.getElementById('rm-ai-status').style.display = 'flex';
-    loadAIForReport(d);
+    loadAIForReport(d, detailUrl);
   }
 
   showRmSlide(0);
@@ -3034,10 +3036,10 @@ function closeReport() {
   document.body.style.overflow = '';
 }
 
-async function loadAIForReport(d) {
+async function loadAIForReport(d, detailUrl) {
   try {
     const params = new URLSearchParams();
-    params.append('data', JSON.stringify({ detail_url: d.detail_url, kpi: d }));
+    params.append('data', JSON.stringify({ detail_url: detailUrl, kpi: d }));
     const res = await fetch(ADVISOR_GAS_URL, { method: 'POST', body: params });
     const json = await res.json();
     if (json.success && json.advice) {
