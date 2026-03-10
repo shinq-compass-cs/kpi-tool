@@ -854,20 +854,40 @@
   .rm-rank-medal { font-size: 20px; }
   .rm-rank-text { font-size: 14px; font-weight: 600; color: #1a2035; line-height: 1.55; }
 
-  /* S2 summary + actions */
-  .rm-kpi-summary { font-size: 13px; line-height: 1.65; color: #2d3748; background: #f0f7ff; border-left: 3px solid #2e6da4; border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 10px 0 12px; }
-  .rm-actions-hd { font-size: 11px; font-weight: 700; color: #718096; letter-spacing: 0.06em; text-transform: uppercase; margin: 14px 0 8px; }
-  /* S3 numbered cards */
-  .rm-numbered-list { display: flex; flex-direction: column; gap: 10px; }
-  .rm-numbered-card { display: flex; align-items: flex-start; gap: 14px; background: #f7f9fc; border-radius: 10px; padding: 12px 16px; }
-  .rm-card-num { min-width: 26px; height: 26px; background: #2e6da4; color: white; border-radius: 50%; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-  .rm-card-text { font-size: 13px; color: #2d3748; line-height: 1.6; }
-  /* S4 strength items */
+  /* CS読み上げ用スクリプト行 */
+  .rm-script-line { font-size: 12px; color: #4a5568; background: #edf2f7; border-left: 3px solid #a0aec0; border-radius: 0 8px 8px 0; padding: 9px 14px; margin-bottom: 14px; font-style: italic; line-height: 1.65; }
+  /* S2 KPI ラベル・ターゲット・ユニット */
+  .rm-kc-label { font-size: 10px; font-weight: 700; color: #718096; margin-bottom: 6px; line-height: 1.3; }
+  .rm-kc-unitsp { font-size: 14px; font-weight: 400; color: #718096; margin-left: 2px; }
+  .rm-kc-target { font-size: 10px; color: #a0aec0; margin: 2px 0 4px; }
+  /* S2 総合判定バナー */
+  .rm-verdict { margin-top: 14px; padding: 11px 16px; border-radius: 10px; font-size: 14px; font-weight: 700; text-align: center; }
+  .rm-verdict-ok   { background: #f0fdf4; color: #15803d; border: 1.5px solid #bbf7d0; }
+  .rm-verdict-warn { background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a; }
+  .rm-verdict-ng   { background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca; }
+  /* S3 強みカード */
   .rm-strength-list { display: flex; flex-direction: column; gap: 10px; }
-  .rm-strength-item { display: flex; align-items: flex-start; gap: 12px; background: linear-gradient(135deg, #f0fdf4, #f7fffe); border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; }
+  .rm-strength-item { display: flex; align-items: flex-start; gap: 12px; background: linear-gradient(135deg, #f0fdf4, #f7fffe); border: 1px solid #bbf7d0; border-radius: 10px; padding: 13px 16px; }
   .rm-strength-icon { font-size: 15px; color: #16a34a; flex-shrink: 0; margin-top: 2px; }
-  .rm-strength-text { font-size: 13px; color: #14532d; font-weight: 600; line-height: 1.6; }
-  /* S5 rank with reason */
+  .rm-strength-text { font-size: 13px; color: #14532d; font-weight: 600; line-height: 1.65; }
+  /* S4 課題・仮説カード */
+  .rm-issue-list { display: flex; flex-direction: column; gap: 10px; }
+  .rm-issue-card { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .rm-issue-problem { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: #f7f9fc; }
+  .rm-issue-num { min-width: 24px; height: 24px; background: #e53e3e; color: white; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .rm-issue-text { font-size: 13px; font-weight: 700; color: #2d3748; line-height: 1.5; }
+  .rm-issue-hypothesis { font-size: 12px; color: #4a5568; background: #fffbeb; border-top: 1px solid #fde68a; padding: 8px 14px 10px 14px; line-height: 1.65; }
+  /* S5 アクションカード */
+  .rm-action-list { display: flex; flex-direction: column; gap: 12px; }
+  .rm-action-card { border-radius: 12px; overflow: hidden; }
+  .rm-action-card.r1 { border-left: 5px solid #f59e0b; background: #fffbeb; }
+  .rm-action-card.r2 { border-left: 5px solid #6b7280; background: #f7f9fc; }
+  .rm-action-card.r3 { border-left: 5px solid #cd7c42; background: #fdf5ed; }
+  .rm-action-hd { display: flex; align-items: center; gap: 12px; padding: 12px 16px 6px; }
+  .rm-action-title { font-size: 15px; font-weight: 800; color: #1a2035; line-height: 1.3; }
+  .rm-action-detail { font-size: 12px; color: #374151; padding: 0 16px 6px 16px; line-height: 1.65; }
+  .rm-action-effect { font-size: 11px; font-weight: 600; color: #2e6da4; background: rgba(46,109,164,0.06); padding: 6px 16px 8px; line-height: 1.5; }
+  /* S5 rank-content（後方互換） */
   .rm-rank-content { flex: 1; }
   .rm-rank-title { font-size: 14px; font-weight: 700; color: #1a2035; line-height: 1.4; margin-bottom: 4px; }
   .rm-rank-reason { font-size: 12px; color: #718096; line-height: 1.5; }
