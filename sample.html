@@ -3012,14 +3012,8 @@ async function loadAIForReport(d, detailUrl) {
     const json = await res.json();
     console.log('[AI Advisor] response:', json);
     if (json.success && json.advice) {
-      // トークン使用量をコンソールに表示
-      const tokenMatch = json.advice.match(/__TOKENS__(\{[^}]*\})$/);
-      if (tokenMatch) {
-        try {
-          const usage = JSON.parse(tokenMatch[1]);
-          console.log('[AI Advisor] Token usage — input:', usage.input_tokens, '/ output:', usage.output_tokens);
-        } catch(e) {}
-        json.advice = json.advice.replace(/\n\n__TOKENS__\{[^}]*\}$/, '');
+      if (json.tokens) {
+        console.log('[AI Advisor] Token usage — input:', json.tokens.input_tokens, '/ output:', json.tokens.output_tokens);
       }
       const sections = parseAIToSections(json.advice);
       renderReportSlides(d, sections, true);

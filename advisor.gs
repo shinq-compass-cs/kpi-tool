@@ -25,8 +25,8 @@ function doPost(e) {
     if (!detailUrl) throw new Error('detail_url が未指定です');
 
     var pageText = fetchDetailPage(detailUrl);
-    var advice   = generateAdvice(pageText, kpi);
-    return jsonResp({ success: true, advice: advice });
+    var result   = generateAdvice(pageText, kpi);
+    return jsonResp({ success: true, advice: result.advice, tokens: result.tokens });
 
   } catch (err) {
     return jsonResp({ success: false, error: err.message });
@@ -129,7 +129,7 @@ function generateAdvice(pageText, kpi) {
   if (!json.content || !json.content[0]) {
     throw new Error('Claude API エラー: ' + res.getContentText().slice(0, 200));
   }
-  return json.content[0].text + '\n\n__TOKENS__' + JSON.stringify(json.usage || {});
+  return { advice: json.content[0].text, tokens: json.usage || {} };
 }
 
 function buildPrompt(pageText, kpi) {
