@@ -3293,50 +3293,42 @@ function buildRmSlide2(d, sections) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
 
-  const kpiCards = [
-    { label: 'アクセス数',  val: d.access        || '―', unit: '（目標200）',  ok: Number(d.access) >= 200 },
-    { label: 'クリック数',  val: d.click         || '―', unit: '（目標20）',   ok: Number(d.click)  >= 20  },
-    { label: '口コミ件数',  val: d.review        || '―', unit: '件（目標5）',  ok: Number(d.review) >= 5   },
-    { label: 'ネット予約',  val: d.net_reserve   || '―', unit: '件（目標2）',  ok: Number(d.net_reserve) >= 2 },
-  ].map(c => `
-    <div class="rm-kpi-card ${c.ok ? 'rm-kc-ok' : 'rm-kc-ng'}">
-      <div class="rm-kc-label">${c.label}</div>
-      <div class="rm-kc-val">${c.val}</div>
-      <div class="rm-kc-unit">${c.unit}</div>
-      <div class="rm-kc-status">${c.ok ? '✅ 達成' : '⚠️ 未達'}</div>
-    </div>
-  `).join('');
-
-  const flagKeys = ['store_pr','reserve_public','reserve_banner','compass_link','pickup_review','review_parts','menu3','menu_link','guest_reserve'];
-  const flags = flagKeys.map(k => {
-    const ok = flagOK(d[k]);
-    return `<span class="rm-flag ${ok ? 'rm-flag-ok' : 'rm-flag-ng'}">${ok ? '✓' : '✗'} ${flagLabel(k)}</span>`;
-  }).join('');
-
-  const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
-
-  // 概観サマリー
   const access = Number(d.access) || 0;
   const click  = Number(d.click)  || 0;
   const review = Number(d.review) || 0;
   const nr     = Number(d.net_reserve) || 0;
-  const okCount = [access >= 200, click >= 20, review >= 5, nr >= 2].filter(Boolean).length;
-  const summaryText = `アクセス ${access}件・クリック ${click}件・口コミ ${review}件・ネット予約 ${nr}件。`
-    + `主要KPI <strong>${okCount}/4 達成</strong>。`
-    + (d.area_rank ? `エリア内順位：<strong>${d.area_rank}位</strong>。` : '');
 
-  // 重要施策（kpiActions）
-  const actions = sections && sections.kpiActions && sections.kpiActions.length ? sections.kpiActions : [];
-  const actionsHtml = actions.map(t => `<div class="rm-list-item">▶ ${t}</div>`).join('');
+  const kpiCards = [
+    { label: 'ページを見た人', val: access, unit: '人', target: 200, ok: access >= 200 },
+    { label: '予約ページを\n開いた人',      val: click,  unit: '人', target: 20,  ok: click  >= 20  },
+    { label: '口コミ数',       val: review, unit: '件', target: 5,   ok: review >= 5   },
+    { label: 'ネット予約数',   val: nr,     unit: '件', target: 2,   ok: nr     >= 2   },
+  ].map(c => `
+    <div class="rm-kpi-card ${c.ok ? 'rm-kc-ok' : 'rm-kc-ng'}">
+      <div class="rm-kc-label">${c.label.replace('\n', '<br>')}</div>
+      <div class="rm-kc-val">${c.val}<span class="rm-kc-unitsp">${c.unit}</span></div>
+      <div class="rm-kc-target">目標 ${c.target}${c.unit}</div>
+      <div class="rm-kc-status">${c.ok ? '✅ 達成' : '⚠️ 要改善'}</div>
+    </div>
+  `).join('');
+
+  const okCount = [access >= 200, click >= 20, review >= 5, nr >= 2].filter(Boolean).length;
+  const verdictText = okCount === 4
+    ? '全項目達成！このまま継続しましょう 🎉'
+    : okCount >= 2
+    ? `${4 - okCount}項目に改善の余地があります`
+    : `重点的な改善が必要な状態です（${okCount}/4 達成）`;
+  const verdictClass = okCount === 4 ? 'rm-verdict-ok' : okCount >= 2 ? 'rm-verdict-warn' : 'rm-verdict-ng';
+
+  const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
 
   el.innerHTML = `
-    <div class="rm-slide-hd">📈 KPI現状確認</div>
+    <div class="rm-slide-hd">📊 今月の成績</div>
     <div class="rm-slide-body">
+      <div class="rm-script-line">「今月の数字を確認しましょう。目標に対してどうだったか、一緒に見ていきます。」</div>
       ${rank ? `<div class="rm-rank">${rank}</div>` : ''}
       <div class="rm-kpi-grid">${kpiCards}</div>
-      <div class="rm-kpi-summary">${summaryText}</div>
-      <div class="rm-flag-row">${flags}</div>
-      ${actionsHtml ? `<div class="rm-actions-hd">重要施策</div><div class="rm-list">${actionsHtml}</div>` : ''}
+      <div class="rm-verdict ${verdictClass}">${verdictText}</div>
     </div>
   `;
   return el;
