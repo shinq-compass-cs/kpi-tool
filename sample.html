@@ -716,17 +716,26 @@
     color: #991B1B;
     line-height: 1.9;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 14px;
     box-shadow: 0 2px 12px rgba(220,38,38,0.15);
   }
-  .goal-banner .goal-icon { font-size: 28px; flex-shrink: 0; }
+  .goal-banner .goal-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
   .goal-banner strong {
     color: #DC2626;
     font-size: 20px;
     font-family: 'Inter', sans-serif;
     font-weight: 700;
     letter-spacing: 0.01em;
+  }
+  .goal-banner-divider {
+    border: none;
+    border-top: 1px solid rgba(220,38,38,0.2);
+    margin: 10px 0 8px;
+  }
+  .goal-review-section strong {
+    font-size: 14px;
+    color: #DC2626;
   }
 
   /* ===== レスポンシブ ===== */
@@ -1563,7 +1572,8 @@ async function handleLogin() {
       const maxPt = Number(found.search_point || 0) + addPt;
       found.add_pt = addPt;
       found.potential_max_pt = maxPt;
-      found.potential_rank = refRows ? calcPotentialRank(found.area, maxPt, refRows, refHm) : null;
+      found.potential_rank   = refRows ? calcPotentialRank(found.area, maxPt, refRows, refHm) : null;
+      found.first_place_pt   = refRows ? calcFirstPlacePt(found.area, refRows, refHm) : null;
     }
 
     // === Step3: 月次推移データ収集（最新月から遡る、3連続ミスで打ち切り、最大2年分） ===
@@ -1692,10 +1702,54 @@ function renderDashboard(d, sheetName) {
     document.getElementById('search-point').textContent = d.search_point;
     document.getElementById('point-badge').style.display = 'flex';
 
-    // 努力目標バナー（同エリア他院データから到達可能順位を表示）
-    if (d.add_pt > 0 && d.potential_rank !== undefined) {
-      document.getElementById('goal-text').innerHTML =
-        `検索優先ポイント <strong>${d.potential_max_pt}pt</strong> にすれば、最大エリア内順位 <strong>${d.potential_rank}位</strong> まで可能（あと <strong>+${d.add_pt}pt</strong> 獲得可能）`;
+    // 努力目標バナー（同エリア他院データから到達可能順位・口コミ目標を表示）
+    if (d.potential_rank !== null && d.potential_rank !== undefined && d.add_pt > 0) {
+      const canReach1st = (d.potential_rank === 1);
+      const planPts = getReviewPlanPts(d.compass_plan);
+
+      if (canReach1st) {
+        document.getElementById('goal-text').innerHTML =
+          `取り組みをすべて完了すると <strong>${d.potential_max_pt}pt</strong> → エリア <strong>1位</strong> 達成可能！（あと <strong>+${d.add_pt}pt</strong> 獲得可能）`;
+      } else {
+        const gap = (d.first_place_pt && d.first_place_pt > d.potential_max_pt)
+          ? d.first_place_pt - d.potential_max_pt
+          : null;
+
+        let html = `取り組みをすべて完了すると <strong>${d.potential_max_pt}pt</strong> → エリア <strong>${d.potential_rank}位</strong>`;
+        if (gap !== null) {
+          html += `<br><span style="font-size:12px;opacity:0.8;">1位まであと <strong>+${gap}pt</strong> 必要</span>`;
+        }
+
+        if (gap !== null && gap > 0) {
+          const reviewCurrent = Number(d.review || 0);
+          const replyCurrent  = Number(d.review_reply || 0);
+          const reviewMaxCount  = Math.floor(planPts.reviewCapPt / planPts.reviewPt);
+          const replyMaxCount   = Math.floor(planPts.replyCapPt  / planPts.replyPt);
+          const reviewRemaining = Math.max(0, reviewMaxCount - reviewCurrent);
+          const replyRemaining  = Math.max(0, replyMaxCount  - replyCurrent);
+          const reviewsNeeded = Math.ceil(gap / planPts.reviewPt);
+          const repliesNeeded = Math.ceil(gap / planPts.replyPt);
+          const reviewOK = reviewsNeeded <= reviewRemaining;
+          const replyOK  = repliesNeeded <= replyRemaining;
+
+          html += `<hr class="goal-banner-divider">`;
+          html += `<div class="goal-review-section">`;
+          html += `<strong>⭐ さらに1位を目指す（口コミポイント）</strong><br>`;
+          if (reviewOK) {
+            html += `口コミ獲得をあと <strong>${reviewsNeeded}件</strong> 増やすと1位達成（現在 ${reviewCurrent}件）<br>`;
+          }
+          if (replyOK) {
+            html += `口コミ返信をあと <strong>${repliesNeeded}件</strong> 増やすと1位達成（現在 ${replyCurrent}件）`;
+          }
+          if (!reviewOK && !replyOK) {
+            html += `口コミ・返信ともにポイント上限に近いため、口コミ単独での1位達成は困難です`;
+          }
+          html += `</div>`;
+        }
+
+        document.getElementById('goal-text').innerHTML = html;
+      }
+
       document.getElementById('goal-banner').style.display = 'flex';
     }
   }
@@ -2159,6 +2213,32 @@ function renderAreaHeatmap(d) {
     </div>
   `;
   el.style.display = 'block';
+}
+
+// ===== プラン別・口コミポイント定義 =====
+function getReviewPlanPts(compassPlan) {
+  const plan = String(compassPlan || '').trim();
+  const isPlatina = plan.includes('プラチナ');
+  return isPlatina
+    ? { reviewPt: 5, replyPt: 3, reviewCapPt: 500, replyCapPt: 300 }
+    : { reviewPt: 3, replyPt: 2, reviewCapPt: 300, replyCapPt: 200 };
+}
+
+// ===== エリア内1位のポイントを取得 =====
+function calcFirstPlacePt(area, allRows, hm) {
+  const areaIdx = hm['検索順位エリア'];
+  const ptIdx   = hm['検索優先ポイント'] ?? hm['掲載優先ポイント'];
+  if (areaIdx === undefined || ptIdx === undefined) return null;
+  const hi = findHeaderRowIndex(allRows);
+  let maxPt = 0;
+  for (let i = hi + 1; i < allRows.length; i++) {
+    const rowArea = String(allRows[i][areaIdx] || '').trim();
+    const rowPt   = parseFloat(allRows[i][ptIdx]);
+    if (rowArea === String(area || '').trim() && !isNaN(rowPt)) {
+      maxPt = Math.max(maxPt, rowPt);
+    }
+  }
+  return maxPt;
 }
 
 // ===== 追加取得可能ポイント計算 =====
