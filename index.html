@@ -3089,15 +3089,15 @@ function extractBullets(text) {
 
 function extractTop3(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 4);
-  // "1位：xxx" 形式を優先
-  const ranked = lines.filter(l => /^\d位[：:]/.test(l));
+  // "1位：xxx" or "・1位：xxx" 形式を優先
+  const ranked = lines.filter(l => /^[・]?\s*\d位[：:]/.test(l));
   if (ranked.length >= 1) {
-    return ranked.slice(0, 3).map(l => l.replace(/^\d位[：:]\s*/, ''));
+    return ranked.slice(0, 3).map(l => l.replace(/^[・]?\s*\d位[：:]\s*/, ''));
   }
-  // フォールバック：箇条書き
+  // フォールバック：箇条書き（「理由」行を除外）
   return lines
-    .map(l => l.replace(/^[・\-\*\d\.\s]+/, '').trim())
-    .filter(l => l.length > 4)
+    .map(l => l.replace(/^[・\-\*\d\.\s]+[位：:]*\s*/, '').trim())
+    .filter(l => l.length > 4 && !/^理由/.test(l))
     .slice(0, 3);
 }
 
