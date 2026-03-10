@@ -854,20 +854,40 @@
   .rm-rank-medal { font-size: 20px; }
   .rm-rank-text { font-size: 14px; font-weight: 600; color: #1a2035; line-height: 1.55; }
 
-  /* S2 summary + actions */
-  .rm-kpi-summary { font-size: 13px; line-height: 1.65; color: #2d3748; background: #f0f7ff; border-left: 3px solid #2e6da4; border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 10px 0 12px; }
-  .rm-actions-hd { font-size: 11px; font-weight: 700; color: #718096; letter-spacing: 0.06em; text-transform: uppercase; margin: 14px 0 8px; }
-  /* S3 numbered cards */
-  .rm-numbered-list { display: flex; flex-direction: column; gap: 10px; }
-  .rm-numbered-card { display: flex; align-items: flex-start; gap: 14px; background: #f7f9fc; border-radius: 10px; padding: 12px 16px; }
-  .rm-card-num { min-width: 26px; height: 26px; background: #2e6da4; color: white; border-radius: 50%; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-  .rm-card-text { font-size: 13px; color: #2d3748; line-height: 1.6; }
-  /* S4 strength items */
+  /* CS読み上げ用スクリプト行 */
+  .rm-script-line { font-size: 12px; color: #4a5568; background: #edf2f7; border-left: 3px solid #a0aec0; border-radius: 0 8px 8px 0; padding: 9px 14px; margin-bottom: 14px; font-style: italic; line-height: 1.65; }
+  /* S2 KPI ラベル・ターゲット・ユニット */
+  .rm-kc-label { font-size: 10px; font-weight: 700; color: #718096; margin-bottom: 6px; line-height: 1.3; }
+  .rm-kc-unitsp { font-size: 14px; font-weight: 400; color: #718096; margin-left: 2px; }
+  .rm-kc-target { font-size: 10px; color: #a0aec0; margin: 2px 0 4px; }
+  /* S2 総合判定バナー */
+  .rm-verdict { margin-top: 14px; padding: 11px 16px; border-radius: 10px; font-size: 14px; font-weight: 700; text-align: center; }
+  .rm-verdict-ok   { background: #f0fdf4; color: #15803d; border: 1.5px solid #bbf7d0; }
+  .rm-verdict-warn { background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a; }
+  .rm-verdict-ng   { background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca; }
+  /* S3 強みカード */
   .rm-strength-list { display: flex; flex-direction: column; gap: 10px; }
-  .rm-strength-item { display: flex; align-items: flex-start; gap: 12px; background: linear-gradient(135deg, #f0fdf4, #f7fffe); border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; }
+  .rm-strength-item { display: flex; align-items: flex-start; gap: 12px; background: linear-gradient(135deg, #f0fdf4, #f7fffe); border: 1px solid #bbf7d0; border-radius: 10px; padding: 13px 16px; }
   .rm-strength-icon { font-size: 15px; color: #16a34a; flex-shrink: 0; margin-top: 2px; }
-  .rm-strength-text { font-size: 13px; color: #14532d; font-weight: 600; line-height: 1.6; }
-  /* S5 rank with reason */
+  .rm-strength-text { font-size: 13px; color: #14532d; font-weight: 600; line-height: 1.65; }
+  /* S4 課題・仮説カード */
+  .rm-issue-list { display: flex; flex-direction: column; gap: 10px; }
+  .rm-issue-card { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .rm-issue-problem { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: #f7f9fc; }
+  .rm-issue-num { min-width: 24px; height: 24px; background: #e53e3e; color: white; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .rm-issue-text { font-size: 13px; font-weight: 700; color: #2d3748; line-height: 1.5; }
+  .rm-issue-hypothesis { font-size: 12px; color: #4a5568; background: #fffbeb; border-top: 1px solid #fde68a; padding: 8px 14px 10px 14px; line-height: 1.65; }
+  /* S5 アクションカード */
+  .rm-action-list { display: flex; flex-direction: column; gap: 12px; }
+  .rm-action-card { border-radius: 12px; overflow: hidden; }
+  .rm-action-card.r1 { border-left: 5px solid #f59e0b; background: #fffbeb; }
+  .rm-action-card.r2 { border-left: 5px solid #6b7280; background: #f7f9fc; }
+  .rm-action-card.r3 { border-left: 5px solid #cd7c42; background: #fdf5ed; }
+  .rm-action-hd { display: flex; align-items: center; gap: 12px; padding: 12px 16px 6px; }
+  .rm-action-title { font-size: 15px; font-weight: 800; color: #1a2035; line-height: 1.3; }
+  .rm-action-detail { font-size: 12px; color: #374151; padding: 0 16px 6px 16px; line-height: 1.65; }
+  .rm-action-effect { font-size: 11px; font-weight: 600; color: #2e6da4; background: rgba(46,109,164,0.06); padding: 6px 16px 8px; line-height: 1.5; }
+  /* S5 rank-content（後方互換） */
   .rm-rank-content { flex: 1; }
   .rm-rank-title { font-size: 14px; font-weight: 700; color: #1a2035; line-height: 1.4; margin-bottom: 4px; }
   .rm-rank-reason { font-size: 12px; color: #718096; line-height: 1.5; }
@@ -3056,16 +3076,17 @@ function buildAdvisorPrompt(d) {
   ].join('\n');
 
   return 'あなたは鍼灸院・整骨院専門のWebマーケティングコンサルタントです。\n'
-    + '以下の「院詳細ページ情報」と「KPIデータ」を分析し、担当コンサルタントが集客を最大化するために行うべき具体的なアドバイスを日本語で提供してください。\n\n'
+    + '以下の情報をもとに、カスタマーサクセス担当が鍼灸師（マーケ知識ゼロ）に説明する際に使う資料を作成してください。\n'
+    + '専門用語は使わず、院長が理解しやすい平易な日本語で書いてください。\n\n'
     + '【院詳細ページ情報（shinq-compass.jpより取得）】\n{{PAGE_TEXT}}\n\n'
     + '【現在のKPIデータ】\n' + kpiLines + '\n\n'
     + '## 出力形式\n'
     + '必ず以下のJSON形式のみで返してください。JSONの前後に説明文やコードブロック記号は一切不要です。\n\n'
-    + '{"pageReview":["評価・改善点1","評価・改善点2","評価・改善点3"],'
-    + '"kpiActions":["改善アクション1","改善アクション2","改善アクション3"],'
-    + '"strengths":["強み・差別化1","強み・差別化2","強み・差別化3"],'
-    + '"top3":[{"title":"施策タイトル","reason":"理由・期待効果を1文で"},{"title":"施策タイトル2","reason":"理由2"},{"title":"施策タイトル3","reason":"理由3"}]}\n\n'
-    + '各配列は3〜6件。top3のtitleは20文字以内、reasonは院長への説明に使えるレベルの具体性で50文字以内。';
+    + '{"strengths":["院の強みや良いところ（院長が喜ぶ表現で）","..."],'
+    + '"issues":[{"problem":"うまくいっていないこと（数字や事実で具体的に）","hypothesis":"その原因として考えられること（〜と考えられます の形で）"},...],'
+    + '"top3":[{"title":"今月やること（動詞始まりで短く）","detail":"具体的な手順（誰でもわかるように）","effect":"やると何が良くなるか（1文で）"},...]}\n\n'
+    + 'strengths: 3〜5件。issues: 2〜4件。top3: 必ず3件。\n'
+    + 'top3のdetailはCSスタッフが院長にそのまま読み上げられる具体性（50文字以内）で記述してください。';
 }
 
 async function loadAIForReport(d, detailUrl) {
@@ -3102,25 +3123,17 @@ async function loadAIForReport(d, detailUrl) {
 
 function parseAIToSections(text) {
   try {
-    // JSONモードで直接パース
     const clean = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
     const obj = JSON.parse(clean);
     console.log('[AI Advisor] JSON parse OK:', obj);
     return {
-      pageReview: Array.isArray(obj.pageReview) ? obj.pageReview : [],
-      kpiActions: Array.isArray(obj.kpiActions) ? obj.kpiActions : [],
-      strengths:  Array.isArray(obj.strengths)  ? obj.strengths  : [],
-      top3:       Array.isArray(obj.top3)        ? obj.top3       : [],
+      strengths: Array.isArray(obj.strengths) ? obj.strengths : [],
+      issues:    Array.isArray(obj.issues)    ? obj.issues    : [],
+      top3:      Array.isArray(obj.top3)      ? obj.top3      : [],
     };
   } catch(e) {
-    console.warn('[AI Advisor] JSONパース失敗、テキストパースにフォールバック:', e.message);
-    const parts = text.split(/###[^\n]*/);
-    return {
-      pageReview: extractBullets(parts[1] || ''),
-      kpiActions: extractBullets(parts[2] || ''),
-      strengths:  extractBullets(parts[3] || ''),
-      top3:       extractTop3(parts[4] || ''),
-    };
+    console.warn('[AI Advisor] JSONパース失敗:', e.message);
+    return { strengths: [], issues: [], top3: [] };
   }
 }
 
@@ -3146,42 +3159,40 @@ function extractTop3(text) {
 }
 
 function generateRuleBasedSections(d) {
-  const pv = [];
-  const kpiAct = [];
-
-  // ページ改善（ルールベース）
-  if (!d.menu3) pv.push('メニューが3件未満です。主要メニューと料金を3件以上登録しましょう');
-  if (!d.pickup_review) pv.push('PickUp口コミが未設定です。評価の高い口コミを選んで設定してください');
-  if (!d.review_parts) pv.push('口コミパーツが未設置です。予約ページへの口コミ誘導バナーを設置しましょう');
-  if (!d.store_pr) pv.push('店舗PR情報が未登録です。院の強みや特徴を入力してください');
-  if (pv.length === 0) pv.push('ページ基本設定はすべて完了しています', '写真・説明文のさらなる充実を検討しましょう');
-
-  // KPIアクション（ルールベース）
   const access = Number(d.access) || 0;
   const click  = Number(d.click)  || 0;
   const review = Number(d.review) || 0;
   const nr     = Number(d.net_reserve) || 0;
 
-  if (access < 200) kpiAct.push(`アクセス数 ${access} → 目標200。検索優先ポイントの追加・コンパスリンク設置を検討`);
-  if (click < 20)   kpiAct.push(`クリック数 ${click} → 目標20。口コミ・写真・メニュー強化でCTRを改善`);
-  if (review < 5)   kpiAct.push(`口コミ ${review}件 → 目標5件。来院患者へのQRカード配布を実施`);
-  if (nr < 2)       kpiAct.push(`ネット予約 ${nr}件 → 目標2件。受付締切時間を緩和し、ゲスト予約を有効化`);
-  if (!d.reserve_public) kpiAct.push('予約公開が未設定。コンパスからのネット予約を公開してください');
-  if (kpiAct.length === 0) kpiAct.push('主要KPIはすべて目標達成中です', '継続的なページ更新で上位を維持しましょう');
+  // 強み
+  const strengths = [];
+  if (access >= 200) strengths.push(`月${access}人がページを見ています — 多くの方に院を知ってもらえている状態です`);
+  if (review >= 5)   strengths.push(`口コミが${review}件 — 患者さんからの信頼の声が積み重なっています`);
+  if (flagOK(d.store_pr))      strengths.push('院の紹介文が登録済み — 院の特徴がページから伝わりやすい状態です');
+  if (flagOK(d.menu3))         strengths.push('メニュー3件以上登録済み — 患者さんが施術内容を選びやすい状態です');
+  if (flagOK(d.pickup_review)) strengths.push('おすすめ口コミが設定済み — 好評価の口コミが目立つ位置に表示されています');
+  if (flagOK(d.reserve_public)) strengths.push('ネット予約が公開済み — ページから直接予約できる環境が整っています');
+  if (strengths.length === 0) strengths.push('まだ改善できる余地が多くあります。以下のやることを進めると数字が伸びやすくなります');
 
-  // TOP3（ルールベース）
+  // 課題と仮説
+  const issues = [];
+  if (access < 200)        issues.push({problem:`ページを見た人が${access}人（目標200人）`, hypothesis:'検索での表示順位が低いため、ページにたどり着けていない方が多い可能性があります'});
+  if (click < 20)          issues.push({problem:`予約ページを開いた人が${click}人（目標20人）`, hypothesis:'口コミが少ない・メニューが少ないなど、ページを見た人が予約に進まずに離脱している可能性があります'});
+  if (review < 5)          issues.push({problem:`口コミが${review}件（目標5件）`, hypothesis:'来院後に口コミをお願いする仕組みがないため、患者さんが投稿できていない可能性があります'});
+  if (nr < 2)              issues.push({problem:`ネット予約が${nr}件（目標2件）`, hypothesis:'受付時間が短い、またはゲスト予約が使えない状態のため、予約しにくくなっている可能性があります'});
+  if (!d.reserve_public)   issues.push({problem:'ネット予約が非公開になっています', hypothesis:'コンパスからの予約を受け付けていない状態のため、せっかく見てもらっても予約につながっていません'});
+  if (!d.store_pr)         issues.push({problem:'院の紹介文が未登録です', hypothesis:'ページに院の特徴が表示されていないため、他院との違いが伝わらず離脱される可能性があります'});
+  if (issues.length === 0) issues.push({problem:'現在、主要な課題は見当たりません', hypothesis:'このまま口コミ返信とページ更新を続けることで、上位表示を維持できます'});
+
+  // TOP3アクション
   const top3 = [];
-  if (review < 5)   top3.push({title:'口コミ獲得強化', reason:'QRカード配布・口コミ返信の徹底でレビュー数を目標5件へ増やす'});
-  if (access < 200) top3.push({title:'検索優先ポイント追加', reason:'ポイント追加でエリア上位表示を狙い、アクセス数200件を目指す'});
-  if (!d.menu3)     top3.push({title:'メニュー3件以上登録', reason:'施術メニュー・料金を充実させてクリック率とCVRを改善'});
-  if (!d.store_pr)  top3.push({title:'店舗PR情報登録', reason:'院の強みや特徴を記入し、ページからの予約転換率を高める'});
-  while (top3.length < 3) top3.push({title:'口コミ返信を徹底', reason:'全口コミへの返信で信頼性を高め、新規患者の安心感を醸成'});
-  return {
-    pageReview:  pv,
-    kpiActions:  kpiAct,
-    strengths:   [],   // ルールベースでは生成しない
-    top3:        top3.slice(0, 3),
-  };
+  if (review < 5)   top3.push({title:'口コミをもらう仕組みを作る', detail:'受付にQRコードを置き、会計時に「よろしければ口コミをお願いします」と一声かける', effect:'口コミが増えると信頼感が高まり、初めての患者さんが予約しやすくなります'});
+  if (access < 200) top3.push({title:'検索優先ポイントを追加する', detail:'コンパス管理画面の「検索優先ポイント」を追加してエリア内の掲載順位を上げる', effect:'ページを見てもらえる人数が増え、予約数アップにつながります'});
+  if (!d.menu3)     top3.push({title:'メニューを3件以上登録する', detail:'施術メニュー・料金・所要時間を管理画面に3件以上登録する', effect:'ページの情報が充実し、予約ページを開いてくれる人が増えます'});
+  if (!d.store_pr)  top3.push({title:'院の紹介文を登録する', detail:'「こんな方におすすめ」「当院の特徴」を管理画面のPR欄に入力する', effect:'院の魅力が伝わり、ページを見た人が予約に進みやすくなります'});
+  while (top3.length < 3) top3.push({title:'口コミに返信を続ける', detail:'届いた口コミ1件1件に、院長名で丁寧なお礼の返信をする', effect:'誠実な対応が伝わり、新規の患者さんが安心して予約しやすくなります'});
+
+  return { strengths, issues, top3: top3.slice(0, 3) };
 }
 
 function flagOK(v) {
@@ -3282,76 +3293,48 @@ function buildRmSlide2(d, sections) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
 
-  const kpiCards = [
-    { label: 'アクセス数',  val: d.access        || '―', unit: '（目標200）',  ok: Number(d.access) >= 200 },
-    { label: 'クリック数',  val: d.click         || '―', unit: '（目標20）',   ok: Number(d.click)  >= 20  },
-    { label: '口コミ件数',  val: d.review        || '―', unit: '件（目標5）',  ok: Number(d.review) >= 5   },
-    { label: 'ネット予約',  val: d.net_reserve   || '―', unit: '件（目標2）',  ok: Number(d.net_reserve) >= 2 },
-  ].map(c => `
-    <div class="rm-kpi-card ${c.ok ? 'rm-kc-ok' : 'rm-kc-ng'}">
-      <div class="rm-kc-label">${c.label}</div>
-      <div class="rm-kc-val">${c.val}</div>
-      <div class="rm-kc-unit">${c.unit}</div>
-      <div class="rm-kc-status">${c.ok ? '✅ 達成' : '⚠️ 未達'}</div>
-    </div>
-  `).join('');
-
-  const flagKeys = ['store_pr','reserve_public','reserve_banner','compass_link','pickup_review','review_parts','menu3','menu_link','guest_reserve'];
-  const flags = flagKeys.map(k => {
-    const ok = flagOK(d[k]);
-    return `<span class="rm-flag ${ok ? 'rm-flag-ok' : 'rm-flag-ng'}">${ok ? '✓' : '✗'} ${flagLabel(k)}</span>`;
-  }).join('');
-
-  const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
-
-  // 概観サマリー
   const access = Number(d.access) || 0;
   const click  = Number(d.click)  || 0;
   const review = Number(d.review) || 0;
   const nr     = Number(d.net_reserve) || 0;
-  const okCount = [access >= 200, click >= 20, review >= 5, nr >= 2].filter(Boolean).length;
-  const summaryText = `アクセス ${access}件・クリック ${click}件・口コミ ${review}件・ネット予約 ${nr}件。`
-    + `主要KPI <strong>${okCount}/4 達成</strong>。`
-    + (d.area_rank ? `エリア内順位：<strong>${d.area_rank}位</strong>。` : '');
 
-  // 重要施策（kpiActions）
-  const actions = sections && sections.kpiActions && sections.kpiActions.length ? sections.kpiActions : [];
-  const actionsHtml = actions.map(t => `<div class="rm-list-item">▶ ${t}</div>`).join('');
+  const kpiCards = [
+    { label: 'ページを見た人', val: access, unit: '人', target: 200, ok: access >= 200 },
+    { label: '予約ページを\n開いた人',      val: click,  unit: '人', target: 20,  ok: click  >= 20  },
+    { label: '口コミ数',       val: review, unit: '件', target: 5,   ok: review >= 5   },
+    { label: 'ネット予約数',   val: nr,     unit: '件', target: 2,   ok: nr     >= 2   },
+  ].map(c => `
+    <div class="rm-kpi-card ${c.ok ? 'rm-kc-ok' : 'rm-kc-ng'}">
+      <div class="rm-kc-label">${c.label.replace('\n', '<br>')}</div>
+      <div class="rm-kc-val">${c.val}<span class="rm-kc-unitsp">${c.unit}</span></div>
+      <div class="rm-kc-target">目標 ${c.target}${c.unit}</div>
+      <div class="rm-kc-status">${c.ok ? '✅ 達成' : '⚠️ 要改善'}</div>
+    </div>
+  `).join('');
+
+  const okCount = [access >= 200, click >= 20, review >= 5, nr >= 2].filter(Boolean).length;
+  const verdictText = okCount === 4
+    ? '全項目達成！このまま継続しましょう 🎉'
+    : okCount >= 2
+    ? `${4 - okCount}項目に改善の余地があります`
+    : `重点的な改善が必要な状態です（${okCount}/4 達成）`;
+  const verdictClass = okCount === 4 ? 'rm-verdict-ok' : okCount >= 2 ? 'rm-verdict-warn' : 'rm-verdict-ng';
+
+  const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
 
   el.innerHTML = `
-    <div class="rm-slide-hd">📈 KPI現状確認</div>
+    <div class="rm-slide-hd">📊 今月の成績</div>
     <div class="rm-slide-body">
+      <div class="rm-script-line">「今月の数字を確認しましょう。目標に対してどうだったか、一緒に見ていきます。」</div>
       ${rank ? `<div class="rm-rank">${rank}</div>` : ''}
       <div class="rm-kpi-grid">${kpiCards}</div>
-      <div class="rm-kpi-summary">${summaryText}</div>
-      <div class="rm-flag-row">${flags}</div>
-      ${actionsHtml ? `<div class="rm-actions-hd">重要施策</div><div class="rm-list">${actionsHtml}</div>` : ''}
+      <div class="rm-verdict ${verdictClass}">${verdictText}</div>
     </div>
   `;
   return el;
 }
 
 function buildRmSlide3(d, sections, fromAI) {
-  const el = document.createElement('div');
-  el.className = 'rm-slide';
-  const items = sections.pageReview;
-  const content = items.length
-    ? items.map((t, i) => `
-        <div class="rm-numbered-card">
-          <span class="rm-card-num">${i + 1}</span>
-          <span class="rm-card-text">${t}</span>
-        </div>`).join('')
-    : '<div class="rm-placeholder">AI分析後に改善点を表示します</div>';
-  el.innerHTML = `
-    <div class="rm-slide-hd">🖥 ページ改善点</div>
-    <div class="rm-slide-body">
-      <div class="rm-numbered-list">${content}</div>
-    </div>
-  `;
-  return el;
-}
-
-function buildRmSlide4(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
   const items = sections.strengths;
@@ -3362,11 +3345,40 @@ function buildRmSlide4(d, sections, fromAI) {
           <span class="rm-strength-icon">${icons[i % icons.length]}</span>
           <span class="rm-strength-text">${t}</span>
         </div>`).join('')
-    : '<div class="rm-placeholder">' + (fromAI ? '強み情報を取得できませんでした' : 'AI分析後に強み・差別化ポイントを表示します') + '</div>';
+    : '<div class="rm-placeholder">AI分析後に院の強みを表示します</div>';
   el.innerHTML = `
-    <div class="rm-slide-hd">💪 強み・差別化ポイント</div>
+    <div class="rm-slide-hd">💪 院の強み・良いところ</div>
     <div class="rm-slide-body">
+      <div class="rm-script-line">「まず、〇〇院さんが他の院よりも優れている点をお伝えします。」</div>
       <div class="rm-strength-list">${content}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildRmSlide4(d, sections, fromAI) {
+  const el = document.createElement('div');
+  el.className = 'rm-slide';
+  const items = sections.issues;
+  const content = items.length
+    ? items.map((item, i) => {
+        const problem    = typeof item === 'object' ? item.problem    : item;
+        const hypothesis = typeof item === 'object' ? item.hypothesis : '';
+        return `
+          <div class="rm-issue-card">
+            <div class="rm-issue-problem">
+              <span class="rm-issue-num">${i + 1}</span>
+              <span class="rm-issue-text">${problem}</span>
+            </div>
+            ${hypothesis ? `<div class="rm-issue-hypothesis">💡 ${hypothesis}</div>` : ''}
+          </div>`;
+      }).join('')
+    : '<div class="rm-placeholder">AI分析後に課題を表示します</div>';
+  el.innerHTML = `
+    <div class="rm-slide-hd">🔍 うまくいっていない理由</div>
+    <div class="rm-slide-body">
+      <div class="rm-script-line">「次に、数字が伸びていない原因として考えられることをお伝えします。」</div>
+      <div class="rm-issue-list">${content}</div>
     </div>
   `;
   return el;
@@ -3377,24 +3389,27 @@ function buildRmSlide5(d, sections, fromAI) {
   el.className = 'rm-slide';
   const top3 = sections.top3;
   const medals = ['🥇', '🥈', '🥉'];
-  const ranks = top3.length
+  const actions = top3.length
     ? top3.map((item, i) => {
         const title  = typeof item === 'object' ? item.title  : item;
-        const reason = typeof item === 'object' ? item.reason : '';
+        const detail = typeof item === 'object' ? (item.detail || item.reason || '') : '';
+        const effect = typeof item === 'object' ? (item.effect || '') : '';
         return `
-          <div class="rm-rank-item r${i+1}">
-            <span class="rm-rank-medal">${medals[i]}</span>
-            <div class="rm-rank-content">
-              <div class="rm-rank-title">${title}</div>
-              ${reason ? `<div class="rm-rank-reason">${reason}</div>` : ''}
+          <div class="rm-action-card r${i+1}">
+            <div class="rm-action-hd">
+              <span class="rm-rank-medal">${medals[i]}</span>
+              <span class="rm-action-title">${title}</span>
             </div>
+            ${detail ? `<div class="rm-action-detail">▶ ${detail}</div>` : ''}
+            ${effect ? `<div class="rm-action-effect">期待効果：${effect}</div>` : ''}
           </div>`;
       }).join('')
-    : '<div class="rm-placeholder">AI分析後に優先施策を表示します</div>';
+    : '<div class="rm-placeholder">AI分析後に今月やることを表示します</div>';
   el.innerHTML = `
-    <div class="rm-slide-hd">🎯 優先施策 TOP3</div>
+    <div class="rm-slide-hd">✅ 今月やること TOP3</div>
     <div class="rm-slide-body">
-      <div class="rm-rank-list">${ranks}</div>
+      <div class="rm-script-line">「具体的に今月やっていただきたいことが3つあります。一緒に確認しましょう。」</div>
+      <div class="rm-action-list">${actions}</div>
     </div>
   `;
   return el;
