@@ -1808,6 +1808,7 @@ async function handleLogin() {
       for (let i = hi + 1; i < latestRows.length; i++) {
         if (String(latestRows[i][idCol] || '').trim() === salonId) {
           found = parseRowDynamic(latestRows[i], firstSheetHm);
+          found.salon_id = salonId;
           found.detail_url = String(latestRows[i][49] || '').trim() || null; // AX列
           foundSheet = latestSheet;
           break;
@@ -1829,6 +1830,7 @@ async function handleLogin() {
           if (String(row[idCol] || '').trim() === salonId) {
             if (!isFreeTrialDateValid(row)) break;
             found = parseRowDynamic(row, freeTrialHm);
+            found.salon_id = salonId;
             found.detail_url = String(row[9] || '').trim() || null; // J列
             foundSheet = FREE_TRIAL_SHEET;
             break;
@@ -3001,21 +3003,27 @@ function closeReport() {
 }
 
 async function loadAIForReport(d, detailUrl) {
+  const st = document.getElementById('rm-ai-status');
   try {
     const params = new URLSearchParams();
     params.append('data', JSON.stringify({ detail_url: detailUrl, kpi: d }));
+    console.log('[AI Advisor] POST →', ADVISOR_GAS_URL, '/ detail_url:', detailUrl);
     const res = await fetch(ADVISOR_GAS_URL, { method: 'POST', body: params });
     const json = await res.json();
+    console.log('[AI Advisor] response:', json);
     if (json.success && json.advice) {
       const sections = parseAIToSections(json.advice);
       renderReportSlides(d, sections, true);
       showRmSlide(rmCurrentIdx);
+    } else {
+      console.warn('[AI Advisor] GASエラー:', json.error);
+      if (st) st.textContent = 'AI分析エラー: ' + (json.error || '不明');
     }
   } catch (e) {
-    // AI失敗はサイレントに無視
+    console.error('[AI Advisor] fetch失敗:', e);
+    if (st) st.textContent = 'AI接続エラー: ' + e.message;
   } finally {
-    const st = document.getElementById('rm-ai-status');
-    if (st) st.style.display = 'none';
+    setTimeout(() => { if (st) st.style.display = 'none'; }, 4000);
   }
 }
 
