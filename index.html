@@ -3211,18 +3211,17 @@ function renderReportSlides(d, sections, fromAI) {
 
   const slides = [
     buildRmSlide1(d),
-    buildRmSlide2(d),
+    buildRmSlide2(d, sections),
     buildRmSlide3(d, sections, fromAI),
     buildRmSlide4(d, sections, fromAI),
     buildRmSlide5(d, sections, fromAI),
-    buildRmSlide6(d, sections),
   ];
 
   slides.forEach((el, i) => {
     el.dataset.idx = i;
     el.style.display = 'none';
     container.appendChild(el);
-    rmSlideData.push({ el, hasAI: fromAI && i >= 2 && i <= 4 });
+    rmSlideData.push({ el, hasAI: fromAI && i >= 1 && i <= 4 });
   });
 
   updateRmNav(slides.length);
