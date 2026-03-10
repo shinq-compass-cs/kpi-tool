@@ -3279,7 +3279,7 @@ function buildRmSlide1(d) {
   return el;
 }
 
-function buildRmSlide2(d) {
+function buildRmSlide2(d, sections) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
 
@@ -3305,12 +3305,28 @@ function buildRmSlide2(d) {
 
   const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
 
+  // 概観サマリー
+  const access = Number(d.access) || 0;
+  const click  = Number(d.click)  || 0;
+  const review = Number(d.review) || 0;
+  const nr     = Number(d.net_reserve) || 0;
+  const okCount = [access >= 200, click >= 20, review >= 5, nr >= 2].filter(Boolean).length;
+  const summaryText = `アクセス ${access}件・クリック ${click}件・口コミ ${review}件・ネット予約 ${nr}件。`
+    + `主要KPI <strong>${okCount}/4 達成</strong>。`
+    + (d.area_rank ? `エリア内順位：<strong>${d.area_rank}位</strong>。` : '');
+
+  // 重要施策（kpiActions）
+  const actions = sections && sections.kpiActions && sections.kpiActions.length ? sections.kpiActions : [];
+  const actionsHtml = actions.map(t => `<div class="rm-list-item">▶ ${t}</div>`).join('');
+
   el.innerHTML = `
     <div class="rm-slide-hd">📈 KPI現状確認</div>
     <div class="rm-slide-body">
       ${rank ? `<div class="rm-rank">${rank}</div>` : ''}
       <div class="rm-kpi-grid">${kpiCards}</div>
+      <div class="rm-kpi-summary">${summaryText}</div>
       <div class="rm-flag-row">${flags}</div>
+      ${actionsHtml ? `<div class="rm-actions-hd">重要施策</div><div class="rm-list">${actionsHtml}</div>` : ''}
     </div>
   `;
   return el;
