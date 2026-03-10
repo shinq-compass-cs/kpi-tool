@@ -119,7 +119,7 @@ function generateAdvice(pageText, kpi) {
     },
     payload: JSON.stringify({
       model: CLAUDE_MODEL_ADVISOR,
-      max_tokens: 8192,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: buildPrompt(pageText, kpi) }]
     }),
     muteHttpExceptions: true
