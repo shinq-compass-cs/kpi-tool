@@ -606,6 +606,65 @@
 
   .advice-body { padding: 16px 20px 20px; }
 
+  /* ===== AIアドバイザーセクション ===== */
+  .ai-advisor-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ai-advisor-header {
+    background: linear-gradient(90deg, #1a3a2a, #2d6a4f);
+    color: white;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ai-advisor-body { padding: 16px 20px 20px; }
+  .ai-advisor-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .ai-advisor-btn:hover:not(:disabled) { background: #1b5e3b; }
+  .ai-advisor-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .ai-result-area {
+    background: #f7faf8;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.85;
+    color: #2d3748;
+  }
+  .ai-result-area h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1b5e3b;
+    margin: 14px 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #c6e6d5;
+  }
+  .ai-result-area h4:first-child { margin-top: 0; }
+  .ai-result-area ul { padding-left: 18px; margin: 4px 0; }
+  .ai-result-area li { margin-bottom: 4px; }
+
   .advice-intro {
     font-size: 12px;
     font-weight: 600;
@@ -1045,6 +1104,17 @@
       <div class="advice-body" id="advice-body"></div>
     </div>
 
+    <!-- AIマーケティングアドバイザー -->
+    <div class="ai-advisor-section" id="ai-advisor-section" style="display:none;">
+      <div class="ai-advisor-header">🤖 AIマーケティング分析</div>
+      <div class="ai-advisor-body">
+        <button class="ai-advisor-btn" id="ai-advisor-btn" onclick="callAdvisor()">
+          🤖 AIマーケティング分析を実行する
+        </button>
+        <div class="ai-result-area" id="ai-result-area" style="display:none;"></div>
+      </div>
+    </div>
+
     <!-- エリア比較ヒートマップ -->
     <div class="heatmap-section" id="area-heatmap" style="display:none;"></div>
 
@@ -1199,6 +1269,8 @@
 const CS_INTERNAL_EMAIL = 'info@shinq-compass.jp'; // このメアドでログイン→社内判定
 const GAS_LOG_URL = 'https://script.google.com/macros/s/AKfycbyUQ7zwgR4lT5eHddLBYnA2Oob55Z63kh4vlHZM7ZaPCEwfNu6oqqFwKsd5zJ4tYOWa/exec'; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
 const DELEGATE_GAS_URL = 'https://script.google.com/macros/s/AKfycbw4Pm3pzkGnF4443l4O-5wGb-aW0wYP3cTLUgGEuQhCYmpVtpC8O7lp4qfispNynmsq/exec';
+const ADVISOR_GAS_URL = ''; // ← advisor.gs をデプロイしたURLを貼り付ける
+let currentSalonData = null; // AI分析用にログイン中のサロンデータを保持
 let isInternal = false; // ログイン時に社内/社外を判定して設定
 let loginTime = null;
 let logSent = false;
@@ -1520,6 +1592,7 @@ async function handleLogin() {
       for (let i = hi + 1; i < latestRows.length; i++) {
         if (String(latestRows[i][idCol] || '').trim() === salonId) {
           found = parseRowDynamic(latestRows[i], firstSheetHm);
+          found.detail_url = String(latestRows[i][49] || '').trim() || null; // AX列
           foundSheet = latestSheet;
           break;
         }
@@ -1540,6 +1613,7 @@ async function handleLogin() {
           if (String(row[idCol] || '').trim() === salonId) {
             if (!isFreeTrialDateValid(row)) break;
             found = parseRowDynamic(row, freeTrialHm);
+            found.detail_url = String(row[9] || '').trim() || null; // J列
             foundSheet = FREE_TRIAL_SHEET;
             break;
           }
@@ -1666,6 +1740,9 @@ async function handleLogin() {
 
 // ===== ダッシュボード描画 =====
 function renderDashboard(d, sheetName) {
+  // AI分析用にデータを保持
+  currentSalonData = d;
+
   // プラチナPLUS判定（関数全体で使用するため先頭で宣言）
   const isPlatinaPlus = String(d.compass_plan || '').trim() === 'プラチナPLUSプラン' || String(d.compass_plan || '').trim() === 'プラチナPLUS';
 
@@ -1901,6 +1978,85 @@ function renderDashboard(d, sheetName) {
 
   // エリア比較ヒートマップ描画
   renderAreaHeatmap(d);
+
+  // AIアドバイザーセクション（detail_urlがあり、GAS URLが設定済みの場合のみ表示）
+  if (d.detail_url && ADVISOR_GAS_URL) {
+    document.getElementById('ai-advisor-section').style.display = 'block';
+    const btn = document.getElementById('ai-advisor-btn');
+    btn.disabled = false;
+    btn.textContent = '🤖 AIマーケティング分析を実行する';
+    document.getElementById('ai-result-area').style.display = 'none';
+  }
+}
+
+// ===== AIマーケティングアドバイザー =====
+async function callAdvisor() {
+  const d = currentSalonData;
+  if (!d || !d.detail_url || !ADVISOR_GAS_URL) return;
+
+  const btn = document.getElementById('ai-advisor-btn');
+  const resultEl = document.getElementById('ai-result-area');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 分析中...（10〜20秒かかります）';
+  resultEl.style.display = 'none';
+
+  try {
+    const payload = {
+      detail_url: d.detail_url,
+      kpi: {
+        name:             d.name,
+        area:             d.area,
+        compass_plan:     d.compass_plan,
+        area_rank:        d.area_rank,
+        search_point:     d.search_point,
+        access:           d.access,
+        click:            d.click,
+        click_rate:       (d.access > 0 && d.click != null) ? Math.round(d.click / d.access * 1000) / 10 : null,
+        net_reserve:      d.net_reserve_count ?? d.net_reserve,
+        net_reserve_rate: (d.click > 0 && (d.net_reserve_count ?? d.net_reserve) != null)
+                            ? Math.round((d.net_reserve_count ?? d.net_reserve) / d.click * 1000) / 10 : null,
+        store_pr:         d.store_pr,
+        reserve_public:   d.reserve_public,
+        reserve_gmb:      d.reserve_gmb,
+        reserve_banner:   d.reserve_banner,
+        compass_link:     d.compass_link,
+        review:           d.review,
+        review_reply:     d.review_reply,
+        pickup_review:    d.pickup_review,
+        review_parts:     d.review_parts,
+        menu3:            d.menu3,
+        menu_link:        d.menu_link,
+        guest_reserve:    d.guest_reserve,
+        deadline:         d.deadline,
+      }
+    };
+
+    const body = new URLSearchParams({ data: JSON.stringify(payload) });
+    const res = await fetch(ADVISOR_GAS_URL, { method: 'POST', body });
+    const json = await res.json();
+
+    if (!json.success) throw new Error(json.error || '分析に失敗しました');
+
+    resultEl.innerHTML = renderAdviceText(json.advice);
+    resultEl.style.display = 'block';
+  } catch (err) {
+    resultEl.innerHTML = `<p style="color:#c53030;font-size:13px;">エラー：${err.message}</p>`;
+    resultEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔄 再分析する';
+  }
+}
+
+function renderAdviceText(text) {
+  let html = text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/^### (.+)$/gm, '</ul><h4 class="ai-section-head">$1</h4><ul>')
+    .replace(/^・(.+)$/gm, '<li>$1</li>')
+    .replace(/\n(?!<)/g, '<br>');
+  html = html.replace(/^<\/ul>/, '').replace(/<ul>(?![\s\S]*<li>)/g, '') + '</ul>';
+  return html;
 }
 
 // ===== QRコードダウンロード =====
@@ -2514,6 +2670,8 @@ function handleLogout() {
   document.getElementById('trend-section').style.display = 'none';
   document.getElementById('qr-section').style.display = 'none';
   document.getElementById('area-heatmap').style.display = 'none';
+  document.getElementById('ai-advisor-section').style.display = 'none';
+  currentSalonData = null;
 }
 
 // Enterキーでログイン
