@@ -3016,5 +3016,20 @@ document.getElementById('dashboard').addEventListener('click', (e) => {
 window.addEventListener('beforeunload', () => sendLoginLog());
 
 </script>
+
+<!-- ===== レポートモーダル ===== -->
+<div class="report-modal" id="report-modal" style="display:none;" onclick="if(event.target===this)closeReport()">
+  <button class="rm-close" onclick="closeReport()">✕</button>
+  <div class="rm-ai-status" id="rm-ai-status" style="display:none;">
+    <span class="rm-spinner"></span> AI分析を読み込み中…
+  </div>
+  <div id="rm-slides"></div>
+  <div class="rm-nav">
+    <button class="rm-nav-btn" onclick="rmNav(-1)">&#8592;</button>
+    <div class="rm-dots" id="rm-dots"></div>
+    <div class="rm-counter" id="rm-counter"></div>
+    <button class="rm-nav-btn" onclick="rmNav(1)">&#8594;</button>
+  </div>
+</div>
 </body>
 </html>
