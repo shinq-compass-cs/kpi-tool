@@ -1700,10 +1700,62 @@ function renderDashboard(d, sheetName) {
     document.getElementById('search-point').textContent = d.search_point;
     document.getElementById('point-badge').style.display = 'flex';
 
-    // 努力目標バナー（同エリア他院データから到達可能順位を表示）
-    if (d.add_pt > 0 && d.potential_rank !== undefined) {
-      document.getElementById('goal-text').innerHTML =
-        `検索優先ポイント <strong>${d.potential_max_pt}pt</strong> にすれば、最大エリア内順位 <strong>${d.potential_rank}位</strong> まで可能（あと <strong>+${d.add_pt}pt</strong> 獲得可能）`;
+    // 努力目標バナー（同エリア他院データから到達可能順位・口コミ目標を表示）
+    if (d.potential_rank !== null && d.potential_rank !== undefined && d.add_pt > 0) {
+      const canReach1st = (d.potential_rank === 1);
+      const planPts = getReviewPlanPts(d.compass_plan);
+
+      if (canReach1st) {
+        // ─ Case A: フラグ項目だけで1位に届く ─
+        document.getElementById('goal-text').innerHTML =
+          `取り組みをすべて完了すると <strong>${d.potential_max_pt}pt</strong> → エリア <strong>1位</strong> 達成可能！（あと <strong>+${d.add_pt}pt</strong> 獲得可能）`;
+
+      } else {
+        // ─ Case B: フラグ項目だけでは1位に届かない → 2段構成 ─
+        const gap = (d.first_place_pt && d.first_place_pt > d.potential_max_pt)
+          ? d.first_place_pt - d.potential_max_pt
+          : null;
+
+        // 上段：フラグ完了後の到達順位と1位との差
+        let html = `取り組みをすべて完了すると <strong>${d.potential_max_pt}pt</strong> → エリア <strong>${d.potential_rank}位</strong>`;
+        if (gap !== null) {
+          html += `<br><span style="font-size:12px;opacity:0.8;">1位まであと <strong>+${gap}pt</strong> 必要</span>`;
+        }
+
+        // 下段：口コミによる1位達成ルート
+        if (gap !== null && gap > 0) {
+          const reviewCurrent = Number(d.review || 0);
+          const replyCurrent  = Number(d.review_reply || 0);
+          // ポイント上限に達するまでに獲得できる残り件数
+          const reviewMaxCount  = Math.floor(planPts.reviewCapPt / planPts.reviewPt);
+          const replyMaxCount   = Math.floor(planPts.replyCapPt  / planPts.replyPt);
+          const reviewRemaining = Math.max(0, reviewMaxCount - reviewCurrent);
+          const replyRemaining  = Math.max(0, replyMaxCount  - replyCurrent);
+          // 1位到達に必要な件数
+          const reviewsNeeded = Math.ceil(gap / planPts.reviewPt);
+          const repliesNeeded = Math.ceil(gap / planPts.replyPt);
+          const reviewOK = reviewsNeeded <= reviewRemaining;
+          const replyOK  = repliesNeeded <= replyRemaining;
+
+          html += `<hr class="goal-banner-divider">`;
+          html += `<div class="goal-review-section">`;
+          html += `<strong>⭐ さらに1位を目指す（口コミポイント）</strong><br>`;
+
+          if (reviewOK) {
+            html += `口コミ獲得をあと <strong>${reviewsNeeded}件</strong> 増やすと1位達成（現在 ${reviewCurrent}件）<br>`;
+          }
+          if (replyOK) {
+            html += `口コミ返信をあと <strong>${repliesNeeded}件</strong> 増やすと1位達成（現在 ${replyCurrent}件）`;
+          }
+          if (!reviewOK && !replyOK) {
+            html += `口コミ・返信ともにポイント上限に近いため、口コミ単独での1位達成は困難です`;
+          }
+          html += `</div>`;
+        }
+
+        document.getElementById('goal-text').innerHTML = html;
+      }
+
       document.getElementById('goal-banner').style.display = 'flex';
     }
   }
