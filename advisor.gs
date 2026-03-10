@@ -1,5 +1,9 @@
 // ============================================================
-// advisor.gs — AIマーケティングアドバイザー（GAS Web App）
+// advisor.gs — Claude API プロキシ（GAS Web App）
+//
+// 【役割】ページ取得（CORS回避）＋ Claude API 中継のみ
+// 【変更不要な項目】プロンプト内容・max_tokens・パース処理
+//   → これらはすべて index.html 側で管理
 //
 // 【セットアップ手順】
 // 1. Google Apps Script (script.google.com) で新しいプロジェクトを作成
@@ -20,13 +24,20 @@ function doPost(e) {
       : (e.postData ? e.postData.contents : '{}');
     var data = JSON.parse(raw);
 
-    var detailUrl = String(data.detail_url || '').trim();
-    var kpi = data.kpi || {};
-    if (!detailUrl) throw new Error('detail_url が未指定です');
+    var detailUrl     = String(data.detail_url     || '').trim();
+    var promptTpl     = String(data.prompt_template || '').trim();
+    var maxTokens     = parseInt(data.max_tokens, 10) || 4000;
 
+    if (!detailUrl)  throw new Error('detail_url が未指定です');
+    if (!promptTpl)  throw new Error('prompt_template が未指定です');
+
+    // ページテキストを取得して {{PAGE_TEXT}} を置換
     var pageText = fetchDetailPage(detailUrl);
-    var result   = generateAdvice(pageText, kpi);
-    return jsonResp({ success: true, advice: result.advice, tokens: result.tokens });
+    var prompt   = promptTpl.replace('{{PAGE_TEXT}}', pageText);
+
+    // Claude API 呼び出し
+    var result = callClaude(prompt, maxTokens);
+    return jsonResp({ success: true, advice: result.text, tokens: result.usage });
 
   } catch (err) {
     return jsonResp({ success: false, error: err.message });
@@ -70,7 +81,7 @@ function extractText(html) {
          || html.match(/<meta[^>]+content=["']([^"']{10,}?)["'][^>]+name=["']description["']/i);
   if (mM) sec.push('【メタ説明】' + mM[1].trim().slice(0, 300));
 
-  // 見出し h1〜h3（exec ループで matchAll を代替）
+  // 見出し h1〜h3
   var headRe = /<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi;
   var heads = [];
   var hm;
@@ -84,7 +95,7 @@ function extractText(html) {
   var imgCnt = (html.match(/<img[^>]+src=["'][^"']*(?:salon|menu|staff|photo|image)[^"']*["']/gi) || []).length;
   sec.push('【掲載画像数（概算）】' + imgCnt + '枚');
 
-  // 料金情報（exec ループ + オブジェクトで重複排除）
+  // 料金情報
   var priceRe = /[\d,]{3,}円/g;
   var priceMap = {};
   var priceList = [];
@@ -106,7 +117,7 @@ function extractText(html) {
 
 // ─── Claude API 呼び出し ───────────────────────────────────
 
-function generateAdvice(pageText, kpi) {
+function callClaude(prompt, maxTokens) {
   var apiKey = PropertiesService.getScriptProperties().getProperty('CLAUDE_API_KEY');
   if (!apiKey) throw new Error('スクリプトプロパティ CLAUDE_API_KEY が未設定です');
 
@@ -119,8 +130,8 @@ function generateAdvice(pageText, kpi) {
     },
     payload: JSON.stringify({
       model: CLAUDE_MODEL_ADVISOR,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: buildPrompt(pageText, kpi) }]
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }]
     }),
     muteHttpExceptions: true
   });
@@ -129,72 +140,10 @@ function generateAdvice(pageText, kpi) {
   if (!json.content || !json.content[0]) {
     throw new Error('Claude API エラー: ' + res.getContentText().slice(0, 200));
   }
-  return { advice: json.content[0].text, tokens: json.usage || {} };
-}
-
-function buildPrompt(pageText, kpi) {
-  var kpiLines = [
-    '院名：'                  + f(kpi.name),
-    'エリア：'                + f(kpi.area),
-    'プラン：'                + f(kpi.compass_plan),
-    '検索優先ポイント：'      + f(kpi.search_point) + 'pt',
-    'エリア内順位：'          + f(kpi.area_rank) + '位',
-    '',
-    '■ ニーズ1（検索で見つけてもらう）',
-    '  アクセス数：'          + f(kpi.access)          + '（目標200）',
-    '  店舗PR情報登録：'      + fl(kpi.store_pr),
-    '  予約公開：'            + fl(kpi.reserve_public),
-    '  予約GMB設置：'         + fl(kpi.reserve_gmb),
-    '  予約バナー設置：'      + fl(kpi.reserve_banner),
-    '  コンパス相互リンク：'  + fl(kpi.compass_link),
-    '',
-    '■ ニーズ2（予約ボタンを押してもらう）',
-    '  クリック数：'          + f(kpi.click)            + '（目標20）',
-    '  クリック率：'          + f(kpi.click_rate)       + '%（目標10%）',
-    '  口コミ件数：'          + f(kpi.review)           + '件（目標5件）',
-    '  口コミ返信：'          + f(kpi.review_reply)     + '件（目標5件）',
-    '  PickUp口コミ：'        + fl(kpi.pickup_review),
-    '  口コミパーツ設置：'    + fl(kpi.review_parts),
-    '  メニュー3件以上：'     + fl(kpi.menu3),
-    '',
-    '■ ニーズ3（実際に予約してもらう）',
-    '  予約数：'              + f(kpi.net_reserve)      + '件（目標2件）',
-    '  ネット予約率：'        + f(kpi.net_reserve_rate) + '%（目標10%）',
-    '  メニュー連携：'        + fl(kpi.menu_link),
-    '  ゲスト予約利用：'      + fl(kpi.guest_reserve),
-    '  予約受付締切時間：'    + f(kpi.deadline)         + '分前'
-  ].join('\n');
-
-  return 'あなたは鍼灸院・整骨院専門のWebマーケティングコンサルタントです。\n'
-    + '以下の「院詳細ページ情報」と「KPIデータ」を分析し、担当コンサルタントが集客を最大化するために行うべき具体的なアドバイスを日本語で提供してください。\n'
-    + '\n'
-    + '【院詳細ページ情報（shinq-compass.jpより取得）】\n'
-    + pageText
-    + '\n\n'
-    + '【現在のKPIデータ】\n'
-    + kpiLines
-    + '\n\n'
-    + '## 出力形式\n'
-    + '必ず以下のJSON形式のみで返してください。JSONの前後に説明文やコードブロック記号は一切不要です。\n'
-    + '\n'
-    + '{\n'
-    + '  "pageReview": ["評価・改善点1", "評価・改善点2", "評価・改善点3"],\n'
-    + '  "kpiActions": ["改善アクション1", "改善アクション2", "改善アクション3"],\n'
-    + '  "strengths":  ["強み・差別化1", "強み・差別化2", "強み・差別化3"],\n'
-    + '  "top3":       ["1位の施策タイトルのみ（理由不要）", "2位の施策タイトルのみ", "3位の施策タイトルのみ"]\n'
-    + '}\n'
-    + '\n'
-    + '各配列は3〜6件。院長への説明に使えるレベルの具体性で記述してください。';
+  return { text: json.content[0].text, usage: json.usage || {} };
 }
 
 // ─── ユーティリティ ───────────────────────────────────────
-
-function f(v)  { return (v !== null && v !== undefined) ? String(v) : '-'; }
-
-function fl(v) {
-  if (v === null || v === undefined) return '未設定';
-  return (v == 1 || v === '1' || v === '公開') ? '達成✓' : '未達✗';
-}
 
 function jsonResp(obj) {
   return ContentService
