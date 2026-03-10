@@ -3389,24 +3389,27 @@ function buildRmSlide5(d, sections, fromAI) {
   el.className = 'rm-slide';
   const top3 = sections.top3;
   const medals = ['🥇', '🥈', '🥉'];
-  const ranks = top3.length
+  const actions = top3.length
     ? top3.map((item, i) => {
         const title  = typeof item === 'object' ? item.title  : item;
-        const reason = typeof item === 'object' ? item.reason : '';
+        const detail = typeof item === 'object' ? (item.detail || item.reason || '') : '';
+        const effect = typeof item === 'object' ? (item.effect || '') : '';
         return `
-          <div class="rm-rank-item r${i+1}">
-            <span class="rm-rank-medal">${medals[i]}</span>
-            <div class="rm-rank-content">
-              <div class="rm-rank-title">${title}</div>
-              ${reason ? `<div class="rm-rank-reason">${reason}</div>` : ''}
+          <div class="rm-action-card r${i+1}">
+            <div class="rm-action-hd">
+              <span class="rm-rank-medal">${medals[i]}</span>
+              <span class="rm-action-title">${title}</span>
             </div>
+            ${detail ? `<div class="rm-action-detail">▶ ${detail}</div>` : ''}
+            ${effect ? `<div class="rm-action-effect">期待効果：${effect}</div>` : ''}
           </div>`;
       }).join('')
-    : '<div class="rm-placeholder">AI分析後に優先施策を表示します</div>';
+    : '<div class="rm-placeholder">AI分析後に今月やることを表示します</div>';
   el.innerHTML = `
-    <div class="rm-slide-hd">🎯 優先施策 TOP3</div>
+    <div class="rm-slide-hd">✅ 今月やること TOP3</div>
     <div class="rm-slide-body">
-      <div class="rm-rank-list">${ranks}</div>
+      <div class="rm-script-line">「具体的に今月やっていただきたいことが3つあります。一緒に確認しましょう。」</div>
+      <div class="rm-action-list">${actions}</div>
     </div>
   `;
   return el;
