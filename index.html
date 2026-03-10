@@ -1540,6 +1540,7 @@ async function handleLogin() {
           if (String(row[idCol] || '').trim() === salonId) {
             if (!isFreeTrialDateValid(row)) break;
             found = parseRowDynamic(row, freeTrialHm);
+            found.detail_url = String(row[9] || '').trim() || null; // J列
             foundSheet = FREE_TRIAL_SHEET;
             break;
           }
