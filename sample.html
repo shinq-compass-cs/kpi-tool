@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>サンプル表示（38290）｜しんきゅうコンパス</title>
+<title>集客フォローツール｜しんきゅうコンパス</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -752,12 +752,33 @@
     background: white;
     flex-shrink: 0;
   }
+  .rm-hd-dark { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); }
+  .rm-tag {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 10px; border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .rm-hd-sub { font-size: 12px; color: #718096; }
+  .rm-sub-dark { color: rgba(255,255,255,0.4); }
+  .rm-ai-badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    background: #d1fae5; color: #065f46;
+    padding: 1px 6px; border-radius: 3px;
+    margin-left: 6px;
+  }
   .rm-slide-body {
     flex: 1;
     padding: 18px 48px 24px;
     overflow-y: auto;
     background: white;
   }
+  .rm-section-title {
+    font-size: 13px; font-weight: 700;
+    color: #1e3a5c; margin-bottom: 12px;
+  }
+  .rm-dark { color: rgba(255,255,255,0.7); }
 
   /* S1 Title */
   .rm-s1 {
@@ -771,10 +792,11 @@
   .rm-s1-date { font-size: 13px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.08); padding: 4px 16px; border-radius: 16px; display: inline-block; }
 
   /* S2 KPI */
+  .rm-rank { font-size: 14px; font-weight: 700; color: #1e3a5c; margin-bottom: 12px; }
   .rm-kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px; margin-bottom: 14px;
+    gap: 10px; margin-bottom: 0;
   }
   .rm-kpi-card {
     background: #f7f9fc;
@@ -799,7 +821,6 @@
   }
   .rm-flag.rm-flag-ok { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
   .rm-flag.rm-flag-ng { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-  .rm-rank { font-size: 14px; font-weight: 700; color: #1e3a5c; margin-bottom: 12px; }
 
   /* S3/S4 list */
   .rm-list { display: flex; flex-direction: column; gap: 8px; }
@@ -816,8 +837,10 @@
     padding: 32px 24px;
     background: #f7f9fc;
     border-radius: 12px;
-    font-size: 13px; color: #718096;
   }
+  .rm-placeholder-icon { font-size: 40px; margin-bottom: 12px; }
+  .rm-placeholder-title { font-size: 15px; font-weight: 700; color: #1e3a5c; margin-bottom: 8px; }
+  .rm-placeholder-desc { font-size: 13px; color: #718096; line-height: 1.7; }
 
   /* S5 TOP3 */
   .rm-rank-list { display: flex; flex-direction: column; gap: 10px; }
@@ -831,27 +854,23 @@
   .rm-rank-medal { font-size: 20px; }
   .rm-rank-text { font-size: 14px; font-weight: 600; color: #1a2035; line-height: 1.55; }
 
-  /* S6 Action */
-  .rm-s6 .rm-slide-hd { background: linear-gradient(135deg, #0f2540, #0d3b2e); color: white; border-color: rgba(255,255,255,0.15); }
-  .rm-s6 .rm-slide-body { background: linear-gradient(135deg, #0f2540, #0d3b2e); }
-  .rm-action-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin-bottom: 14px; }
-  .rm-action-table th { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); text-align: left; padding: 0 12px 4px; letter-spacing: 0.06em; }
-  .rm-action-table td { background: rgba(255,255,255,0.07); padding: 12px 14px; font-size: 13px; color: white; }
-  .rm-action-table tr td:first-child { border-radius: 8px 0 0 8px; }
-  .rm-action-table tr td:last-child  { border-radius: 0 8px 8px 0; }
-  .rm-at-no { font-size: 16px; font-weight: 900; width: 36px; color: rgba(255,255,255,0.5); }
-  .rm-at-task { font-weight: 600; }
-  .rm-at-who { color: #4de8a0; font-weight: 700; white-space: nowrap; width: 90px; }
-  .rm-at-when { color: rgba(255,255,255,0.5); font-size: 12px; white-space: nowrap; width: 90px; }
-  .rm-next-check {
-    background: rgba(77,232,160,0.1);
-    border: 1px solid rgba(77,232,160,0.25);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.6);
-    line-height: 1.6;
-  }
+  /* S2 summary + actions */
+  .rm-kpi-summary { font-size: 13px; line-height: 1.65; color: #2d3748; background: #f0f7ff; border-left: 3px solid #2e6da4; border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 10px 0 12px; }
+  .rm-actions-hd { font-size: 11px; font-weight: 700; color: #718096; letter-spacing: 0.06em; text-transform: uppercase; margin: 14px 0 8px; }
+  /* S3 numbered cards */
+  .rm-numbered-list { display: flex; flex-direction: column; gap: 10px; }
+  .rm-numbered-card { display: flex; align-items: flex-start; gap: 14px; background: #f7f9fc; border-radius: 10px; padding: 12px 16px; }
+  .rm-card-num { min-width: 26px; height: 26px; background: #2e6da4; color: white; border-radius: 50%; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .rm-card-text { font-size: 13px; color: #2d3748; line-height: 1.6; }
+  /* S4 strength items */
+  .rm-strength-list { display: flex; flex-direction: column; gap: 10px; }
+  .rm-strength-item { display: flex; align-items: flex-start; gap: 12px; background: linear-gradient(135deg, #f0fdf4, #f7fffe); border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; }
+  .rm-strength-icon { font-size: 15px; color: #16a34a; flex-shrink: 0; margin-top: 2px; }
+  .rm-strength-text { font-size: 13px; color: #14532d; font-weight: 600; line-height: 1.6; }
+  /* S5 rank with reason */
+  .rm-rank-content { flex: 1; }
+  .rm-rank-title { font-size: 14px; font-weight: 700; color: #1a2035; line-height: 1.4; margin-bottom: 4px; }
+  .rm-rank-reason { font-size: 12px; color: #718096; line-height: 1.5; }
 
   /* ナビ */
   .rm-nav {
@@ -871,6 +890,7 @@
     transition: background 0.2s;
   }
   .rm-nav-btn:hover { background: rgba(255,255,255,0.22); }
+  .rm-nav-btn:disabled { opacity: 0.2; cursor: default; }
   .rm-counter { font-size: 12px; color: rgba(255,255,255,0.4); min-width: 40px; text-align: center; }
   .rm-dots { display: flex; gap: 6px; }
   .rm-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); cursor: pointer; transition: all 0.2s; }
@@ -1508,9 +1528,6 @@ function monthlySheetName(offsetMonths) {
   return yy + mm;
 }
 
-// デモ表示用定数（sample.html専用）
-const DEMO_SALON_ID = '38290';
-
 // 担当者連絡先
 const LINE_URL = 'https://line.me/ti/p/@348cwzis';
 const MAIL_ADDRESS = 'info@shinq-compass.jp';
@@ -1865,6 +1882,7 @@ async function handleLogin() {
       found.add_pt = addPt;
       found.potential_max_pt = maxPt;
       found.potential_rank   = refRows ? calcPotentialRank(found.area, maxPt, refRows, refHm) : null;
+      // フラグ項目だけでは1位に届かない場合に備えてエリア1位のptを取得
       found.first_place_pt   = refRows ? calcFirstPlacePt(found.area, refRows, refHm) : null;
     }
 
@@ -2003,9 +2021,12 @@ function renderDashboard(d, sheetName) {
       const planPts = getReviewPlanPts(d.compass_plan);
 
       if (canReach1st) {
+        // ─ Case A: フラグ項目だけで1位に届く ─
         document.getElementById('goal-text').innerHTML =
           `取り組みをすべて完了すると <strong>${d.potential_max_pt}pt</strong> → エリア <strong>1位</strong> 達成可能！（あと <strong>+${d.add_pt}pt</strong> 獲得可能）`;
+
       } else {
+        // ─ Case B: フラグ項目だけでは1位に届かない → 2段構成 ─
         const gap = (d.first_place_pt && d.first_place_pt > d.potential_max_pt)
           ? d.first_place_pt - d.potential_max_pt
           : null;
@@ -2203,81 +2224,12 @@ function renderDashboard(d, sheetName) {
   // AIアドバイザーセクション（detail_urlがあり、GAS URLが設定済みの場合のみ表示）
   if (d.detail_url && ADVISOR_GAS_URL) {
     document.getElementById('ai-advisor-section').style.display = 'block';
+    // 再分析できるようボタンをリセット
     const btn = document.getElementById('ai-advisor-btn');
     btn.disabled = false;
     btn.textContent = '🤖 AIマーケティング分析を実行する';
     document.getElementById('ai-result-area').style.display = 'none';
   }
-}
-
-// ===== AIマーケティングアドバイザー =====
-async function callAdvisor() {
-  const d = currentSalonData;
-  if (!d || !d.detail_url || !ADVISOR_GAS_URL) return;
-
-  const btn = document.getElementById('ai-advisor-btn');
-  const resultEl = document.getElementById('ai-result-area');
-
-  btn.disabled = true;
-  btn.textContent = '⏳ 分析中...（10〜20秒かかります）';
-  resultEl.style.display = 'none';
-
-  try {
-    const payload = {
-      detail_url: d.detail_url,
-      kpi: {
-        name:             d.name,
-        area:             d.area,
-        compass_plan:     d.compass_plan,
-        area_rank:        d.area_rank,
-        search_point:     d.search_point,
-        access:           d.access,
-        click:            d.click,
-        click_rate:       (d.access > 0 && d.click != null) ? Math.round(d.click / d.access * 1000) / 10 : null,
-        net_reserve:      d.net_reserve_count ?? d.net_reserve,
-        net_reserve_rate: (d.click > 0 && (d.net_reserve_count ?? d.net_reserve) != null)
-                            ? Math.round((d.net_reserve_count ?? d.net_reserve) / d.click * 1000) / 10 : null,
-        store_pr:         d.store_pr,
-        reserve_public:   d.reserve_public,
-        reserve_gmb:      d.reserve_gmb,
-        reserve_banner:   d.reserve_banner,
-        compass_link:     d.compass_link,
-        review:           d.review,
-        review_reply:     d.review_reply,
-        pickup_review:    d.pickup_review,
-        review_parts:     d.review_parts,
-        menu3:            d.menu3,
-        menu_link:        d.menu_link,
-        guest_reserve:    d.guest_reserve,
-        deadline:         d.deadline,
-      }
-    };
-
-    const body = new URLSearchParams({ data: JSON.stringify(payload) });
-    const res = await fetch(ADVISOR_GAS_URL, { method: 'POST', body });
-    const json = await res.json();
-
-    if (!json.success) throw new Error(json.error || '分析に失敗しました');
-
-    resultEl.innerHTML = renderAdviceText(json.advice);
-    resultEl.style.display = 'block';
-  } catch (err) {
-    resultEl.innerHTML = `<p style="color:#c53030;font-size:13px;">エラー：${err.message}</p>`;
-    resultEl.style.display = 'block';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🔄 再分析する';
-  }
-}
-
-function renderAdviceText(text) {
-  let html = text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/^### (.+)$/gm, '</ul><h4 class="ai-section-head">$1</h4><ul>')
-    .replace(/^・(.+)$/gm, '<li>$1</li>')
-    .replace(/\n(?!<)/g, '<br>');
-  html = html.replace(/^<\/ul>/, '').replace(/<ul>(?![\s\S]*<li>)/g, '') + '</ul>';
-  return html;
 }
 
 // ===== QRコードダウンロード =====
@@ -2489,6 +2441,78 @@ async function downloadReviewPdf() {
   URL.revokeObjectURL(link.href);
 }
 
+// ===== AIマーケティングアドバイザー =====
+async function callAdvisor() {
+  const d = currentSalonData;
+  if (!d || !d.detail_url || !ADVISOR_GAS_URL) return;
+
+  const btn = document.getElementById('ai-advisor-btn');
+  const resultEl = document.getElementById('ai-result-area');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 分析中...（10〜20秒かかります）';
+  resultEl.style.display = 'none';
+
+  try {
+    const payload = {
+      detail_url: d.detail_url,
+      kpi: {
+        name:             d.name,
+        area:             d.area,
+        compass_plan:     d.compass_plan,
+        area_rank:        d.area_rank,
+        search_point:     d.search_point,
+        access:           d.access,
+        click:            d.click,
+        click_rate:       (d.access > 0 && d.click != null) ? Math.round(d.click / d.access * 1000) / 10 : null,
+        net_reserve:      d.net_reserve_count ?? d.net_reserve,
+        net_reserve_rate: (d.click > 0 && (d.net_reserve_count ?? d.net_reserve) != null)
+                            ? Math.round((d.net_reserve_count ?? d.net_reserve) / d.click * 1000) / 10 : null,
+        store_pr:         d.store_pr,
+        reserve_public:   d.reserve_public,
+        reserve_gmb:      d.reserve_gmb,
+        reserve_banner:   d.reserve_banner,
+        compass_link:     d.compass_link,
+        review:           d.review,
+        review_reply:     d.review_reply,
+        pickup_review:    d.pickup_review,
+        review_parts:     d.review_parts,
+        menu3:            d.menu3,
+        menu_link:        d.menu_link,
+        guest_reserve:    d.guest_reserve,
+        deadline:         d.deadline,
+      }
+    };
+
+    const body = new URLSearchParams({ data: JSON.stringify(payload) });
+    const res = await fetch(ADVISOR_GAS_URL, { method: 'POST', body });
+    const json = await res.json();
+
+    if (!json.success) throw new Error(json.error || '分析に失敗しました');
+
+    resultEl.innerHTML = renderAdviceText(json.advice);
+    resultEl.style.display = 'block';
+  } catch (err) {
+    resultEl.innerHTML = `<p style="color:#c53030;font-size:13px;">エラー：${err.message}</p>`;
+    resultEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔄 再分析する';
+  }
+}
+
+function renderAdviceText(text) {
+  // エスケープ → ### 見出し → ・箇条書き → HTML に変換
+  let html = text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/^### (.+)$/gm, '</ul><h4 class="ai-section-head">$1</h4><ul>')
+    .replace(/^・(.+)$/gm, '<li>$1</li>')
+    .replace(/\n(?!<)/g, '<br>');
+  // 先頭の </ul> を除去し、最後の <ul> を閉じる
+  html = html.replace(/^<\/ul>/, '').replace(/<ul>(?![\s\S]*<li>)/g, '') + '</ul>';
+  return html;
+}
+
 // ===== エリア比較ヒートマップ描画 =====
 function renderAreaHeatmap(d) {
   const el = document.getElementById('area-heatmap');
@@ -2599,6 +2623,8 @@ function renderAreaHeatmap(d) {
 }
 
 // ===== プラン別・口コミポイント定義 =====
+// プレミアム:  口コミ3pt（上限300pt）/ 返信2pt（上限200pt）
+// プラチナ系:  口コミ5pt（上限500pt）/ 返信3pt（上限300pt）
 function getReviewPlanPts(compassPlan) {
   const plan = String(compassPlan || '').trim();
   const isPlatina = plan.includes('プラチナ');
@@ -2920,11 +2946,16 @@ function clearSession() {
   localStorage.removeItem(SESSION_KEY);
 }
 
-// DEMOモード：常に DEMO_SALON_ID を自動表示（ログイン不要）
 (function restoreSession() {
-  document.getElementById('salon-id-input').value = DEMO_SALON_ID;
-  document.getElementById('email-input').value    = CS_INTERNAL_EMAIL;
-  handleLogin();
+  const raw = localStorage.getItem(SESSION_KEY);
+  if (!raw) return;
+  try {
+    const s = JSON.parse(raw);
+    if (!s.expires || Date.now() > s.expires) { clearSession(); return; }
+    document.getElementById('salon-id-input').value = s.salon_id;
+    document.getElementById('email-input').value    = s.email;
+    handleLogin();
+  } catch { clearSession(); }
 })();
 
 // ===== ログ送信 =====
@@ -3033,8 +3064,8 @@ function buildAdvisorPrompt(d) {
     + '{"pageReview":["評価・改善点1","評価・改善点2","評価・改善点3"],'
     + '"kpiActions":["改善アクション1","改善アクション2","改善アクション3"],'
     + '"strengths":["強み・差別化1","強み・差別化2","強み・差別化3"],'
-    + '"top3":["1位の施策タイトルのみ（理由不要）","2位の施策タイトルのみ","3位の施策タイトルのみ"]}\n\n'
-    + '各配列は3〜6件。院長への説明に使えるレベルの具体性で記述してください。';
+    + '"top3":[{"title":"施策タイトル","reason":"理由・期待効果を1文で"},{"title":"施策タイトル2","reason":"理由2"},{"title":"施策タイトル3","reason":"理由3"}]}\n\n'
+    + '各配列は3〜6件。top3のtitleは20文字以内、reasonは院長への説明に使えるレベルの具体性で50文字以内。';
 }
 
 async function loadAIForReport(d, detailUrl) {
@@ -3071,6 +3102,7 @@ async function loadAIForReport(d, detailUrl) {
 
 function parseAIToSections(text) {
   try {
+    // JSONモードで直接パース
     const clean = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
     const obj = JSON.parse(clean);
     console.log('[AI Advisor] JSON parse OK:', obj);
@@ -3139,11 +3171,11 @@ function generateRuleBasedSections(d) {
 
   // TOP3（ルールベース）
   const top3 = [];
-  if (review < 5)   top3.push('口コミ獲得強化（QRカード配布・返信徹底）');
-  if (access < 200) top3.push('検索優先ポイント追加でアクセス数アップ');
-  if (!d.menu3)     top3.push('メニュー3件以上登録してクリック率向上');
-  if (!d.store_pr)  top3.push('店舗PR情報登録でページ訴求力アップ');
-  while (top3.length < 3) top3.push('口コミ返信を徹底して信頼性向上');
+  if (review < 5)   top3.push({title:'口コミ獲得強化', reason:'QRカード配布・口コミ返信の徹底でレビュー数を目標5件へ増やす'});
+  if (access < 200) top3.push({title:'検索優先ポイント追加', reason:'ポイント追加でエリア上位表示を狙い、アクセス数200件を目指す'});
+  if (!d.menu3)     top3.push({title:'メニュー3件以上登録', reason:'施術メニュー・料金を充実させてクリック率とCVRを改善'});
+  if (!d.store_pr)  top3.push({title:'店舗PR情報登録', reason:'院の強みや特徴を記入し、ページからの予約転換率を高める'});
+  while (top3.length < 3) top3.push({title:'口コミ返信を徹底', reason:'全口コミへの返信で信頼性を高め、新規患者の安心感を醸成'});
   return {
     pageReview:  pv,
     kpiActions:  kpiAct,
@@ -3160,6 +3192,7 @@ function flagLabel(key) {
   const map = {
     store_pr:      '店舗PR登録',
     reserve_public:'予約公開',
+    reserve_gmb:   '予約GMB',
     reserve_banner:'予約バナー',
     compass_link:  'コンパスリンク',
     pickup_review: 'PickUp口コミ',
@@ -3178,18 +3211,17 @@ function renderReportSlides(d, sections, fromAI) {
 
   const slides = [
     buildRmSlide1(d),
-    buildRmSlide2(d),
+    buildRmSlide2(d, sections),
     buildRmSlide3(d, sections, fromAI),
     buildRmSlide4(d, sections, fromAI),
     buildRmSlide5(d, sections, fromAI),
-    buildRmSlide6(d, sections),
   ];
 
   slides.forEach((el, i) => {
     el.dataset.idx = i;
     el.style.display = 'none';
     container.appendChild(el);
-    rmSlideData.push({ el, hasAI: fromAI && i >= 2 && i <= 4 });
+    rmSlideData.push({ el, hasAI: fromAI && i >= 1 && i <= 4 });
   });
 
   updateRmNav(slides.length);
@@ -3246,7 +3278,7 @@ function buildRmSlide1(d) {
   return el;
 }
 
-function buildRmSlide2(d) {
+function buildRmSlide2(d, sections) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
 
@@ -3272,12 +3304,28 @@ function buildRmSlide2(d) {
 
   const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
 
+  // 概観サマリー
+  const access = Number(d.access) || 0;
+  const click  = Number(d.click)  || 0;
+  const review = Number(d.review) || 0;
+  const nr     = Number(d.net_reserve) || 0;
+  const okCount = [access >= 200, click >= 20, review >= 5, nr >= 2].filter(Boolean).length;
+  const summaryText = `アクセス ${access}件・クリック ${click}件・口コミ ${review}件・ネット予約 ${nr}件。`
+    + `主要KPI <strong>${okCount}/4 達成</strong>。`
+    + (d.area_rank ? `エリア内順位：<strong>${d.area_rank}位</strong>。` : '');
+
+  // 重要施策（kpiActions）
+  const actions = sections && sections.kpiActions && sections.kpiActions.length ? sections.kpiActions : [];
+  const actionsHtml = actions.map(t => `<div class="rm-list-item">▶ ${t}</div>`).join('');
+
   el.innerHTML = `
     <div class="rm-slide-hd">📈 KPI現状確認</div>
     <div class="rm-slide-body">
       ${rank ? `<div class="rm-rank">${rank}</div>` : ''}
       <div class="rm-kpi-grid">${kpiCards}</div>
+      <div class="rm-kpi-summary">${summaryText}</div>
       <div class="rm-flag-row">${flags}</div>
+      ${actionsHtml ? `<div class="rm-actions-hd">重要施策</div><div class="rm-list">${actionsHtml}</div>` : ''}
     </div>
   `;
   return el;
@@ -3288,12 +3336,16 @@ function buildRmSlide3(d, sections, fromAI) {
   el.className = 'rm-slide';
   const items = sections.pageReview;
   const content = items.length
-    ? items.map(t => `<div class="rm-list-item">・${t}</div>`).join('')
+    ? items.map((t, i) => `
+        <div class="rm-numbered-card">
+          <span class="rm-card-num">${i + 1}</span>
+          <span class="rm-card-text">${t}</span>
+        </div>`).join('')
     : '<div class="rm-placeholder">AI分析後に改善点を表示します</div>';
   el.innerHTML = `
     <div class="rm-slide-hd">🖥 ページ改善点</div>
     <div class="rm-slide-body">
-      <div class="rm-list">${content}</div>
+      <div class="rm-numbered-list">${content}</div>
     </div>
   `;
   return el;
@@ -3303,13 +3355,18 @@ function buildRmSlide4(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
   const items = sections.strengths;
+  const icons = ['✦', '◆', '★', '●', '▲', '♦'];
   const content = items.length
-    ? items.map(t => `<div class="rm-list-item">・${t}</div>`).join('')
+    ? items.map((t, i) => `
+        <div class="rm-strength-item">
+          <span class="rm-strength-icon">${icons[i % icons.length]}</span>
+          <span class="rm-strength-text">${t}</span>
+        </div>`).join('')
     : '<div class="rm-placeholder">' + (fromAI ? '強み情報を取得できませんでした' : 'AI分析後に強み・差別化ポイントを表示します') + '</div>';
   el.innerHTML = `
     <div class="rm-slide-hd">💪 強み・差別化ポイント</div>
     <div class="rm-slide-body">
-      <div class="rm-list">${content}</div>
+      <div class="rm-strength-list">${content}</div>
     </div>
   `;
   return el;
@@ -3321,12 +3378,18 @@ function buildRmSlide5(d, sections, fromAI) {
   const top3 = sections.top3;
   const medals = ['🥇', '🥈', '🥉'];
   const ranks = top3.length
-    ? top3.map((t, i) => `
-        <div class="rm-rank-item r${i+1}">
-          <span class="rm-rank-medal">${medals[i]}</span>
-          <span class="rm-rank-text">${t}</span>
-        </div>
-      `).join('')
+    ? top3.map((item, i) => {
+        const title  = typeof item === 'object' ? item.title  : item;
+        const reason = typeof item === 'object' ? item.reason : '';
+        return `
+          <div class="rm-rank-item r${i+1}">
+            <span class="rm-rank-medal">${medals[i]}</span>
+            <div class="rm-rank-content">
+              <div class="rm-rank-title">${title}</div>
+              ${reason ? `<div class="rm-rank-reason">${reason}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('')
     : '<div class="rm-placeholder">AI分析後に優先施策を表示します</div>';
   el.innerHTML = `
     <div class="rm-slide-hd">🎯 優先施策 TOP3</div>
@@ -3337,45 +3400,6 @@ function buildRmSlide5(d, sections, fromAI) {
   return el;
 }
 
-function buildRmSlide6(d, sections) {
-  const el = document.createElement('div');
-  el.className = 'rm-slide rm-s6';
-
-  const top3 = sections.top3.length ? sections.top3 : ['優先施策 1', '優先施策 2', '優先施策 3'];
-  const rows = top3.slice(0, 3).map((t, i) => `
-    <tr>
-      <td class="rm-at-no">${i + 1}</td>
-      <td class="rm-at-task">${t}</td>
-      <td class="rm-at-who">院長 / CS</td>
-      <td class="rm-at-when">今月中</td>
-    </tr>
-  `).join('');
-
-  const nextDate = (() => {
-    const nd = new Date();
-    nd.setMonth(nd.getMonth() + 1);
-    return nd.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
-  })();
-
-  el.innerHTML = `
-    <div class="rm-slide-hd">📋 行動計画</div>
-    <div class="rm-slide-body">
-      <table class="rm-action-table">
-        <thead>
-          <tr>
-            <th class="rm-at-no">#</th>
-            <th class="rm-at-task">施策</th>
-            <th class="rm-at-who">担当</th>
-            <th class="rm-at-when">期限</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <div class="rm-next-check">次回フォロー予定：${nextDate}</div>
-    </div>
-  `;
-  return el;
-}
 
 </script>
 
