@@ -1830,6 +1830,7 @@ async function handleLogin() {
       for (let i = hi + 1; i < latestRows.length; i++) {
         if (String(latestRows[i][idCol] || '').trim() === salonId) {
           found = parseRowDynamic(latestRows[i], firstSheetHm);
+          found.salon_id = salonId;
           found.detail_url = String(latestRows[i][49] || '').trim() || null; // AX列
           foundSheet = latestSheet;
           break;
