@@ -3400,45 +3400,6 @@ function buildRmSlide5(d, sections, fromAI) {
   return el;
 }
 
-function buildRmSlide6(d, sections) {
-  const el = document.createElement('div');
-  el.className = 'rm-slide rm-s6';
-
-  const top3 = sections.top3.length ? sections.top3 : ['優先施策 1', '優先施策 2', '優先施策 3'];
-  const rows = top3.slice(0, 3).map((t, i) => `
-    <tr>
-      <td class="rm-at-no">${i + 1}</td>
-      <td class="rm-at-task">${t}</td>
-      <td class="rm-at-who">院長 / CS</td>
-      <td class="rm-at-when">今月中</td>
-    </tr>
-  `).join('');
-
-  const nextDate = (() => {
-    const nd = new Date();
-    nd.setMonth(nd.getMonth() + 1);
-    return nd.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
-  })();
-
-  el.innerHTML = `
-    <div class="rm-slide-hd">📋 行動計画</div>
-    <div class="rm-slide-body">
-      <table class="rm-action-table">
-        <thead>
-          <tr>
-            <th class="rm-at-no">#</th>
-            <th class="rm-at-task">施策</th>
-            <th class="rm-at-who">担当</th>
-            <th class="rm-at-when">期限</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <div class="rm-next-check">次回フォロー予定：${nextDate}</div>
-    </div>
-  `;
-  return el;
-}
 
 </script>
 
