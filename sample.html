@@ -665,6 +665,217 @@
   .ai-result-area ul { padding-left: 18px; margin: 4px 0; }
   .ai-result-area li { margin-bottom: 4px; }
 
+  /* ===== レポーティングボタン ===== */
+  .report-trigger-row {
+    margin: 0 0 14px;
+  }
+  .report-trigger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px 16px;
+    background: linear-gradient(135deg, #1e3a5c, #2d6a8f);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(30,58,92,0.25);
+    transition: opacity 0.2s;
+  }
+  .report-trigger-btn:hover { opacity: 0.88; }
+
+  /* ===== レポートモーダル ===== */
+  .report-modal {
+    position: fixed;
+    inset: 0;
+    background: #0f1923;
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .rm-close {
+    position: absolute;
+    top: 14px; right: 16px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: none; color: white;
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    transition: background 0.2s;
+  }
+  .rm-close:hover { background: rgba(255,255,255,0.25); }
+  .rm-ai-status {
+    position: absolute;
+    top: 14px; left: 16px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    z-index: 10;
+  }
+  .rm-spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #4de8a0;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* slides */
+  #rm-slides {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .rm-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .rm-slide-hd {
+    padding: 20px 48px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1.5px solid #e2e8f0;
+    background: white;
+    flex-shrink: 0;
+  }
+  .rm-slide-body {
+    flex: 1;
+    padding: 18px 48px 24px;
+    overflow-y: auto;
+    background: white;
+  }
+
+  /* S1 Title */
+  .rm-s1 {
+    background: linear-gradient(150deg, #0f2540 0%, #1b3a5c 60%, #1a3026 100%);
+    justify-content: center; align-items: center; text-align: center;
+  }
+  .rm-s1-eyecatch { font-size: 48px; margin-bottom: 16px; }
+  .rm-s1-title { font-size: clamp(22px, 5vw, 40px); font-weight: 900; color: white; margin-bottom: 10px; }
+  .rm-s1-salon { font-size: clamp(18px, 4vw, 30px); font-weight: 900; color: #4de8a0; margin-bottom: 6px; }
+  .rm-s1-area { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+  .rm-s1-date { font-size: 13px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.08); padding: 4px 16px; border-radius: 16px; display: inline-block; }
+
+  /* S2 KPI */
+  .rm-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 14px;
+  }
+  .rm-kpi-card {
+    background: #f7f9fc;
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+    border-top: 3px solid #e2e8f0;
+  }
+  .rm-kpi-card.rm-kc-ok { border-top-color: #22c55e; }
+  .rm-kpi-card.rm-kc-ng { border-top-color: #ef4444; }
+  .rm-kc-label { font-size: 10px; font-weight: 700; color: #718096; margin-bottom: 6px; }
+  .rm-kc-val { font-size: 24px; font-weight: 900; line-height: 1; }
+  .rm-kc-unit { font-size: 11px; color: #a0aec0; margin: 3px 0; }
+  .rm-kc-status { font-size: 11px; font-weight: 700; }
+  .rm-kpi-card.rm-kc-ok .rm-kc-status { color: #16a34a; }
+  .rm-kpi-card.rm-kc-ng .rm-kc-status { color: #dc2626; }
+  .rm-flag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rm-flag {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600;
+    padding: 5px 10px; border-radius: 6px;
+  }
+  .rm-flag.rm-flag-ok { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .rm-flag.rm-flag-ng { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  .rm-rank { font-size: 14px; font-weight: 700; color: #1e3a5c; margin-bottom: 12px; }
+
+  /* S3/S4 list */
+  .rm-list { display: flex; flex-direction: column; gap: 8px; }
+  .rm-list-item {
+    font-size: 13px; color: #2d3748;
+    padding: 10px 14px 10px 16px;
+    background: #f7f9fc;
+    border-left: 3px solid #2e6da4;
+    border-radius: 0 8px 8px 0;
+    line-height: 1.55;
+  }
+  .rm-placeholder {
+    text-align: center;
+    padding: 32px 24px;
+    background: #f7f9fc;
+    border-radius: 12px;
+    font-size: 13px; color: #718096;
+  }
+
+  /* S5 TOP3 */
+  .rm-rank-list { display: flex; flex-direction: column; gap: 10px; }
+  .rm-rank-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 18px; border-radius: 10px;
+  }
+  .rm-rank-item.r1 { background: #fffbeb; border-left: 4px solid #f59e0b; }
+  .rm-rank-item.r2 { background: #f7f9fc; border-left: 4px solid #6b7280; }
+  .rm-rank-item.r3 { background: #fdf5ed; border-left: 4px solid #cd7c42; }
+  .rm-rank-medal { font-size: 20px; }
+  .rm-rank-text { font-size: 14px; font-weight: 600; color: #1a2035; line-height: 1.55; }
+
+  /* S6 Action */
+  .rm-s6 .rm-slide-hd { background: linear-gradient(135deg, #0f2540, #0d3b2e); color: white; border-color: rgba(255,255,255,0.15); }
+  .rm-s6 .rm-slide-body { background: linear-gradient(135deg, #0f2540, #0d3b2e); }
+  .rm-action-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin-bottom: 14px; }
+  .rm-action-table th { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.35); text-align: left; padding: 0 12px 4px; letter-spacing: 0.06em; }
+  .rm-action-table td { background: rgba(255,255,255,0.07); padding: 12px 14px; font-size: 13px; color: white; }
+  .rm-action-table tr td:first-child { border-radius: 8px 0 0 8px; }
+  .rm-action-table tr td:last-child  { border-radius: 0 8px 8px 0; }
+  .rm-at-no { font-size: 16px; font-weight: 900; width: 36px; color: rgba(255,255,255,0.5); }
+  .rm-at-task { font-weight: 600; }
+  .rm-at-who { color: #4de8a0; font-weight: 700; white-space: nowrap; width: 90px; }
+  .rm-at-when { color: rgba(255,255,255,0.5); font-size: 12px; white-space: nowrap; width: 90px; }
+  .rm-next-check {
+    background: rgba(77,232,160,0.1);
+    border: 1px solid rgba(77,232,160,0.25);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+  }
+
+  /* ナビ */
+  .rm-nav {
+    padding: 10px 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: #0f1923;
+    flex-shrink: 0;
+  }
+  .rm-nav-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none;
+    color: white; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .rm-nav-btn:hover { background: rgba(255,255,255,0.22); }
+  .rm-counter { font-size: 12px; color: rgba(255,255,255,0.4); min-width: 40px; text-align: center; }
+  .rm-dots { display: flex; gap: 6px; }
+  .rm-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); cursor: pointer; transition: all 0.2s; }
+  .rm-dot.active { background: white; transform: scale(1.3); }
+
   .advice-intro {
     font-size: 12px;
     font-weight: 600;
@@ -1080,6 +1291,11 @@
     <div class="goal-banner" id="goal-banner" style="display:none;">
       <span class="goal-icon">🎯</span>
       <span id="goal-text"></span>
+    </div>
+
+    <!-- レポーティングボタン -->
+    <div class="report-trigger-row" id="report-trigger-row" style="display:none;">
+      <button class="report-trigger-btn" onclick="openReport()">📊 レポーティング</button>
     </div>
 
     <!-- 達成サマリー -->
@@ -1979,6 +2195,9 @@ function renderDashboard(d, sheetName) {
   // エリア比較ヒートマップ描画
   renderAreaHeatmap(d);
 
+  // レポーティングボタン（常に表示）
+  document.getElementById('report-trigger-row').style.display = 'block';
+
   // AIアドバイザーセクション（detail_urlがあり、GAS URLが設定済みの場合のみ表示）
   if (d.detail_url && ADVISOR_GAS_URL) {
     document.getElementById('ai-advisor-section').style.display = 'block';
@@ -2671,6 +2890,7 @@ function handleLogout() {
   document.getElementById('qr-section').style.display = 'none';
   document.getElementById('area-heatmap').style.display = 'none';
   document.getElementById('ai-advisor-section').style.display = 'none';
+  document.getElementById('report-trigger-row').style.display = 'none';
   currentSalonData = null;
 }
 
@@ -2749,6 +2969,359 @@ document.getElementById('dashboard').addEventListener('click', (e) => {
 // タブを閉じた場合のフォールバック送信
 window.addEventListener('beforeunload', () => sendLoginLog());
 
+// ===== レポーティングモーダル =====
+let rmCurrentIdx = 0;
+let rmSlideData   = [];   // {el, hasAI} 配列
+
+function openReport() {
+  const d = currentSalonData;
+  if (!d) return;
+  const modal = document.getElementById('report-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // ルールベースでスライド描画
+  const sections = generateRuleBasedSections(d);
+  renderReportSlides(d, sections, false);
+
+  // AI読み込み
+  if (d.detail_url && ADVISOR_GAS_URL) {
+    document.getElementById('rm-ai-status').style.display = 'flex';
+    loadAIForReport(d);
+  }
+
+  showRmSlide(0);
+}
+
+function closeReport() {
+  document.getElementById('report-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function loadAIForReport(d) {
+  try {
+    const params = new URLSearchParams();
+    params.append('data', JSON.stringify({ detail_url: d.detail_url, kpi: d }));
+    const res = await fetch(ADVISOR_GAS_URL, { method: 'POST', body: params });
+    const json = await res.json();
+    if (json.success && json.advice) {
+      const sections = parseAIToSections(json.advice);
+      renderReportSlides(d, sections, true);
+      showRmSlide(rmCurrentIdx);
+    }
+  } catch (e) {
+    // AI失敗はサイレントに無視
+  } finally {
+    const st = document.getElementById('rm-ai-status');
+    if (st) st.style.display = 'none';
+  }
+}
+
+function parseAIToSections(text) {
+  // ### N. ... で分割
+  const parts = text.split(/###\s*\d+[\.\s]/);
+  parts.shift(); // 先頭空白を削除
+  return {
+    pageReview:   extractBullets(parts[0] || ''),
+    kpiActions:   extractBullets(parts[1] || ''),
+    strengths:    extractBullets(parts[2] || ''),
+    top3:         extractTop3(parts[3] || ''),
+  };
+}
+
+function extractBullets(text) {
+  return text.split('\n')
+    .map(l => l.replace(/^[・\-\*]\s*/, '').trim())
+    .filter(l => l.length > 3)
+    .slice(0, 6);
+}
+
+function extractTop3(text) {
+  const lines = text.split('\n')
+    .map(l => l.replace(/^[・\-\*\d\.\s]+/, '').trim())
+    .filter(l => l.length > 3);
+  return lines.slice(0, 3);
+}
+
+function generateRuleBasedSections(d) {
+  const pv = [];
+  const kpiAct = [];
+
+  // ページ改善（ルールベース）
+  if (!d.menu3) pv.push('メニューが3件未満です。主要メニューと料金を3件以上登録しましょう');
+  if (!d.pickup_review) pv.push('PickUp口コミが未設定です。評価の高い口コミを選んで設定してください');
+  if (!d.review_parts) pv.push('口コミパーツが未設置です。予約ページへの口コミ誘導バナーを設置しましょう');
+  if (!d.store_pr) pv.push('店舗PR情報が未登録です。院の強みや特徴を入力してください');
+  if (pv.length === 0) pv.push('ページ基本設定はすべて完了しています', '写真・説明文のさらなる充実を検討しましょう');
+
+  // KPIアクション（ルールベース）
+  const access = Number(d.access) || 0;
+  const click  = Number(d.click)  || 0;
+  const review = Number(d.review) || 0;
+  const nr     = Number(d.net_reserve) || 0;
+
+  if (access < 200) kpiAct.push(`アクセス数 ${access} → 目標200。検索優先ポイントの追加・コンパスリンク設置を検討`);
+  if (click < 20)   kpiAct.push(`クリック数 ${click} → 目標20。口コミ・写真・メニュー強化でCTRを改善`);
+  if (review < 5)   kpiAct.push(`口コミ ${review}件 → 目標5件。来院患者へのQRカード配布を実施`);
+  if (nr < 2)       kpiAct.push(`ネット予約 ${nr}件 → 目標2件。受付締切時間を緩和し、ゲスト予約を有効化`);
+  if (!d.reserve_public) kpiAct.push('予約公開が未設定。コンパスからのネット予約を公開してください');
+  if (kpiAct.length === 0) kpiAct.push('主要KPIはすべて目標達成中です', '継続的なページ更新で上位を維持しましょう');
+
+  // TOP3（ルールベース）
+  const top3 = [];
+  if (review < 5)   top3.push('口コミ獲得強化（QRカード配布・返信徹底）');
+  if (access < 200) top3.push('検索優先ポイント追加でアクセス数アップ');
+  if (!d.menu3)     top3.push('メニュー3件以上登録してクリック率向上');
+  if (!d.store_pr)  top3.push('店舗PR情報登録でページ訴求力アップ');
+  while (top3.length < 3) top3.push('口コミ返信を徹底して信頼性向上');
+  return {
+    pageReview:  pv,
+    kpiActions:  kpiAct,
+    strengths:   [],   // ルールベースでは生成しない
+    top3:        top3.slice(0, 3),
+  };
+}
+
+function flagOK(v) {
+  return (v == 1 || v === '1' || v === '公開');
+}
+
+function flagLabel(key) {
+  const map = {
+    store_pr:      '店舗PR登録',
+    reserve_public:'予約公開',
+    reserve_banner:'予約バナー',
+    compass_link:  'コンパスリンク',
+    pickup_review: 'PickUp口コミ',
+    review_parts:  '口コミパーツ',
+    menu3:         'メニュー3件',
+    menu_link:     'メニュー連携',
+    guest_reserve: 'ゲスト予約',
+  };
+  return map[key] || key;
+}
+
+function renderReportSlides(d, sections, fromAI) {
+  const container = document.getElementById('rm-slides');
+  container.innerHTML = '';
+  rmSlideData = [];
+
+  const slides = [
+    buildRmSlide1(d),
+    buildRmSlide2(d),
+    buildRmSlide3(d, sections, fromAI),
+    buildRmSlide4(d, sections, fromAI),
+    buildRmSlide5(d, sections, fromAI),
+    buildRmSlide6(d, sections),
+  ];
+
+  slides.forEach((el, i) => {
+    el.dataset.idx = i;
+    el.style.display = 'none';
+    container.appendChild(el);
+    rmSlideData.push({ el, hasAI: fromAI && i >= 2 && i <= 4 });
+  });
+
+  updateRmNav(slides.length);
+}
+
+function showRmSlide(idx) {
+  if (!rmSlideData.length) return;
+  idx = Math.max(0, Math.min(idx, rmSlideData.length - 1));
+  rmCurrentIdx = idx;
+  rmSlideData.forEach((s, i) => {
+    s.el.style.display = i === idx ? 'flex' : 'none';
+  });
+  updateRmNav(rmSlideData.length);
+}
+
+function updateRmNav(total) {
+  document.getElementById('rm-counter').textContent = `${rmCurrentIdx + 1} / ${total}`;
+  const dots = document.getElementById('rm-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('span');
+    d.className = 'rm-dot' + (i === rmCurrentIdx ? ' active' : '');
+    d.onclick = () => showRmSlide(i);
+    dots.appendChild(d);
+  }
+}
+
+function rmNav(dir) {
+  showRmSlide(rmCurrentIdx + dir);
+}
+
+// キーボード操作
+document.addEventListener('keydown', e => {
+  if (document.getElementById('report-modal').style.display !== 'none') {
+    if (e.key === 'ArrowRight') rmNav(1);
+    if (e.key === 'ArrowLeft')  rmNav(-1);
+    if (e.key === 'Escape')     closeReport();
+  }
+});
+
+// ===== スライドビルダー =====
+
+function buildRmSlide1(d) {
+  const el = document.createElement('div');
+  el.className = 'rm-slide rm-s1';
+  const today = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+  el.innerHTML = `
+    <div class="rm-s1-eyecatch">📊</div>
+    <div class="rm-s1-title">集客フォローレポート</div>
+    <div class="rm-s1-salon">${d.name || '―'}</div>
+    <div class="rm-s1-area">${d.area || ''} / ${d.compass_plan || ''}</div>
+    <div class="rm-s1-date">${today}</div>
+  `;
+  return el;
+}
+
+function buildRmSlide2(d) {
+  const el = document.createElement('div');
+  el.className = 'rm-slide';
+
+  const kpiCards = [
+    { label: 'アクセス数',  val: d.access        || '―', unit: '（目標200）',  ok: Number(d.access) >= 200 },
+    { label: 'クリック数',  val: d.click         || '―', unit: '（目標20）',   ok: Number(d.click)  >= 20  },
+    { label: '口コミ件数',  val: d.review        || '―', unit: '件（目標5）',  ok: Number(d.review) >= 5   },
+    { label: 'ネット予約',  val: d.net_reserve   || '―', unit: '件（目標2）',  ok: Number(d.net_reserve) >= 2 },
+  ].map(c => `
+    <div class="rm-kpi-card ${c.ok ? 'rm-kc-ok' : 'rm-kc-ng'}">
+      <div class="rm-kc-label">${c.label}</div>
+      <div class="rm-kc-val">${c.val}</div>
+      <div class="rm-kc-unit">${c.unit}</div>
+      <div class="rm-kc-status">${c.ok ? '✅ 達成' : '⚠️ 未達'}</div>
+    </div>
+  `).join('');
+
+  const flagKeys = ['store_pr','reserve_public','reserve_banner','compass_link','pickup_review','review_parts','menu3','menu_link','guest_reserve'];
+  const flags = flagKeys.map(k => {
+    const ok = flagOK(d[k]);
+    return `<span class="rm-flag ${ok ? 'rm-flag-ok' : 'rm-flag-ng'}">${ok ? '✓' : '✗'} ${flagLabel(k)}</span>`;
+  }).join('');
+
+  const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
+
+  el.innerHTML = `
+    <div class="rm-slide-hd">📈 KPI現状確認</div>
+    <div class="rm-slide-body">
+      ${rank ? `<div class="rm-rank">${rank}</div>` : ''}
+      <div class="rm-kpi-grid">${kpiCards}</div>
+      <div class="rm-flag-row">${flags}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildRmSlide3(d, sections, fromAI) {
+  const el = document.createElement('div');
+  el.className = 'rm-slide';
+  const items = sections.pageReview;
+  const content = items.length
+    ? items.map(t => `<div class="rm-list-item">・${t}</div>`).join('')
+    : '<div class="rm-placeholder">AI分析後に改善点を表示します</div>';
+  el.innerHTML = `
+    <div class="rm-slide-hd">🖥 ページ改善点</div>
+    <div class="rm-slide-body">
+      <div class="rm-list">${content}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildRmSlide4(d, sections, fromAI) {
+  const el = document.createElement('div');
+  el.className = 'rm-slide';
+  const items = sections.strengths;
+  const content = items.length
+    ? items.map(t => `<div class="rm-list-item">・${t}</div>`).join('')
+    : '<div class="rm-placeholder">' + (fromAI ? '強み情報を取得できませんでした' : 'AI分析後に強み・差別化ポイントを表示します') + '</div>';
+  el.innerHTML = `
+    <div class="rm-slide-hd">💪 強み・差別化ポイント</div>
+    <div class="rm-slide-body">
+      <div class="rm-list">${content}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildRmSlide5(d, sections, fromAI) {
+  const el = document.createElement('div');
+  el.className = 'rm-slide';
+  const top3 = sections.top3;
+  const medals = ['🥇', '🥈', '🥉'];
+  const ranks = top3.length
+    ? top3.map((t, i) => `
+        <div class="rm-rank-item r${i+1}">
+          <span class="rm-rank-medal">${medals[i]}</span>
+          <span class="rm-rank-text">${t}</span>
+        </div>
+      `).join('')
+    : '<div class="rm-placeholder">AI分析後に優先施策を表示します</div>';
+  el.innerHTML = `
+    <div class="rm-slide-hd">🎯 優先施策 TOP3</div>
+    <div class="rm-slide-body">
+      <div class="rm-rank-list">${ranks}</div>
+    </div>
+  `;
+  return el;
+}
+
+function buildRmSlide6(d, sections) {
+  const el = document.createElement('div');
+  el.className = 'rm-slide rm-s6';
+
+  const top3 = sections.top3.length ? sections.top3 : ['優先施策 1', '優先施策 2', '優先施策 3'];
+  const rows = top3.slice(0, 3).map((t, i) => `
+    <tr>
+      <td class="rm-at-no">${i + 1}</td>
+      <td class="rm-at-task">${t}</td>
+      <td class="rm-at-who">院長 / CS</td>
+      <td class="rm-at-when">今月中</td>
+    </tr>
+  `).join('');
+
+  const nextDate = (() => {
+    const nd = new Date();
+    nd.setMonth(nd.getMonth() + 1);
+    return nd.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
+  })();
+
+  el.innerHTML = `
+    <div class="rm-slide-hd">📋 行動計画</div>
+    <div class="rm-slide-body">
+      <table class="rm-action-table">
+        <thead>
+          <tr>
+            <th class="rm-at-no">#</th>
+            <th class="rm-at-task">施策</th>
+            <th class="rm-at-who">担当</th>
+            <th class="rm-at-when">期限</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="rm-next-check">次回フォロー予定：${nextDate}</div>
+    </div>
+  `;
+  return el;
+}
+
 </script>
+
+<!-- ===== レポートモーダル ===== -->
+<div class="report-modal" id="report-modal" style="display:none;" onclick="if(event.target===this)closeReport()">
+  <button class="rm-close" onclick="closeReport()">✕</button>
+  <div class="rm-ai-status" id="rm-ai-status" style="display:none;">
+    <span class="rm-spinner"></span> AI分析を読み込み中…
+  </div>
+  <div id="rm-slides"></div>
+  <div class="rm-nav">
+    <button class="rm-nav-btn" onclick="rmNav(-1)">&#8592;</button>
+    <div class="rm-dots" id="rm-dots"></div>
+    <div class="rm-counter" id="rm-counter"></div>
+    <button class="rm-nav-btn" onclick="rmNav(1)">&#8594;</button>
+  </div>
+</div>
 </body>
 </html>
