@@ -1199,6 +1199,8 @@
 const CS_INTERNAL_EMAIL = 'info@shinq-compass.jp'; // このメアドでログイン→社内判定
 const GAS_LOG_URL = 'https://script.google.com/macros/s/AKfycbyUQ7zwgR4lT5eHddLBYnA2Oob55Z63kh4vlHZM7ZaPCEwfNu6oqqFwKsd5zJ4tYOWa/exec'; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
 const DELEGATE_GAS_URL = 'https://script.google.com/macros/s/AKfycbw4Pm3pzkGnF4443l4O-5wGb-aW0wYP3cTLUgGEuQhCYmpVtpC8O7lp4qfispNynmsq/exec';
+const ADVISOR_GAS_URL = ''; // ← advisor.gs をデプロイしたURLを貼り付ける
+let currentSalonData = null; // AI分析用にログイン中のサロンデータを保持
 let isInternal = false; // ログイン時に社内/社外を判定して設定
 let loginTime = null;
 let logSent = false;
