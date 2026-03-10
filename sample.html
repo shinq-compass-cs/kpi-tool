@@ -1715,34 +1715,40 @@ function renderDashboard(d, sheetName) {
           ? d.first_place_pt - d.potential_max_pt
           : null;
 
+        // 上段：フラグ完了後の到達順位と1位との差（「約」を付与）
         let html = `取り組みをすべて完了すると <strong>${d.potential_max_pt}pt</strong> → エリア <strong>${d.potential_rank}位</strong>`;
         if (gap !== null) {
-          html += `<br><span style="font-size:12px;opacity:0.8;">1位まであと <strong>+${gap}pt</strong> 必要</span>`;
+          html += `<br><span style="font-size:12px;opacity:0.8;">1位まであと 約 <strong>+${gap}pt</strong> 必要　※当日の口コミ状況により変わる場合があります</span>`;
         }
 
+        // 下段：口コミ+返信を1セットで計算した1位達成プラン
         if (gap !== null && gap > 0) {
           const reviewCurrent = Number(d.review || 0);
           const replyCurrent  = Number(d.review_reply || 0);
+          // 1セット（口コミ獲得+返信）あたりのポイント
+          const ptPerSet = planPts.reviewPt + planPts.replyPt;
+          // ポイント上限の件数（口コミ・返信それぞれの残余件数のうち小さい方がセット上限）
           const reviewMaxCount  = Math.floor(planPts.reviewCapPt / planPts.reviewPt);
           const replyMaxCount   = Math.floor(planPts.replyCapPt  / planPts.replyPt);
-          const reviewRemaining = Math.max(0, reviewMaxCount - reviewCurrent);
-          const replyRemaining  = Math.max(0, replyMaxCount  - replyCurrent);
-          const reviewsNeeded = Math.ceil(gap / planPts.reviewPt);
-          const repliesNeeded = Math.ceil(gap / planPts.replyPt);
-          const reviewOK = reviewsNeeded <= reviewRemaining;
-          const replyOK  = repliesNeeded <= replyRemaining;
+          const setsRemaining   = Math.min(
+            Math.max(0, reviewMaxCount - reviewCurrent),
+            Math.max(0, replyMaxCount  - replyCurrent)
+          );
+          const setsNeeded  = Math.ceil(gap / ptPerSet);
+          const totalPt     = setsNeeded * ptPerSet;
+          const setsOK      = setsNeeded <= setsRemaining;
 
           html += `<hr class="goal-banner-divider">`;
           html += `<div class="goal-review-section">`;
-          html += `<strong>⭐ さらに1位を目指す（口コミポイント）</strong><br>`;
-          if (reviewOK) {
-            html += `口コミ獲得をあと <strong>${reviewsNeeded}件</strong> 増やすと1位達成（現在 ${reviewCurrent}件）<br>`;
-          }
-          if (replyOK) {
-            html += `口コミ返信をあと <strong>${repliesNeeded}件</strong> 増やすと1位達成（現在 ${replyCurrent}件）`;
-          }
-          if (!reviewOK && !replyOK) {
-            html += `口コミ・返信ともにポイント上限に近いため、口コミ単独での1位達成は困難です`;
+          html += `<strong>⭐ 1位達成プラン（口コミ獲得＋返信）</strong><br>`;
+
+          if (setsOK) {
+            html += `口コミ獲得＋返信を 1セット <strong>${ptPerSet}pt</strong>`
+              + `（${planPts.reviewPt}pt＋${planPts.replyPt}pt）× <strong>${setsNeeded}件</strong>`
+              + ` ＝ ${totalPt}pt → 1位達成可能<br>`;
+            html += `<span style="font-size:11px;opacity:0.8;">現在：口コミ ${reviewCurrent}件・返信 ${replyCurrent}件</span>`;
+          } else {
+            html += `口コミ・返信ともにポイント上限に近いため、セット方式での1位達成は困難です`;
           }
           html += `</div>`;
         }
