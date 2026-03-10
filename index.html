@@ -3337,12 +3337,16 @@ function buildRmSlide3(d, sections, fromAI) {
   el.className = 'rm-slide';
   const items = sections.pageReview;
   const content = items.length
-    ? items.map(t => `<div class="rm-list-item">・${t}</div>`).join('')
+    ? items.map((t, i) => `
+        <div class="rm-numbered-card">
+          <span class="rm-card-num">${i + 1}</span>
+          <span class="rm-card-text">${t}</span>
+        </div>`).join('')
     : '<div class="rm-placeholder">AI分析後に改善点を表示します</div>';
   el.innerHTML = `
     <div class="rm-slide-hd">🖥 ページ改善点</div>
     <div class="rm-slide-body">
-      <div class="rm-list">${content}</div>
+      <div class="rm-numbered-list">${content}</div>
     </div>
   `;
   return el;
