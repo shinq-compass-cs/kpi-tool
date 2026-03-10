@@ -3123,25 +3123,17 @@ async function loadAIForReport(d, detailUrl) {
 
 function parseAIToSections(text) {
   try {
-    // JSONモードで直接パース
     const clean = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
     const obj = JSON.parse(clean);
     console.log('[AI Advisor] JSON parse OK:', obj);
     return {
-      pageReview: Array.isArray(obj.pageReview) ? obj.pageReview : [],
-      kpiActions: Array.isArray(obj.kpiActions) ? obj.kpiActions : [],
-      strengths:  Array.isArray(obj.strengths)  ? obj.strengths  : [],
-      top3:       Array.isArray(obj.top3)        ? obj.top3       : [],
+      strengths: Array.isArray(obj.strengths) ? obj.strengths : [],
+      issues:    Array.isArray(obj.issues)    ? obj.issues    : [],
+      top3:      Array.isArray(obj.top3)      ? obj.top3      : [],
     };
   } catch(e) {
-    console.warn('[AI Advisor] JSONパース失敗、テキストパースにフォールバック:', e.message);
-    const parts = text.split(/###[^\n]*/);
-    return {
-      pageReview: extractBullets(parts[1] || ''),
-      kpiActions: extractBullets(parts[2] || ''),
-      strengths:  extractBullets(parts[3] || ''),
-      top3:       extractTop3(parts[4] || ''),
-    };
+    console.warn('[AI Advisor] JSONパース失敗:', e.message);
+    return { strengths: [], issues: [], top3: [] };
   }
 }
 
