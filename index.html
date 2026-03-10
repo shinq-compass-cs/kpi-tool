@@ -3171,11 +3171,11 @@ function generateRuleBasedSections(d) {
 
   // TOP3（ルールベース）
   const top3 = [];
-  if (review < 5)   top3.push('口コミ獲得強化（QRカード配布・返信徹底）');
-  if (access < 200) top3.push('検索優先ポイント追加でアクセス数アップ');
-  if (!d.menu3)     top3.push('メニュー3件以上登録してクリック率向上');
-  if (!d.store_pr)  top3.push('店舗PR情報登録でページ訴求力アップ');
-  while (top3.length < 3) top3.push('口コミ返信を徹底して信頼性向上');
+  if (review < 5)   top3.push({title:'口コミ獲得強化', reason:'QRカード配布・口コミ返信の徹底でレビュー数を目標5件へ増やす'});
+  if (access < 200) top3.push({title:'検索優先ポイント追加', reason:'ポイント追加でエリア上位表示を狙い、アクセス数200件を目指す'});
+  if (!d.menu3)     top3.push({title:'メニュー3件以上登録', reason:'施術メニュー・料金を充実させてクリック率とCVRを改善'});
+  if (!d.store_pr)  top3.push({title:'店舗PR情報登録', reason:'院の強みや特徴を記入し、ページからの予約転換率を高める'});
+  while (top3.length < 3) top3.push({title:'口コミ返信を徹底', reason:'全口コミへの返信で信頼性を高め、新規患者の安心感を醸成'});
   return {
     pageReview:  pv,
     kpiActions:  kpiAct,
