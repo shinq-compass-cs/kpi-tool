@@ -3379,12 +3379,18 @@ function buildRmSlide5(d, sections, fromAI) {
   const top3 = sections.top3;
   const medals = ['🥇', '🥈', '🥉'];
   const ranks = top3.length
-    ? top3.map((t, i) => `
-        <div class="rm-rank-item r${i+1}">
-          <span class="rm-rank-medal">${medals[i]}</span>
-          <span class="rm-rank-text">${t}</span>
-        </div>
-      `).join('')
+    ? top3.map((item, i) => {
+        const title  = typeof item === 'object' ? item.title  : item;
+        const reason = typeof item === 'object' ? item.reason : '';
+        return `
+          <div class="rm-rank-item r${i+1}">
+            <span class="rm-rank-medal">${medals[i]}</span>
+            <div class="rm-rank-content">
+              <div class="rm-rank-title">${title}</div>
+              ${reason ? `<div class="rm-rank-reason">${reason}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('')
     : '<div class="rm-placeholder">AI分析後に優先施策を表示します</div>';
   el.innerHTML = `
     <div class="rm-slide-hd">🎯 優先施策 TOP3</div>
