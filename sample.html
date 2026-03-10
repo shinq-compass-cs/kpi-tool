@@ -3031,15 +3031,26 @@ async function loadAIForReport(d, detailUrl) {
 }
 
 function parseAIToSections(text) {
-  // ### で始まる行で分割（タイトル行ごと消費するので shift 不要）
-  const parts = text.split(/###[^\n]*/);
-  console.log('[AI Advisor] sections raw:', parts.length, parts.map(p => p.slice(0, 40)));
-  return {
-    pageReview: extractBullets(parts[1] || ''),
-    kpiActions: extractBullets(parts[2] || ''),
-    strengths:  extractBullets(parts[3] || ''),
-    top3:       extractTop3(parts[4] || ''),
-  };
+  try {
+    const clean = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+    const obj = JSON.parse(clean);
+    console.log('[AI Advisor] JSON parse OK:', obj);
+    return {
+      pageReview: Array.isArray(obj.pageReview) ? obj.pageReview : [],
+      kpiActions: Array.isArray(obj.kpiActions) ? obj.kpiActions : [],
+      strengths:  Array.isArray(obj.strengths)  ? obj.strengths  : [],
+      top3:       Array.isArray(obj.top3)        ? obj.top3       : [],
+    };
+  } catch(e) {
+    console.warn('[AI Advisor] JSONパース失敗、テキストパースにフォールバック:', e.message);
+    const parts = text.split(/###[^\n]*/);
+    return {
+      pageReview: extractBullets(parts[1] || ''),
+      kpiActions: extractBullets(parts[2] || ''),
+      strengths:  extractBullets(parts[3] || ''),
+      top3:       extractTop3(parts[4] || ''),
+    };
+  }
 }
 
 function extractBullets(text) {
