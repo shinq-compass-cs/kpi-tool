@@ -1738,6 +1738,9 @@ async function handleLogin() {
 
 // ===== ダッシュボード描画 =====
 function renderDashboard(d, sheetName) {
+  // AI分析用にデータを保持
+  currentSalonData = d;
+
   // プラチナPLUS判定（関数全体で使用するため先頭で宣言）
   const isPlatinaPlus = String(d.compass_plan || '').trim() === 'プラチナPLUSプラン' || String(d.compass_plan || '').trim() === 'プラチナPLUS';
 
