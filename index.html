@@ -3356,13 +3356,18 @@ function buildRmSlide4(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
   const items = sections.strengths;
+  const icons = ['✦', '◆', '★', '●', '▲', '♦'];
   const content = items.length
-    ? items.map(t => `<div class="rm-list-item">・${t}</div>`).join('')
+    ? items.map((t, i) => `
+        <div class="rm-strength-item">
+          <span class="rm-strength-icon">${icons[i % icons.length]}</span>
+          <span class="rm-strength-text">${t}</span>
+        </div>`).join('')
     : '<div class="rm-placeholder">' + (fromAI ? '強み情報を取得できませんでした' : 'AI分析後に強み・差別化ポイントを表示します') + '</div>';
   el.innerHTML = `
     <div class="rm-slide-hd">💪 強み・差別化ポイント</div>
     <div class="rm-slide-body">
-      <div class="rm-list">${content}</div>
+      <div class="rm-strength-list">${content}</div>
     </div>
   `;
   return el;
