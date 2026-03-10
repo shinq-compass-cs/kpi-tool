@@ -1560,7 +1560,9 @@ async function handleLogin() {
       const maxPt = Number(found.search_point || 0) + addPt;
       found.add_pt = addPt;
       found.potential_max_pt = maxPt;
-      found.potential_rank = refRows ? calcPotentialRank(found.area, maxPt, refRows, refHm) : null;
+      found.potential_rank   = refRows ? calcPotentialRank(found.area, maxPt, refRows, refHm) : null;
+      // フラグ項目だけでは1位に届かない場合に備えてエリア1位のptを取得
+      found.first_place_pt   = refRows ? calcFirstPlacePt(found.area, refRows, refHm) : null;
     }
 
     // === Step3: 月次推移データ収集（最新月から遡る、3連続ミスで打ち切り、最大2年分） ===
