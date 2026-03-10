@@ -3064,29 +3064,38 @@ async function loadAIForReport(d, detailUrl) {
 }
 
 function parseAIToSections(text) {
-  // ### N. ... で分割
-  const parts = text.split(/###\s*\d+[\.\s]/);
-  parts.shift(); // 先頭空白を削除
+  // ### で始まる行で分割（タイトル行ごと消費するので shift 不要）
+  const parts = text.split(/###[^\n]*/);
+  // parts[0] = ###より前のテキスト（不要）
+  // parts[1] = section1内容, parts[2] = section2内容, ...
+  console.log('[AI Advisor] sections raw:', parts.length, parts.map(p => p.slice(0, 40)));
   return {
-    pageReview:   extractBullets(parts[0] || ''),
-    kpiActions:   extractBullets(parts[1] || ''),
-    strengths:    extractBullets(parts[2] || ''),
-    top3:         extractTop3(parts[3] || ''),
+    pageReview: extractBullets(parts[1] || ''),
+    kpiActions: extractBullets(parts[2] || ''),
+    strengths:  extractBullets(parts[3] || ''),
+    top3:       extractTop3(parts[4] || ''),
   };
 }
 
 function extractBullets(text) {
   return text.split('\n')
-    .map(l => l.replace(/^[・\-\*]\s*/, '').trim())
-    .filter(l => l.length > 3)
+    .map(l => l.replace(/^[・\-\*→]\s*/, '').trim())
+    .filter(l => l.length > 4 && !/^[\d一二三四五]+[位\.\．、。]/.test(l))
     .slice(0, 6);
 }
 
 function extractTop3(text) {
-  const lines = text.split('\n')
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 4);
+  // "1位：xxx" 形式を優先
+  const ranked = lines.filter(l => /^\d位[：:]/.test(l));
+  if (ranked.length >= 1) {
+    return ranked.slice(0, 3).map(l => l.replace(/^\d位[：:]\s*/, ''));
+  }
+  // フォールバック：箇条書き
+  return lines
     .map(l => l.replace(/^[・\-\*\d\.\s]+/, '').trim())
-    .filter(l => l.length > 3);
-  return lines.slice(0, 3);
+    .filter(l => l.length > 4)
+    .slice(0, 3);
 }
 
 function generateRuleBasedSections(d) {
