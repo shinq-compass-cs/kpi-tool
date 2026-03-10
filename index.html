@@ -3159,42 +3159,40 @@ function extractTop3(text) {
 }
 
 function generateRuleBasedSections(d) {
-  const pv = [];
-  const kpiAct = [];
-
-  // ページ改善（ルールベース）
-  if (!d.menu3) pv.push('メニューが3件未満です。主要メニューと料金を3件以上登録しましょう');
-  if (!d.pickup_review) pv.push('PickUp口コミが未設定です。評価の高い口コミを選んで設定してください');
-  if (!d.review_parts) pv.push('口コミパーツが未設置です。予約ページへの口コミ誘導バナーを設置しましょう');
-  if (!d.store_pr) pv.push('店舗PR情報が未登録です。院の強みや特徴を入力してください');
-  if (pv.length === 0) pv.push('ページ基本設定はすべて完了しています', '写真・説明文のさらなる充実を検討しましょう');
-
-  // KPIアクション（ルールベース）
   const access = Number(d.access) || 0;
   const click  = Number(d.click)  || 0;
   const review = Number(d.review) || 0;
   const nr     = Number(d.net_reserve) || 0;
 
-  if (access < 200) kpiAct.push(`アクセス数 ${access} → 目標200。検索優先ポイントの追加・コンパスリンク設置を検討`);
-  if (click < 20)   kpiAct.push(`クリック数 ${click} → 目標20。口コミ・写真・メニュー強化でCTRを改善`);
-  if (review < 5)   kpiAct.push(`口コミ ${review}件 → 目標5件。来院患者へのQRカード配布を実施`);
-  if (nr < 2)       kpiAct.push(`ネット予約 ${nr}件 → 目標2件。受付締切時間を緩和し、ゲスト予約を有効化`);
-  if (!d.reserve_public) kpiAct.push('予約公開が未設定。コンパスからのネット予約を公開してください');
-  if (kpiAct.length === 0) kpiAct.push('主要KPIはすべて目標達成中です', '継続的なページ更新で上位を維持しましょう');
+  // 強み
+  const strengths = [];
+  if (access >= 200) strengths.push(`月${access}人がページを見ています — 多くの方に院を知ってもらえている状態です`);
+  if (review >= 5)   strengths.push(`口コミが${review}件 — 患者さんからの信頼の声が積み重なっています`);
+  if (flagOK(d.store_pr))      strengths.push('院の紹介文が登録済み — 院の特徴がページから伝わりやすい状態です');
+  if (flagOK(d.menu3))         strengths.push('メニュー3件以上登録済み — 患者さんが施術内容を選びやすい状態です');
+  if (flagOK(d.pickup_review)) strengths.push('おすすめ口コミが設定済み — 好評価の口コミが目立つ位置に表示されています');
+  if (flagOK(d.reserve_public)) strengths.push('ネット予約が公開済み — ページから直接予約できる環境が整っています');
+  if (strengths.length === 0) strengths.push('まだ改善できる余地が多くあります。以下のやることを進めると数字が伸びやすくなります');
 
-  // TOP3（ルールベース）
+  // 課題と仮説
+  const issues = [];
+  if (access < 200)        issues.push({problem:`ページを見た人が${access}人（目標200人）`, hypothesis:'検索での表示順位が低いため、ページにたどり着けていない方が多い可能性があります'});
+  if (click < 20)          issues.push({problem:`予約ページを開いた人が${click}人（目標20人）`, hypothesis:'口コミが少ない・メニューが少ないなど、ページを見た人が予約に進まずに離脱している可能性があります'});
+  if (review < 5)          issues.push({problem:`口コミが${review}件（目標5件）`, hypothesis:'来院後に口コミをお願いする仕組みがないため、患者さんが投稿できていない可能性があります'});
+  if (nr < 2)              issues.push({problem:`ネット予約が${nr}件（目標2件）`, hypothesis:'受付時間が短い、またはゲスト予約が使えない状態のため、予約しにくくなっている可能性があります'});
+  if (!d.reserve_public)   issues.push({problem:'ネット予約が非公開になっています', hypothesis:'コンパスからの予約を受け付けていない状態のため、せっかく見てもらっても予約につながっていません'});
+  if (!d.store_pr)         issues.push({problem:'院の紹介文が未登録です', hypothesis:'ページに院の特徴が表示されていないため、他院との違いが伝わらず離脱される可能性があります'});
+  if (issues.length === 0) issues.push({problem:'現在、主要な課題は見当たりません', hypothesis:'このまま口コミ返信とページ更新を続けることで、上位表示を維持できます'});
+
+  // TOP3アクション
   const top3 = [];
-  if (review < 5)   top3.push({title:'口コミ獲得強化', reason:'QRカード配布・口コミ返信の徹底でレビュー数を目標5件へ増やす'});
-  if (access < 200) top3.push({title:'検索優先ポイント追加', reason:'ポイント追加でエリア上位表示を狙い、アクセス数200件を目指す'});
-  if (!d.menu3)     top3.push({title:'メニュー3件以上登録', reason:'施術メニュー・料金を充実させてクリック率とCVRを改善'});
-  if (!d.store_pr)  top3.push({title:'店舗PR情報登録', reason:'院の強みや特徴を記入し、ページからの予約転換率を高める'});
-  while (top3.length < 3) top3.push({title:'口コミ返信を徹底', reason:'全口コミへの返信で信頼性を高め、新規患者の安心感を醸成'});
-  return {
-    pageReview:  pv,
-    kpiActions:  kpiAct,
-    strengths:   [],   // ルールベースでは生成しない
-    top3:        top3.slice(0, 3),
-  };
+  if (review < 5)   top3.push({title:'口コミをもらう仕組みを作る', detail:'受付にQRコードを置き、会計時に「よろしければ口コミをお願いします」と一声かける', effect:'口コミが増えると信頼感が高まり、初めての患者さんが予約しやすくなります'});
+  if (access < 200) top3.push({title:'検索優先ポイントを追加する', detail:'コンパス管理画面の「検索優先ポイント」を追加してエリア内の掲載順位を上げる', effect:'ページを見てもらえる人数が増え、予約数アップにつながります'});
+  if (!d.menu3)     top3.push({title:'メニューを3件以上登録する', detail:'施術メニュー・料金・所要時間を管理画面に3件以上登録する', effect:'ページの情報が充実し、予約ページを開いてくれる人が増えます'});
+  if (!d.store_pr)  top3.push({title:'院の紹介文を登録する', detail:'「こんな方におすすめ」「当院の特徴」を管理画面のPR欄に入力する', effect:'院の魅力が伝わり、ページを見た人が予約に進みやすくなります'});
+  while (top3.length < 3) top3.push({title:'口コミに返信を続ける', detail:'届いた口コミ1件1件に、院長名で丁寧なお礼の返信をする', effect:'誠実な対応が伝わり、新規の患者さんが安心して予約しやすくなります'});
+
+  return { strengths, issues, top3: top3.slice(0, 3) };
 }
 
 function flagOK(v) {
