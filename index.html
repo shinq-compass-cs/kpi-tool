@@ -3337,18 +3337,20 @@ function buildRmSlide2(d, sections) {
 function buildRmSlide3(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
-  const items = sections.pageReview;
+  const items = sections.strengths;
+  const icons = ['✦', '◆', '★', '●', '▲', '♦'];
   const content = items.length
     ? items.map((t, i) => `
-        <div class="rm-numbered-card">
-          <span class="rm-card-num">${i + 1}</span>
-          <span class="rm-card-text">${t}</span>
+        <div class="rm-strength-item">
+          <span class="rm-strength-icon">${icons[i % icons.length]}</span>
+          <span class="rm-strength-text">${t}</span>
         </div>`).join('')
-    : '<div class="rm-placeholder">AI分析後に改善点を表示します</div>';
+    : '<div class="rm-placeholder">AI分析後に院の強みを表示します</div>';
   el.innerHTML = `
-    <div class="rm-slide-hd">🖥 ページ改善点</div>
+    <div class="rm-slide-hd">💪 院の強み・良いところ</div>
     <div class="rm-slide-body">
-      <div class="rm-numbered-list">${content}</div>
+      <div class="rm-script-line">「まず、〇〇院さんが他の院よりも優れている点をお伝えします。」</div>
+      <div class="rm-strength-list">${content}</div>
     </div>
   `;
   return el;
