@@ -3101,7 +3101,6 @@ async function loadAIForReport(d, detailUrl) {
       }
       const sections = parseAIToSections(json.advice);
       renderReportSlides(d, sections, true);
-      showRmSlide(rmCurrentIdx);
     } else {
       console.warn('[AI Advisor] GASエラー:', json.error);
       if (st) st.textContent = 'AI分析エラー: ' + (json.error || '不明');
