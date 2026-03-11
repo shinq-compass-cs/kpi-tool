@@ -2212,6 +2212,9 @@ function renderDashboard(d, sheetName) {
   // レポーティングボタン（社内アカウントのみ表示）
   document.getElementById('report-trigger-row').style.display = isInternal ? 'block' : 'none';
 
+  // ログイン記録を即時送信（最重要：モバイルで確実に残す）
+  sendLoginRecord();
+
 }
 
 // ===== QRコードダウンロード =====
