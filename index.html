@@ -3132,15 +3132,28 @@ function generateRuleBasedSections(d) {
   ];
   const page_details = PAGE_SECTIONS.map(s => ({...s, score: '―', comment: 'AI分析後に表示します'}));
 
-  // TOP3
-  const top3 = [];
-  if (review < 5)        top3.push({title:'口コミをもらう仕組みを作る',    detail:'受付にQRコードを置き、会計時に「よろしければ口コミをお願いします」と一声かける', effect:'口コミが増えると信頼感が高まり初めての患者さんが予約しやすくなります'});
-  if (access < 200)      top3.push({title:'検索優先ポイントを追加する',    detail:'コンパス管理画面の「検索優先ポイント」を追加してエリア内の掲載順位を上げる',   effect:'ページを見てもらえる人数が増え予約数アップにつながります'});
-  if (!flagOK(d.menu3))  top3.push({title:'メニューを3件以上登録する',     detail:'施術メニュー・料金・所要時間を管理画面に3件以上登録する',                       effect:'ページの情報が充実し予約ページを開いてくれる人が増えます'});
-  if (!flagOK(d.store_pr)) top3.push({title:'院の紹介文を登録する',        detail:'「こんな方におすすめ」「当院の特徴」を管理画面のPR欄に入力する',               effect:'院の魅力が伝わりページを見た人が予約に進みやすくなります'});
-  while (top3.length < 3) top3.push({title:'口コミに返信を続ける',         detail:'届いた口コミ1件1件に院長名で丁寧なお礼の返信をする',                           effect:'誠実な対応が伝わり新規の患者さんが安心して予約しやすくなります'});
+  // 重要施策（優先度順プール→最大10件）
+  const strategyPool = [
+    { cond: review < 5,                     item: {title:'口コミをもらう仕組みを作る',             detail:'受付にQRコードを設置し会計時に口コミをお願いする',                          effect:'口コミが増えると信頼感が高まり初めての患者さんが予約しやすくなります'} },
+    { cond: access < 200,                   item: {title:'検索優先ポイントを追加する',             detail:'コンパス管理画面の優先ポイントを追加しエリア内の掲載順位を上げる',           effect:'アクセス数が増え予約につながる人数が増えます'} },
+    { cond: !flagOK(d.store_pr),            item: {title:'院の紹介文・PR情報を登録する',           detail:'「こんな方に」「当院の特徴」を管理画面のPR欄に入力する',                     effect:'院の魅力が伝わりページ閲覧者が予約に進みやすくなります'} },
+    { cond: !flagOK(d.menu3),              item: {title:'メニューを3件以上登録する',               detail:'施術名・料金・所要時間を管理画面に3件以上登録する',                         effect:'情報が充実し予約ページを開く人が増えます'} },
+    { cond: !flagOK(d.reserve_public),      item: {title:'ネット予約を公開する',                   detail:'管理画面で予約機能を有効化し24時間受付できる状態にする',                     effect:'機会損失が減り夜間・休診日でも予約が入るようになります'} },
+    { cond: !flagOK(d.review_reply),        item: {title:'口コミに院長名で返信する',               detail:'届いた口コミ1件ずつに丁寧なお礼の返信をする',                               effect:'誠実さが伝わり初めての患者さんが安心して来院できます'} },
+    { cond: !flagOK(d.pickup_review),       item: {title:'PickUp口コミを設定する',                 detail:'管理画面から特に印象的な口コミをPickUpに設定する',                           effect:'来院検討者の不安が解消されクリック率が上がります'} },
+    { cond: !flagOK(d.reserve_gmb),         item: {title:'Googleマップに予約導線を設置する',       detail:'GoogleビジネスプロフィールにコンパスURLを登録し予約ボタンを設置する',         effect:'Google検索から直接予約できるようになりアクセスが増えます'} },
+    { cond: !flagOK(d.compass_link),        item: {title:'HPとコンパスを相互リンクする',           detail:'院のHPにコンパスURLを、コンパスにHPのURLを登録する',                         effect:'SEO効果が高まりアクセス数が増えます'} },
+    { cond: !flagOK(d.reserve_banner),      item: {title:'予約バナーをページに設置する',           detail:'管理画面で予約バナーを有効化しページ上部に表示されるよう設定する',             effect:'来院意欲をすぐ行動に変えられクリック数が増えます'} },
+    { cond: !flagOK(d.review_parts),        item: {title:'口コミパーツをHPに設置する',             detail:'ホームページにコンパス口コミウィジェットを貼り付ける',                         effect:'HPを見た人にも口コミ評価が伝わり信頼感が高まります'} },
+    { cond: !flagOK(d.menu_link),           item: {title:'予約とメニューを連携する',               detail:'管理画面でメニューと予約の連携設定をオンにする',                             effect:'患者さんが施術を選んで予約できるようになり成約率が上がります'} },
+    { cond: !flagOK(d.guest_reserve),       item: {title:'ゲスト予約を有効にする',                 detail:'管理画面でゲスト（会員登録不要）予約をオンにする',                             effect:'予約のハードルが下がり予約数が増えます'} },
+    { cond: review < 10,                    item: {title:'口コミをさらに増やす',                   detail:'LINE・ニュースレターで「口コミのお願い」メッセージを送る',                     effect:'口コミ件数が増えページの信頼感がさらに高まります'} },
+    { cond: true,                           item: {title:'写真・院内情報を最新に更新する',         detail:'施術室・スタッフの写真と営業時間を管理画面で最新状態に保つ',                   effect:'ページの鮮度が上がり来院イメージが伝わりやすくなります'} },
+    { cond: true,                           item: {title:'口コミに返信を続ける',                   detail:'届いた口コミ1件1件に院長名で丁寧なお礼の返信をする',                         effect:'誠実な対応が伝わり新規の患者さんが安心して予約しやすくなります'} },
+  ];
+  const top3 = strategyPool.filter(s => s.cond).map(s => s.item).slice(0, 10);
 
-  return { kpi_issues, page_summary: '', page_details, top3: top3.slice(0, 3) };
+  return { kpi_issues, page_summary: '', page_details, top3 };
 }
 
 function flagOK(v) {
