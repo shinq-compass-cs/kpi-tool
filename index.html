@@ -3377,17 +3377,20 @@ function buildRmSlide4(d, sections, fromAI) {
 function buildRmSlide5(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
-  const top3 = sections.top3;
+  const strategies = sections.top3;
   const medals = ['🥇', '🥈', '🥉'];
-  const actions = top3.length
-    ? top3.map((item, i) => {
+  const actions = strategies.length
+    ? strategies.map((item, i) => {
         const title  = typeof item === 'object' ? item.title  : item;
         const detail = typeof item === 'object' ? (item.detail || item.reason || '') : '';
         const effect = typeof item === 'object' ? (item.effect || '') : '';
+        const isTop  = i < 3;
+        const cardClass = isTop ? `r${i+1} rm-action-top` : 'rm-action-rest';
+        const icon = isTop ? `<span class="rm-rank-medal">${medals[i]}</span>` : `<span class="rm-action-rank-num">${i+1}</span>`;
         return `
-          <div class="rm-action-card r${i+1}">
+          <div class="rm-action-card ${cardClass}">
             <div class="rm-action-hd">
-              <span class="rm-rank-medal">${medals[i]}</span>
+              ${icon}
               <span class="rm-action-title">${title}</span>
             </div>
             ${detail ? `<div class="rm-action-detail">▶ ${detail}</div>` : ''}
@@ -3396,7 +3399,7 @@ function buildRmSlide5(d, sections, fromAI) {
       }).join('')
     : '<div class="rm-placeholder">AI分析後に今月やることを表示します</div>';
   el.innerHTML = `
-    <div class="rm-slide-hd">✅ 特に行うこと 3点</div>
+    <div class="rm-slide-hd">✅ 重要施策</div>
     <div class="rm-slide-body">
       <div class="rm-action-list">${actions}</div>
     </div>
