@@ -3019,8 +3019,6 @@ document.getElementById('dashboard').addEventListener('click', (e) => {
 window.addEventListener('beforeunload', () => sendLoginLog());
 
 // ===== レポーティングモーダル =====
-let rmCurrentIdx = 0;
-let rmSlideData   = [];   // {el, hasAI} 配列
 
 function openReport() {
   const d = currentSalonData;
