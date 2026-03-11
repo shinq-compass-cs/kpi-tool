@@ -825,8 +825,14 @@
   .rm-action-card.r1 { border-left: 5px solid #f59e0b; background: #fffbeb; }
   .rm-action-card.r2 { border-left: 5px solid #6b7280; background: #f7f9fc; }
   .rm-action-card.r3 { border-left: 5px solid #cd7c42; background: #fdf5ed; }
+  .rm-action-card.rm-action-rest { border-left: 3px solid #cbd5e0; background: #f7f9fc; }
   .rm-action-hd { display: flex; align-items: center; gap: 12px; padding: 12px 16px 6px; }
   .rm-action-title { font-size: 15px; font-weight: 800; color: #1a2035; line-height: 1.3; }
+  .rm-action-card.rm-action-top .rm-action-title { font-size: 16px; }
+  .rm-action-card.rm-action-rest .rm-action-title { font-size: 13px; font-weight: 700; color: #374151; }
+  .rm-action-card.rm-action-rest .rm-action-detail { font-size: 11px; }
+  .rm-action-card.rm-action-rest .rm-action-effect { font-size: 10px; }
+  .rm-action-rank-num { font-size: 12px; font-weight: 800; color: #9ca3af; width: 20px; text-align: center; flex-shrink: 0; }
   .rm-action-detail { font-size: 12px; color: #374151; padding: 0 16px 6px 16px; line-height: 1.65; }
   .rm-action-effect { font-size: 11px; font-weight: 600; color: #2e6da4; background: rgba(46,109,164,0.06); padding: 6px 16px 8px; line-height: 1.5; }
   /* S5 rank-content（後方互換） */
@@ -843,9 +849,11 @@
   .rm-kpi-group-val.ok { color: #4de8a0; }
   .rm-kpi-group-meta { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.45); margin-left: 6px; }
   .rm-kpi-group-items { padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 1px; background: white; }
-  .rm-kpi-item { display: flex; align-items: center; gap: 8px; padding: 5px 4px; border-radius: 5px; }
-  .rm-kpi-item-icon { font-size: 11px; font-weight: 900; flex-shrink: 0; width: 14px; text-align: center; }
+  .rm-kpi-item { display: flex; align-items: flex-start; gap: 8px; padding: 5px 4px; border-radius: 5px; }
+  .rm-kpi-item-icon { font-size: 11px; font-weight: 900; flex-shrink: 0; width: 14px; text-align: center; margin-top: 2px; }
+  .rm-kpi-item-body { display: flex; flex-direction: column; gap: 2px; flex: 1; }
   .rm-kpi-item-label { font-size: 12px; }
+  .rm-kpi-item-advice { font-size: 10px; color: #6b7280; line-height: 1.55; }
   .rm-kpi-item-ok .rm-kpi-item-icon  { color: #16a34a; }
   .rm-kpi-item-ok .rm-kpi-item-label { color: #9ca3af; }
   .rm-kpi-item-ng .rm-kpi-item-icon  { color: #dc2626; }
@@ -3018,7 +3026,7 @@ function buildAdvisorPrompt(d) {
     + '"top3":[{"title":"やること（動詞始まりで短く）","detail":"具体的な手順（50文字以内）","effect":"期待効果（1文）"}]}\n\n'
     + 'kpi_issues: KPIデータで未達成・未設定のもののみ（問題ない項目は含めない）。\n'
     + 'page_details: 必ず9項目すべて・scoreは◎○△×のいずれか。\n'
-    + 'top3: 必ず3件。ページ改善のアクションを優先度順に。';
+    + 'top3: 10件程度（最低7件）。KPI改善・ページ改善を合わせて優先度順に。上位3件が最重要。';
 }
 
 async function loadAIForReport(d, detailUrl) {
@@ -3124,15 +3132,28 @@ function generateRuleBasedSections(d) {
   ];
   const page_details = PAGE_SECTIONS.map(s => ({...s, score: '―', comment: 'AI分析後に表示します'}));
 
-  // TOP3
-  const top3 = [];
-  if (review < 5)        top3.push({title:'口コミをもらう仕組みを作る',    detail:'受付にQRコードを置き、会計時に「よろしければ口コミをお願いします」と一声かける', effect:'口コミが増えると信頼感が高まり初めての患者さんが予約しやすくなります'});
-  if (access < 200)      top3.push({title:'検索優先ポイントを追加する',    detail:'コンパス管理画面の「検索優先ポイント」を追加してエリア内の掲載順位を上げる',   effect:'ページを見てもらえる人数が増え予約数アップにつながります'});
-  if (!flagOK(d.menu3))  top3.push({title:'メニューを3件以上登録する',     detail:'施術メニュー・料金・所要時間を管理画面に3件以上登録する',                       effect:'ページの情報が充実し予約ページを開いてくれる人が増えます'});
-  if (!flagOK(d.store_pr)) top3.push({title:'院の紹介文を登録する',        detail:'「こんな方におすすめ」「当院の特徴」を管理画面のPR欄に入力する',               effect:'院の魅力が伝わりページを見た人が予約に進みやすくなります'});
-  while (top3.length < 3) top3.push({title:'口コミに返信を続ける',         detail:'届いた口コミ1件1件に院長名で丁寧なお礼の返信をする',                           effect:'誠実な対応が伝わり新規の患者さんが安心して予約しやすくなります'});
+  // 重要施策（優先度順プール→最大10件）
+  const strategyPool = [
+    { cond: review < 5,                     item: {title:'口コミをもらう仕組みを作る',             detail:'受付にQRコードを設置し会計時に口コミをお願いする',                          effect:'口コミが増えると信頼感が高まり初めての患者さんが予約しやすくなります'} },
+    { cond: access < 200,                   item: {title:'検索優先ポイントを追加する',             detail:'コンパス管理画面の優先ポイントを追加しエリア内の掲載順位を上げる',           effect:'アクセス数が増え予約につながる人数が増えます'} },
+    { cond: !flagOK(d.store_pr),            item: {title:'院の紹介文・PR情報を登録する',           detail:'「こんな方に」「当院の特徴」を管理画面のPR欄に入力する',                     effect:'院の魅力が伝わりページ閲覧者が予約に進みやすくなります'} },
+    { cond: !flagOK(d.menu3),              item: {title:'メニューを3件以上登録する',               detail:'施術名・料金・所要時間を管理画面に3件以上登録する',                         effect:'情報が充実し予約ページを開く人が増えます'} },
+    { cond: !flagOK(d.reserve_public),      item: {title:'ネット予約を公開する',                   detail:'管理画面で予約機能を有効化し24時間受付できる状態にする',                     effect:'機会損失が減り夜間・休診日でも予約が入るようになります'} },
+    { cond: !flagOK(d.review_reply),        item: {title:'口コミに院長名で返信する',               detail:'届いた口コミ1件ずつに丁寧なお礼の返信をする',                               effect:'誠実さが伝わり初めての患者さんが安心して来院できます'} },
+    { cond: !flagOK(d.pickup_review),       item: {title:'PickUp口コミを設定する',                 detail:'管理画面から特に印象的な口コミをPickUpに設定する',                           effect:'来院検討者の不安が解消されクリック率が上がります'} },
+    { cond: !flagOK(d.reserve_gmb),         item: {title:'Googleマップに予約導線を設置する',       detail:'GoogleビジネスプロフィールにコンパスURLを登録し予約ボタンを設置する',         effect:'Google検索から直接予約できるようになりアクセスが増えます'} },
+    { cond: !flagOK(d.compass_link),        item: {title:'HPとコンパスを相互リンクする',           detail:'院のHPにコンパスURLを、コンパスにHPのURLを登録する',                         effect:'SEO効果が高まりアクセス数が増えます'} },
+    { cond: !flagOK(d.reserve_banner),      item: {title:'予約バナーをページに設置する',           detail:'管理画面で予約バナーを有効化しページ上部に表示されるよう設定する',             effect:'来院意欲をすぐ行動に変えられクリック数が増えます'} },
+    { cond: !flagOK(d.review_parts),        item: {title:'口コミパーツをHPに設置する',             detail:'ホームページにコンパス口コミウィジェットを貼り付ける',                         effect:'HPを見た人にも口コミ評価が伝わり信頼感が高まります'} },
+    { cond: !flagOK(d.menu_link),           item: {title:'予約とメニューを連携する',               detail:'管理画面でメニューと予約の連携設定をオンにする',                             effect:'患者さんが施術を選んで予約できるようになり成約率が上がります'} },
+    { cond: !flagOK(d.guest_reserve),       item: {title:'ゲスト予約を有効にする',                 detail:'管理画面でゲスト（会員登録不要）予約をオンにする',                             effect:'予約のハードルが下がり予約数が増えます'} },
+    { cond: review < 10,                    item: {title:'口コミをさらに増やす',                   detail:'LINE・ニュースレターで「口コミのお願い」メッセージを送る',                     effect:'口コミ件数が増えページの信頼感がさらに高まります'} },
+    { cond: true,                           item: {title:'写真・院内情報を最新に更新する',         detail:'施術室・スタッフの写真と営業時間を管理画面で最新状態に保つ',                   effect:'ページの鮮度が上がり来院イメージが伝わりやすくなります'} },
+    { cond: true,                           item: {title:'口コミに返信を続ける',                   detail:'届いた口コミ1件1件に院長名で丁寧なお礼の返信をする',                         effect:'誠実な対応が伝わり新規の患者さんが安心して予約しやすくなります'} },
+  ];
+  const top3 = strategyPool.filter(s => s.cond).map(s => s.item).slice(0, 10);
 
-  return { kpi_issues, page_summary: '', page_details, top3: top3.slice(0, 3) };
+  return { kpi_issues, page_summary: '', page_details, top3 };
 }
 
 function flagOK(v) {
@@ -3272,33 +3293,33 @@ function buildRmSlide3(d, sections, fromAI) {
   const groups = [
     {
       label: 'アクセス数を上げるために',
-      val: access, target: 200, unit: '件',
+      val: access, target: 200, unit: '',
       items: [
-        { label: '店舗PR情報登録',    ok: flagOK(d.store_pr) },
-        { label: '予約GMB設置',       ok: flagOK(d.reserve_gmb) },
-        { label: '予約バナー設置',    ok: flagOK(d.reserve_banner) },
-        { label: 'コンパス相互リンク', ok: flagOK(d.compass_link) },
+        { label: '店舗PR情報登録',    ok: flagOK(d.store_pr),       advice: '院の紹介文・特徴を管理画面に登録すると検索表示と信頼感が上がります' },
+        { label: '予約GMB設置',       ok: flagOK(d.reserve_gmb),    advice: 'GoogleマップにコンパスURLを設定し検索から直接予約できる導線を作ります' },
+        { label: '予約バナー設置',    ok: flagOK(d.reserve_banner), advice: 'ページ上部に予約バナーを設置すると来院意欲をすぐ行動に変えられます' },
+        { label: 'コンパス相互リンク', ok: flagOK(d.compass_link),  advice: '院のHPとコンパスを相互リンクするとSEO効果が高まりアクセスが増えます' },
       ]
     },
     {
       label: 'クリック数を上げるために',
-      val: click, target: 20, unit: '件',
+      val: click, target: 20, unit: '',
       items: [
-        { label: `口コミ件数（${review}件）`,  ok: review >= 5 },
-        { label: '口コミ返信',        ok: flagOK(d.review_reply) },
-        { label: 'PickUp口コミ',      ok: flagOK(d.pickup_review) },
-        { label: '口コミパーツ設置',  ok: flagOK(d.review_parts) },
-        { label: 'メニュー3件以上',   ok: flagOK(d.menu3) },
+        { label: `口コミ件数（${review}件）`,  ok: review >= 5,              advice: '口コミ5件未満は信頼感不足です。会計時に一声かけてQRコードで口コミをお願いしましょう' },
+        { label: '口コミ返信',        ok: flagOK(d.review_reply),   advice: '口コミ1件ずつに院長名で丁寧な返信をすると誠実さが伝わり新患が安心して来院できます' },
+        { label: 'PickUp口コミ',      ok: flagOK(d.pickup_review),  advice: '特に印象的な口コミをPickUpに設定するとページを見た人の背中を押す効果があります' },
+        { label: '口コミパーツ設置',  ok: flagOK(d.review_parts),   advice: 'HPに口コミウィジェットを貼ると外部からの信頼がページ閲覧者にも伝わります' },
+        { label: 'メニュー3件以上',   ok: flagOK(d.menu3),          advice: 'メニュー・料金・所要時間を3件以上登録すると情報量が増え予約ページを開く人が増えます' },
       ]
     },
     {
       label: '予約数を上げるために',
       val: nr, target: 2, unit: '件',
       items: [
-        { label: '予約公開利用院',    ok: flagOK(d.reserve_public) },
-        { label: 'メニュー連携',      ok: flagOK(d.menu_link) },
-        { label: 'ゲスト予約利用',    ok: flagOK(d.guest_reserve) },
-        { label: '予約受付締切時間',  ok: !!(d.deadline && String(d.deadline).trim()) },
+        { label: '予約公開利用院',    ok: flagOK(d.reserve_public), advice: 'ネット予約を公開すると24時間いつでも予約受付が可能になり機会損失が減ります' },
+        { label: 'メニュー連携',      ok: flagOK(d.menu_link),      advice: '予約画面にメニューを連携すると患者さんが施術を選んで予約でき成約率が上がります' },
+        { label: 'ゲスト予約利用',    ok: flagOK(d.guest_reserve),  advice: '会員登録不要のゲスト予約を有効にすると予約のハードルが下がり予約数が増えます' },
+        { label: '予約受付締切時間',  ok: !!(d.deadline && String(d.deadline).trim()), advice: '締切時間を設定することで当日のオペレーション管理がしやすくなります' },
       ]
     },
   ];
@@ -3309,7 +3330,10 @@ function buildRmSlide3(d, sections, fromAI) {
     const itemsHtml = g.items.map(item => `
       <div class="rm-kpi-item ${item.ok ? 'rm-kpi-item-ok' : 'rm-kpi-item-ng'}">
         <span class="rm-kpi-item-icon">${item.ok ? '✓' : '✗'}</span>
-        <span class="rm-kpi-item-label">${item.label}</span>
+        <div class="rm-kpi-item-body">
+          <span class="rm-kpi-item-label">${item.label}</span>
+          ${!item.ok && item.advice ? `<span class="rm-kpi-item-advice">${item.advice}</span>` : ''}
+        </div>
       </div>`).join('');
     return `
       <div class="rm-kpi-group">
@@ -3366,17 +3390,20 @@ function buildRmSlide4(d, sections, fromAI) {
 function buildRmSlide5(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
-  const top3 = sections.top3;
+  const strategies = sections.top3;
   const medals = ['🥇', '🥈', '🥉'];
-  const actions = top3.length
-    ? top3.map((item, i) => {
+  const actions = strategies.length
+    ? strategies.map((item, i) => {
         const title  = typeof item === 'object' ? item.title  : item;
         const detail = typeof item === 'object' ? (item.detail || item.reason || '') : '';
         const effect = typeof item === 'object' ? (item.effect || '') : '';
+        const isTop  = i < 3;
+        const cardClass = isTop ? `r${i+1} rm-action-top` : 'rm-action-rest';
+        const icon = isTop ? `<span class="rm-rank-medal">${medals[i]}</span>` : `<span class="rm-action-rank-num">${i+1}</span>`;
         return `
-          <div class="rm-action-card r${i+1}">
+          <div class="rm-action-card ${cardClass}">
             <div class="rm-action-hd">
-              <span class="rm-rank-medal">${medals[i]}</span>
+              ${icon}
               <span class="rm-action-title">${title}</span>
             </div>
             ${detail ? `<div class="rm-action-detail">▶ ${detail}</div>` : ''}
@@ -3385,7 +3412,7 @@ function buildRmSlide5(d, sections, fromAI) {
       }).join('')
     : '<div class="rm-placeholder">AI分析後に今月やることを表示します</div>';
   el.innerHTML = `
-    <div class="rm-slide-hd">✅ 特に行うこと 3点</div>
+    <div class="rm-slide-hd">✅ 重要施策</div>
     <div class="rm-slide-body">
       <div class="rm-action-list">${actions}</div>
     </div>
