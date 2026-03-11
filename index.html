@@ -3317,7 +3317,10 @@ function buildRmSlide3(d, sections, fromAI) {
     const itemsHtml = g.items.map(item => `
       <div class="rm-kpi-item ${item.ok ? 'rm-kpi-item-ok' : 'rm-kpi-item-ng'}">
         <span class="rm-kpi-item-icon">${item.ok ? '✓' : '✗'}</span>
-        <span class="rm-kpi-item-label">${item.label}</span>
+        <div class="rm-kpi-item-body">
+          <span class="rm-kpi-item-label">${item.label}</span>
+          ${!item.ok && item.advice ? `<span class="rm-kpi-item-advice">${item.advice}</span>` : ''}
+        </div>
       </div>`).join('');
     return `
       <div class="rm-kpi-group">
