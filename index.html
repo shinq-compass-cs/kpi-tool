@@ -3026,7 +3026,7 @@ function buildAdvisorPrompt(d) {
     + '"top3":[{"title":"やること（動詞始まりで短く）","detail":"具体的な手順（50文字以内）","effect":"期待効果（1文）"}]}\n\n'
     + 'kpi_issues: KPIデータで未達成・未設定のもののみ（問題ない項目は含めない）。\n'
     + 'page_details: 必ず9項目すべて・scoreは◎○△×のいずれか。\n'
-    + 'top3: 必ず3件。ページ改善のアクションを優先度順に。';
+    + 'top3: 10件程度（最低7件）。KPI改善・ページ改善を合わせて優先度順に。上位3件が最重要。';
 }
 
 async function loadAIForReport(d, detailUrl) {
