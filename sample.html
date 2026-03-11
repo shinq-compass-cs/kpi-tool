@@ -1498,7 +1498,8 @@ const ADVISOR_GAS_URL = 'https://script.google.com/macros/s/AKfycbxZB0-yz0F0jlqU
 let currentSalonData = null; // AI分析用にログイン中のサロンデータを保持
 let isInternal = false; // ログイン時に社内/社外を判定して設定
 let loginTime = null;
-let logSent = false;
+let loginLogSent = false;  // ログイン直後送信フラグ
+let urlLogSent   = false;  // セッション終了時URL送信フラグ
 const sessionClickedUrls = [];
 
 // ===== 設定（ここを変更してください） =====
@@ -1909,7 +1910,8 @@ async function handleLogin() {
     isInternal = loginIsInternal;
     if (!isInternal) {
       loginTime = new Date();
-      logSent = false;
+      loginLogSent = false;
+      urlLogSent   = false;
       sessionClickedUrls.length = 0;
     }
     saveSession(salonId, email);
@@ -2209,6 +2211,9 @@ function renderDashboard(d, sheetName) {
 
   // レポーティングボタン（社内アカウントのみ表示）
   document.getElementById('report-trigger-row').style.display = isInternal ? 'block' : 'none';
+
+  // ログイン記録を即時送信（最重要：モバイルで確実に残す）
+  sendLoginRecord();
 
 }
 
@@ -2810,7 +2815,7 @@ function renderTrendCharts() {
 // ===== ログアウト =====
 function handleLogout() {
   clearSession();
-  sendLoginLog();
+  sendUrlRecord();
   currentData = null;
   trendData = [];
   avgData = null;
@@ -2882,21 +2887,44 @@ function trackUrl(url) {
   sessionClickedUrls.push(url);
 }
 
-function sendLoginLog() {
-  if (isInternal || !currentData || logSent || !GAS_LOG_URL) return;
-  logSent = true;
-  const payload = {
-    datetime: loginTime
-      ? loginTime.toLocaleString('ja-JP')
-      : new Date().toLocaleString('ja-JP'),
+// ===== ログ送信（2段階方式） =====
+
+// ① ログイン直後に即時送信 — 端末・時刻の確実な記録
+function sendLoginRecord() {
+  if (isInternal || !currentData || loginLogSent || !GAS_LOG_URL) return;
+  loginLogSent = true;
+  const fd = new FormData();
+  fd.append('data', JSON.stringify({
+    type:       'ログイン',
+    datetime:   (loginTime || new Date()).toLocaleString('ja-JP'),
     salon_id:   currentData.salon_id || '',
     salon_name: currentData.name     || '',
     device:     getDeviceInfo(),
-    urls:       sessionClickedUrls.slice(0, 10)
-  };
+    urls:       [],
+  }));
+  fetch(GAS_LOG_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+}
+
+// ② セッション終了時にURLクリック履歴を送信（クリックがあった場合のみ）
+function sendUrlRecord() {
+  if (isInternal || !currentData || urlLogSent || !GAS_LOG_URL) return;
+  if (!sessionClickedUrls.length) return;
+  urlLogSent = true;
   const fd = new FormData();
-  fd.append('data', JSON.stringify(payload));
-  fetch(GAS_LOG_URL, { method: 'POST', body: fd, mode: 'no-cors', keepalive: true });
+  fd.append('data', JSON.stringify({
+    type:       'クリック履歴',
+    datetime:   (loginTime || new Date()).toLocaleString('ja-JP'),
+    salon_id:   currentData.salon_id || '',
+    salon_name: currentData.name     || '',
+    device:     getDeviceInfo(),
+    urls:       sessionClickedUrls.slice(0, 10),
+  }));
+  // sendBeacon: ページ離脱時でも確実に送信される
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon(GAS_LOG_URL, fd);
+  } else {
+    fetch(GAS_LOG_URL, { method: 'POST', body: fd, mode: 'no-cors', keepalive: true });
+  }
 }
 
 // ダッシュボード内の外部リンククリックを追跡
@@ -2906,8 +2934,12 @@ document.getElementById('dashboard').addEventListener('click', (e) => {
   if (a && /^https?:/.test(a.href)) trackUrl(a.href);
 });
 
-// タブを閉じた場合のフォールバック送信
-window.addEventListener('beforeunload', () => sendLoginLog());
+// セッション終了イベント（モバイル対応: pagehide + visibilitychange を追加）
+window.addEventListener('beforeunload',   () => sendUrlRecord());
+window.addEventListener('pagehide',       () => sendUrlRecord());
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') sendUrlRecord();
+});
 
 // ===== レポーティングモーダル =====
 
