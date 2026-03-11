@@ -831,14 +831,22 @@
   .rm-rank-title { font-size: 14px; font-weight: 700; color: #1a2035; line-height: 1.4; margin-bottom: 4px; }
   .rm-rank-reason { font-size: 12px; color: #718096; line-height: 1.5; }
 
-  /* KPI課題カード */
-  .rm-kpi-issue-list { display: flex; flex-direction: column; gap: 8px; }
-  .rm-kpi-issue-card { border-radius: 10px; overflow: hidden; border: 1px solid #fecaca; }
-  .rm-kpi-issue-hd { display: flex; align-items: baseline; gap: 10px; padding: 9px 14px; background: #fef2f2; }
-  .rm-kpi-issue-item { font-size: 12px; font-weight: 800; color: #dc2626; flex-shrink: 0; white-space: nowrap; }
-  .rm-kpi-issue-problem { font-size: 12px; color: #7f1d1d; line-height: 1.4; }
-  .rm-kpi-issue-action { font-size: 12px; color: #374151; background: #f9fafb; padding: 7px 14px 9px; line-height: 1.65; border-top: 1px solid #e5e7eb; }
-  .rm-kpi-issue-none { padding: 10px 0; font-size: 13px; color: #16a34a; font-weight: 700; }
+  /* KPI グループ（階層構造） */
+  .rm-kpi-group-list { display: flex; flex-direction: column; gap: 12px; }
+  .rm-kpi-group { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .rm-kpi-group-hd { padding: 10px 14px 11px; background: #1e3a5c; }
+  .rm-kpi-group-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; letter-spacing: 0.02em; }
+  .rm-kpi-group-val { font-size: 22px; font-weight: 900; color: #f87171; line-height: 1.15; }
+  .rm-kpi-group-val.ok { color: #4de8a0; }
+  .rm-kpi-group-meta { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.45); margin-left: 6px; }
+  .rm-kpi-group-items { padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 1px; background: white; }
+  .rm-kpi-item { display: flex; align-items: center; gap: 8px; padding: 5px 4px; border-radius: 5px; }
+  .rm-kpi-item-icon { font-size: 11px; font-weight: 900; flex-shrink: 0; width: 14px; text-align: center; }
+  .rm-kpi-item-label { font-size: 12px; }
+  .rm-kpi-item-ok .rm-kpi-item-icon  { color: #16a34a; }
+  .rm-kpi-item-ok .rm-kpi-item-label { color: #9ca3af; }
+  .rm-kpi-item-ng .rm-kpi-item-icon  { color: #dc2626; }
+  .rm-kpi-item-ng .rm-kpi-item-label { color: #1e3a5c; font-weight: 700; }
 
   /* サブセクション見出し */
   .rm-subsection-title { font-size: 10px; font-weight: 700; color: #718096; letter-spacing: 0.1em; text-transform: uppercase; margin: 14px 0 8px; }
@@ -3196,21 +3204,74 @@ function buildRmSlide2(d, sections) {
 function buildRmSlide3(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
-  const items = sections.kpi_issues;
-  const content = items.length === 0
-    ? '<div class="rm-kpi-issue-none">✅ KPI未実施項目はありません</div>'
-    : items.map(item => `
-        <div class="rm-kpi-issue-card">
-          <div class="rm-kpi-issue-hd">
-            <span class="rm-kpi-issue-item">${item.item}</span>
-            <span class="rm-kpi-issue-problem">${item.problem}</span>
+
+  const access = Number(d.access) || 0;
+  const click  = Number(d.click)  || 0;
+  const nr     = Number(d.net_reserve) || 0;
+  const review = Number(d.review) || 0;
+
+  function pct(val, target) {
+    return target > 0 ? Math.round(val / target * 1000) / 10 : 0;
+  }
+
+  const groups = [
+    {
+      label: 'アクセス数を上げるために',
+      val: access, target: 200, unit: '件',
+      items: [
+        { label: '店舗PR情報登録',    ok: flagOK(d.store_pr) },
+        { label: '予約GMB設置',       ok: flagOK(d.reserve_gmb) },
+        { label: '予約バナー設置',    ok: flagOK(d.reserve_banner) },
+        { label: 'コンパス相互リンク', ok: flagOK(d.compass_link) },
+      ]
+    },
+    {
+      label: 'クリック数を上げるために',
+      val: click, target: 20, unit: '件',
+      items: [
+        { label: `口コミ件数（${review}件）`,  ok: review >= 5 },
+        { label: '口コミ返信',        ok: flagOK(d.review_reply) },
+        { label: 'PickUp口コミ',      ok: flagOK(d.pickup_review) },
+        { label: '口コミパーツ設置',  ok: flagOK(d.review_parts) },
+        { label: 'メニュー3件以上',   ok: flagOK(d.menu3) },
+      ]
+    },
+    {
+      label: '予約数を上げるために',
+      val: nr, target: 2, unit: '件',
+      items: [
+        { label: '予約公開利用院',    ok: flagOK(d.reserve_public) },
+        { label: 'メニュー連携',      ok: flagOK(d.menu_link) },
+        { label: 'ゲスト予約利用',    ok: flagOK(d.guest_reserve) },
+        { label: '予約受付締切時間',  ok: !!(d.deadline && String(d.deadline).trim()) },
+      ]
+    },
+  ];
+
+  const content = groups.map(g => {
+    const rate = pct(g.val, g.target);
+    const valOk = g.val >= g.target;
+    const itemsHtml = g.items.map(item => `
+      <div class="rm-kpi-item ${item.ok ? 'rm-kpi-item-ok' : 'rm-kpi-item-ng'}">
+        <span class="rm-kpi-item-icon">${item.ok ? '✓' : '✗'}</span>
+        <span class="rm-kpi-item-label">${item.label}</span>
+      </div>`).join('');
+    return `
+      <div class="rm-kpi-group">
+        <div class="rm-kpi-group-hd">
+          <div class="rm-kpi-group-label">${g.label}</div>
+          <div class="rm-kpi-group-val${valOk ? ' ok' : ''}">
+            ${g.val}${g.unit}<span class="rm-kpi-group-meta">目標${g.target}${g.unit} / 達成率${rate}%</span>
           </div>
-          <div class="rm-kpi-issue-action">▶ 対策：${item.action}</div>
-        </div>`).join('');
+        </div>
+        <div class="rm-kpi-group-items">${itemsHtml}</div>
+      </div>`;
+  }).join('');
+
   el.innerHTML = `
     <div class="rm-slide-hd">⚠️ 課題 — KPI未実施部分</div>
     <div class="rm-slide-body">
-      <div class="rm-kpi-issue-list">${content}</div>
+      <div class="rm-kpi-group-list">${content}</div>
     </div>
   `;
   return el;
