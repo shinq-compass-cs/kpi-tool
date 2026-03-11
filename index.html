@@ -688,107 +688,104 @@
   .report-trigger-btn:hover { background: #2e6da4; color: white; }
 
   /* ===== レポートモーダル ===== */
-  /* ===== レポートモーダル ===== */
+  /* ===== レポートモーダル（LP縦スクロール） ===== */
   .report-modal {
     position: fixed;
     inset: 0;
-    background: #0f1923;
+    background: #edf0f4;
     z-index: 2000;
     display: none;
     flex-direction: column;
     overflow: hidden;
   }
   .rm-close {
-    position: absolute;
-    top: 14px; right: 16px;
-    width: 36px; height: 36px;
+    position: fixed;
+    top: 12px; right: 14px;
+    width: 32px; height: 32px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.18);
     border: none; color: white;
-    font-size: 18px; cursor: pointer;
+    font-size: 16px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    z-index: 10;
+    z-index: 2100;
     transition: background 0.2s;
   }
-  .rm-close:hover { background: rgba(255,255,255,0.25); }
+  .rm-close:hover { background: rgba(0,0,0,0.35); }
   .rm-ai-status {
-    position: absolute;
-    top: 14px; left: 16px;
+    position: fixed;
+    top: 12px; left: 14px;
     display: none;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.55);
-    z-index: 10;
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    background: rgba(0,0,0,0.3);
+    padding: 4px 10px;
+    border-radius: 12px;
+    z-index: 2100;
   }
   .rm-spinner {
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.2);
+    width: 12px; height: 12px;
+    border: 2px solid rgba(255,255,255,0.25);
     border-top-color: #4de8a0;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* slides */
+  /* LP スクロールコンテナ */
   #rm-slides {
     flex: 1;
-    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 32px;
+  }
+
+  /* LP セクションカード */
+  .rm-slide {
+    display: block;
+    margin: 10px 14px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     overflow: hidden;
   }
-  .rm-slide {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-  }
   .rm-slide-hd {
-    padding: 20px 48px 14px;
+    padding: 11px 18px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #1e3a5c;
     border-bottom: 1.5px solid #e2e8f0;
-    background: white;
-    flex-shrink: 0;
-  }
-  .rm-hd-dark { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); }
-  .rm-tag {
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.08em;
-    padding: 4px 10px; border-radius: 4px;
-    flex-shrink: 0;
-  }
-  .rm-hd-sub { font-size: 12px; color: #718096; }
-  .rm-sub-dark { color: rgba(255,255,255,0.4); }
-  .rm-ai-badge {
-    display: inline-block;
-    font-size: 10px; font-weight: 700;
-    background: #d1fae5; color: #065f46;
-    padding: 1px 6px; border-radius: 3px;
-    margin-left: 6px;
+    background: #f7f9fc;
+    letter-spacing: 0.01em;
   }
   .rm-slide-body {
-    flex: 1;
-    padding: 18px 48px 24px;
-    overflow-y: auto;
+    padding: 16px 18px 18px;
     background: white;
   }
-  .rm-section-title {
-    font-size: 13px; font-weight: 700;
-    color: #1e3a5c; margin-bottom: 12px;
-  }
-  .rm-dark { color: rgba(255,255,255,0.7); }
 
-  /* S1 Title */
+  /* S1 ヒーローバー */
   .rm-s1 {
-    background: linear-gradient(150deg, #0f2540 0%, #1b3a5c 60%, #1a3026 100%);
-    justify-content: center; align-items: center; text-align: center;
+    margin: 0 0 10px;
+    border-radius: 0;
+    box-shadow: none;
+    background: linear-gradient(135deg, #0f2540 0%, #1b3a5c 55%, #163226 100%);
+    padding: 16px 52px 16px 18px;
   }
-  .rm-s1-eyecatch { font-size: 48px; margin-bottom: 16px; }
-  .rm-s1-title { font-size: clamp(22px, 5vw, 40px); font-weight: 900; color: white; margin-bottom: 10px; }
-  .rm-s1-salon { font-size: clamp(18px, 4vw, 30px); font-weight: 900; color: #4de8a0; margin-bottom: 6px; }
-  .rm-s1-area { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
-  .rm-s1-date { font-size: 13px; color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.08); padding: 4px 16px; border-radius: 16px; display: inline-block; }
+  .rm-s1-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.45); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
+  .rm-s1-salon { font-size: 18px; font-weight: 900; color: #4de8a0; margin-bottom: 3px; }
+  .rm-s1-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+  /* 旧 S1 スタイル（未使用になるが残す） */
+  .rm-s1-eyecatch { display: none; }
+  .rm-s1-title { display: none; }
+  .rm-s1-area { display: none; }
+  .rm-s1-date { display: none; }
+
+  /* ナビ（LP化後は非表示） */
+  .rm-nav { display: none !important; }
 
   /* S2 KPI */
   .rm-rank { font-size: 14px; font-weight: 700; color: #1e3a5c; margin-bottom: 12px; }
