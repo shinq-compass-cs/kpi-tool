@@ -1498,7 +1498,8 @@ const ADVISOR_GAS_URL = 'https://script.google.com/macros/s/AKfycbxZB0-yz0F0jlqU
 let currentSalonData = null; // AI分析用にログイン中のサロンデータを保持
 let isInternal = false; // ログイン時に社内/社外を判定して設定
 let loginTime = null;
-let logSent = false;
+let loginLogSent = false;  // ログイン直後送信フラグ
+let urlLogSent   = false;  // セッション終了時URL送信フラグ
 const sessionClickedUrls = [];
 
 // ===== 設定（ここを変更してください） =====
