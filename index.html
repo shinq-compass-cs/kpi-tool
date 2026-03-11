@@ -3274,13 +3274,13 @@ document.addEventListener('keydown', e => {
 function buildRmSlide1(d) {
   const el = document.createElement('div');
   el.className = 'rm-slide rm-s1';
-  const today = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+  const now = new Date();
+  const monthLabel = `${now.getFullYear()}年${now.getMonth() + 1}月度`;
+  const sub = [d.area, d.compass_plan, monthLabel].filter(Boolean).join('　｜　');
   el.innerHTML = `
-    <div class="rm-s1-eyecatch">📊</div>
-    <div class="rm-s1-title">集客フォローレポート</div>
+    <div class="rm-s1-label">月次KPI フォローレポート</div>
     <div class="rm-s1-salon">${d.name || '―'}</div>
-    <div class="rm-s1-area">${d.area || ''} / ${d.compass_plan || ''}</div>
-    <div class="rm-s1-date">${today}</div>
+    <div class="rm-s1-sub">${sub}</div>
   `;
   return el;
 }
