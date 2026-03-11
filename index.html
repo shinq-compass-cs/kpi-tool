@@ -3204,21 +3204,74 @@ function buildRmSlide2(d, sections) {
 function buildRmSlide3(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
-  const items = sections.kpi_issues;
-  const content = items.length === 0
-    ? '<div class="rm-kpi-issue-none">✅ KPI未実施項目はありません</div>'
-    : items.map(item => `
-        <div class="rm-kpi-issue-card">
-          <div class="rm-kpi-issue-hd">
-            <span class="rm-kpi-issue-item">${item.item}</span>
-            <span class="rm-kpi-issue-problem">${item.problem}</span>
+
+  const access = Number(d.access) || 0;
+  const click  = Number(d.click)  || 0;
+  const nr     = Number(d.net_reserve) || 0;
+  const review = Number(d.review) || 0;
+
+  function pct(val, target) {
+    return target > 0 ? Math.round(val / target * 1000) / 10 : 0;
+  }
+
+  const groups = [
+    {
+      label: 'アクセス数を上げるために',
+      val: access, target: 200, unit: '件',
+      items: [
+        { label: '店舗PR情報登録',    ok: flagOK(d.store_pr) },
+        { label: '予約GMB設置',       ok: flagOK(d.reserve_gmb) },
+        { label: '予約バナー設置',    ok: flagOK(d.reserve_banner) },
+        { label: 'コンパス相互リンク', ok: flagOK(d.compass_link) },
+      ]
+    },
+    {
+      label: 'クリック数を上げるために',
+      val: click, target: 20, unit: '件',
+      items: [
+        { label: `口コミ件数（${review}件）`,  ok: review >= 5 },
+        { label: '口コミ返信',        ok: flagOK(d.review_reply) },
+        { label: 'PickUp口コミ',      ok: flagOK(d.pickup_review) },
+        { label: '口コミパーツ設置',  ok: flagOK(d.review_parts) },
+        { label: 'メニュー3件以上',   ok: flagOK(d.menu3) },
+      ]
+    },
+    {
+      label: '予約数を上げるために',
+      val: nr, target: 2, unit: '件',
+      items: [
+        { label: '予約公開利用院',    ok: flagOK(d.reserve_public) },
+        { label: 'メニュー連携',      ok: flagOK(d.menu_link) },
+        { label: 'ゲスト予約利用',    ok: flagOK(d.guest_reserve) },
+        { label: '予約受付締切時間',  ok: !!(d.deadline && String(d.deadline).trim()) },
+      ]
+    },
+  ];
+
+  const content = groups.map(g => {
+    const rate = pct(g.val, g.target);
+    const valOk = g.val >= g.target;
+    const itemsHtml = g.items.map(item => `
+      <div class="rm-kpi-item ${item.ok ? 'rm-kpi-item-ok' : 'rm-kpi-item-ng'}">
+        <span class="rm-kpi-item-icon">${item.ok ? '✓' : '✗'}</span>
+        <span class="rm-kpi-item-label">${item.label}</span>
+      </div>`).join('');
+    return `
+      <div class="rm-kpi-group">
+        <div class="rm-kpi-group-hd">
+          <div class="rm-kpi-group-label">${g.label}</div>
+          <div class="rm-kpi-group-val${valOk ? ' ok' : ''}">
+            ${g.val}${g.unit}<span class="rm-kpi-group-meta">目標${g.target}${g.unit} / 達成率${rate}%</span>
           </div>
-          <div class="rm-kpi-issue-action">▶ 対策：${item.action}</div>
-        </div>`).join('');
+        </div>
+        <div class="rm-kpi-group-items">${itemsHtml}</div>
+      </div>`;
+  }).join('');
+
   el.innerHTML = `
     <div class="rm-slide-hd">⚠️ 課題 — KPI未実施部分</div>
     <div class="rm-slide-body">
-      <div class="rm-kpi-issue-list">${content}</div>
+      <div class="rm-kpi-group-list">${content}</div>
     </div>
   `;
   return el;
