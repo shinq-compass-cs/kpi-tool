@@ -3345,19 +3345,21 @@ function buildRmSlide2(d, sections) {
 function buildRmSlide3(d, sections, fromAI) {
   const el = document.createElement('div');
   el.className = 'rm-slide';
-  const items = sections.strengths;
-  const icons = ['✦', '◆', '★', '●', '▲', '♦'];
-  const content = items.length
-    ? items.map((t, i) => `
-        <div class="rm-strength-item">
-          <span class="rm-strength-icon">${icons[i % icons.length]}</span>
-          <span class="rm-strength-text">${t}</span>
-        </div>`).join('')
-    : '<div class="rm-placeholder">AI分析後に院の強みを表示します</div>';
+  const items = sections.kpi_issues;
+  const content = items.length === 0
+    ? '<div class="rm-kpi-issue-none">✅ KPI未実施項目はありません</div>'
+    : items.map(item => `
+        <div class="rm-kpi-issue-card">
+          <div class="rm-kpi-issue-hd">
+            <span class="rm-kpi-issue-item">${item.item}</span>
+            <span class="rm-kpi-issue-problem">${item.problem}</span>
+          </div>
+          <div class="rm-kpi-issue-action">▶ 対策：${item.action}</div>
+        </div>`).join('');
   el.innerHTML = `
-    <div class="rm-slide-hd">💪 院の強み・良いところ</div>
+    <div class="rm-slide-hd">⚠️ 課題 — KPI未実施部分</div>
     <div class="rm-slide-body">
-      <div class="rm-strength-list">${content}</div>
+      <div class="rm-kpi-issue-list">${content}</div>
     </div>
   `;
   return el;
