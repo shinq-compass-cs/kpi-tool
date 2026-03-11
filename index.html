@@ -3214,24 +3214,15 @@ function flagLabel(key) {
 function renderReportSlides(d, sections, fromAI) {
   const container = document.getElementById('rm-slides');
   container.innerHTML = '';
-  rmSlideData = [];
+  container.scrollTop = 0;
 
-  const slides = [
+  [
     buildRmSlide1(d),
     buildRmSlide2(d, sections),
     buildRmSlide3(d, sections, fromAI),
     buildRmSlide4(d, sections, fromAI),
     buildRmSlide5(d, sections, fromAI),
-  ];
-
-  slides.forEach((el, i) => {
-    el.dataset.idx = i;
-    el.style.display = 'none';
-    container.appendChild(el);
-    rmSlideData.push({ el, hasAI: fromAI && i >= 1 && i <= 4 });
-  });
-
-  updateRmNav(slides.length);
+  ].forEach(el => container.appendChild(el));
 }
 
 function showRmSlide(idx) {
