@@ -3332,7 +3332,7 @@ function buildRmSlide2(d, sections) {
   const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
 
   el.innerHTML = `
-    <div class="rm-slide-hd">📊 今月の成績</div>
+    <div class="rm-slide-hd">📊 数値サマリー</div>
     <div class="rm-slide-body">
       ${rank ? `<div class="rm-rank">${rank}</div>` : ''}
       <div class="rm-kpi-grid">${kpiCards}</div>
