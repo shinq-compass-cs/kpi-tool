@@ -3164,13 +3164,14 @@ function parseAIToSections(text) {
     const obj = JSON.parse(clean);
     console.log('[AI Advisor] JSON parse OK:', obj);
     return {
-      strengths: Array.isArray(obj.strengths) ? obj.strengths : [],
-      issues:    Array.isArray(obj.issues)    ? obj.issues    : [],
-      top3:      Array.isArray(obj.top3)      ? obj.top3      : [],
+      kpi_issues:   Array.isArray(obj.kpi_issues)   ? obj.kpi_issues   : [],
+      page_summary: typeof obj.page_summary === 'string' ? obj.page_summary : '',
+      page_details: Array.isArray(obj.page_details) ? obj.page_details  : [],
+      top3:         Array.isArray(obj.top3)          ? obj.top3          : [],
     };
   } catch(e) {
     console.warn('[AI Advisor] JSONパース失敗:', e.message);
-    return { strengths: [], issues: [], top3: [] };
+    return { kpi_issues: [], page_summary: '', page_details: [], top3: [] };
   }
 }
 
