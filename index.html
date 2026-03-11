@@ -3225,38 +3225,10 @@ function renderReportSlides(d, sections, fromAI) {
   ].forEach(el => container.appendChild(el));
 }
 
-function showRmSlide(idx) {
-  if (!rmSlideData.length) return;
-  idx = Math.max(0, Math.min(idx, rmSlideData.length - 1));
-  rmCurrentIdx = idx;
-  rmSlideData.forEach((s, i) => {
-    s.el.style.display = i === idx ? 'flex' : 'none';
-  });
-  updateRmNav(rmSlideData.length);
-}
-
-function updateRmNav(total) {
-  document.getElementById('rm-counter').textContent = `${rmCurrentIdx + 1} / ${total}`;
-  const dots = document.getElementById('rm-dots');
-  dots.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('span');
-    d.className = 'rm-dot' + (i === rmCurrentIdx ? ' active' : '');
-    d.onclick = () => showRmSlide(i);
-    dots.appendChild(d);
-  }
-}
-
-function rmNav(dir) {
-  showRmSlide(rmCurrentIdx + dir);
-}
-
 // キーボード操作
 document.addEventListener('keydown', e => {
   if (document.getElementById('report-modal').style.display !== 'none') {
-    if (e.key === 'ArrowRight') rmNav(1);
-    if (e.key === 'ArrowLeft')  rmNav(-1);
-    if (e.key === 'Escape')     closeReport();
+    if (e.key === 'Escape') closeReport();
   }
 });
 
