@@ -3280,33 +3280,33 @@ function buildRmSlide3(d, sections, fromAI) {
   const groups = [
     {
       label: 'アクセス数を上げるために',
-      val: access, target: 200, unit: '件',
+      val: access, target: 200, unit: '',
       items: [
-        { label: '店舗PR情報登録',    ok: flagOK(d.store_pr) },
-        { label: '予約GMB設置',       ok: flagOK(d.reserve_gmb) },
-        { label: '予約バナー設置',    ok: flagOK(d.reserve_banner) },
-        { label: 'コンパス相互リンク', ok: flagOK(d.compass_link) },
+        { label: '店舗PR情報登録',    ok: flagOK(d.store_pr),       advice: '院の紹介文・特徴を管理画面に登録すると検索表示と信頼感が上がります' },
+        { label: '予約GMB設置',       ok: flagOK(d.reserve_gmb),    advice: 'GoogleマップにコンパスURLを設定し検索から直接予約できる導線を作ります' },
+        { label: '予約バナー設置',    ok: flagOK(d.reserve_banner), advice: 'ページ上部に予約バナーを設置すると来院意欲をすぐ行動に変えられます' },
+        { label: 'コンパス相互リンク', ok: flagOK(d.compass_link),  advice: '院のHPとコンパスを相互リンクするとSEO効果が高まりアクセスが増えます' },
       ]
     },
     {
       label: 'クリック数を上げるために',
-      val: click, target: 20, unit: '件',
+      val: click, target: 20, unit: '',
       items: [
-        { label: `口コミ件数（${review}件）`,  ok: review >= 5 },
-        { label: '口コミ返信',        ok: flagOK(d.review_reply) },
-        { label: 'PickUp口コミ',      ok: flagOK(d.pickup_review) },
-        { label: '口コミパーツ設置',  ok: flagOK(d.review_parts) },
-        { label: 'メニュー3件以上',   ok: flagOK(d.menu3) },
+        { label: `口コミ件数（${review}件）`,  ok: review >= 5,              advice: '口コミ5件未満は信頼感不足です。会計時に一声かけてQRコードで口コミをお願いしましょう' },
+        { label: '口コミ返信',        ok: flagOK(d.review_reply),   advice: '口コミ1件ずつに院長名で丁寧な返信をすると誠実さが伝わり新患が安心して来院できます' },
+        { label: 'PickUp口コミ',      ok: flagOK(d.pickup_review),  advice: '特に印象的な口コミをPickUpに設定するとページを見た人の背中を押す効果があります' },
+        { label: '口コミパーツ設置',  ok: flagOK(d.review_parts),   advice: 'HPに口コミウィジェットを貼ると外部からの信頼がページ閲覧者にも伝わります' },
+        { label: 'メニュー3件以上',   ok: flagOK(d.menu3),          advice: 'メニュー・料金・所要時間を3件以上登録すると情報量が増え予約ページを開く人が増えます' },
       ]
     },
     {
       label: '予約数を上げるために',
       val: nr, target: 2, unit: '件',
       items: [
-        { label: '予約公開利用院',    ok: flagOK(d.reserve_public) },
-        { label: 'メニュー連携',      ok: flagOK(d.menu_link) },
-        { label: 'ゲスト予約利用',    ok: flagOK(d.guest_reserve) },
-        { label: '予約受付締切時間',  ok: !!(d.deadline && String(d.deadline).trim()) },
+        { label: '予約公開利用院',    ok: flagOK(d.reserve_public), advice: 'ネット予約を公開すると24時間いつでも予約受付が可能になり機会損失が減ります' },
+        { label: 'メニュー連携',      ok: flagOK(d.menu_link),      advice: '予約画面にメニューを連携すると患者さんが施術を選んで予約でき成約率が上がります' },
+        { label: 'ゲスト予約利用',    ok: flagOK(d.guest_reserve),  advice: '会員登録不要のゲスト予約を有効にすると予約のハードルが下がり予約数が増えます' },
+        { label: '予約受付締切時間',  ok: !!(d.deadline && String(d.deadline).trim()), advice: '締切時間を設定することで当日のオペレーション管理がしやすくなります' },
       ]
     },
   ];
