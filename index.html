@@ -1910,7 +1910,8 @@ async function handleLogin() {
     isInternal = loginIsInternal;
     if (!isInternal) {
       loginTime = new Date();
-      logSent = false;
+      loginLogSent = false;
+      urlLogSent   = false;
       sessionClickedUrls.length = 0;
     }
     saveSession(salonId, email);
