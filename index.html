@@ -2234,8 +2234,8 @@ function renderDashboard(d, sheetName) {
   // エリア比較ヒートマップ描画
   renderAreaHeatmap(d);
 
-  // レポーティングボタン（常に表示）
-  document.getElementById('report-trigger-row').style.display = 'block';
+  // レポーティングボタン（社内アカウントのみ表示）
+  document.getElementById('report-trigger-row').style.display = isInternal ? 'block' : 'none';
 
   // AIアドバイザーセクション（detail_urlがあり、GAS URLが設定済みの場合のみ表示）
   if (d.detail_url && ADVISOR_GAS_URL) {
