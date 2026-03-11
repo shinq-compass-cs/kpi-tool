@@ -2259,15 +2259,6 @@ function renderDashboard(d, sheetName) {
   // レポーティングボタン（社内アカウントのみ表示）
   document.getElementById('report-trigger-row').style.display = isInternal ? 'block' : 'none';
 
-  // AIアドバイザーセクション（detail_urlがあり、GAS URLが設定済みの場合のみ表示）
-  if (d.detail_url && ADVISOR_GAS_URL) {
-    document.getElementById('ai-advisor-section').style.display = 'block';
-    // 再分析できるようボタンをリセット
-    const btn = document.getElementById('ai-advisor-btn');
-    btn.disabled = false;
-    btn.textContent = '🤖 AIマーケティング分析を実行する';
-    document.getElementById('ai-result-area').style.display = 'none';
-  }
 }
 
 // ===== QRコードダウンロード =====
