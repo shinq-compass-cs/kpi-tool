@@ -831,14 +831,22 @@
   .rm-rank-title { font-size: 14px; font-weight: 700; color: #1a2035; line-height: 1.4; margin-bottom: 4px; }
   .rm-rank-reason { font-size: 12px; color: #718096; line-height: 1.5; }
 
-  /* KPI課題カード */
-  .rm-kpi-issue-list { display: flex; flex-direction: column; gap: 8px; }
-  .rm-kpi-issue-card { border-radius: 10px; overflow: hidden; border: 1px solid #fecaca; }
-  .rm-kpi-issue-hd { display: flex; align-items: baseline; gap: 10px; padding: 9px 14px; background: #fef2f2; }
-  .rm-kpi-issue-item { font-size: 12px; font-weight: 800; color: #dc2626; flex-shrink: 0; white-space: nowrap; }
-  .rm-kpi-issue-problem { font-size: 12px; color: #7f1d1d; line-height: 1.4; }
-  .rm-kpi-issue-action { font-size: 12px; color: #374151; background: #f9fafb; padding: 7px 14px 9px; line-height: 1.65; border-top: 1px solid #e5e7eb; }
-  .rm-kpi-issue-none { padding: 10px 0; font-size: 13px; color: #16a34a; font-weight: 700; }
+  /* KPI グループ（階層構造） */
+  .rm-kpi-group-list { display: flex; flex-direction: column; gap: 12px; }
+  .rm-kpi-group { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .rm-kpi-group-hd { padding: 10px 14px 11px; background: #1e3a5c; }
+  .rm-kpi-group-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; letter-spacing: 0.02em; }
+  .rm-kpi-group-val { font-size: 22px; font-weight: 900; color: #f87171; line-height: 1.15; }
+  .rm-kpi-group-val.ok { color: #4de8a0; }
+  .rm-kpi-group-meta { font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.45); margin-left: 6px; }
+  .rm-kpi-group-items { padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 1px; background: white; }
+  .rm-kpi-item { display: flex; align-items: center; gap: 8px; padding: 5px 4px; border-radius: 5px; }
+  .rm-kpi-item-icon { font-size: 11px; font-weight: 900; flex-shrink: 0; width: 14px; text-align: center; }
+  .rm-kpi-item-label { font-size: 12px; }
+  .rm-kpi-item-ok .rm-kpi-item-icon  { color: #16a34a; }
+  .rm-kpi-item-ok .rm-kpi-item-label { color: #9ca3af; }
+  .rm-kpi-item-ng .rm-kpi-item-icon  { color: #dc2626; }
+  .rm-kpi-item-ng .rm-kpi-item-label { color: #1e3a5c; font-weight: 700; }
 
   /* サブセクション見出し */
   .rm-subsection-title { font-size: 10px; font-weight: 700; color: #718096; letter-spacing: 0.1em; text-transform: uppercase; margin: 14px 0 8px; }
