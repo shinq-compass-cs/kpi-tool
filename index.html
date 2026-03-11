@@ -667,27 +667,25 @@
 
   /* ===== レポーティングボタン ===== */
   .report-trigger-row {
-    margin: 0 0 14px;
+    margin: 16px 0 6px;
+    text-align: center;
   }
   .report-trigger-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 13px 16px;
-    background: linear-gradient(135deg, #1e3a5c, #2d6a8f);
-    color: white;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 15px;
+    gap: 5px;
+    padding: 6px 14px;
+    background: transparent;
+    color: #2e6da4;
+    border: 1px solid #2e6da4;
+    border-radius: 20px;
+    font-size: 12px;
     font-family: inherit;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 3px 12px rgba(30,58,92,0.25);
-    transition: opacity 0.2s;
+    transition: background 0.2s, color 0.2s;
   }
-  .report-trigger-btn:hover { opacity: 0.88; }
+  .report-trigger-btn:hover { background: #2e6da4; color: white; }
 
   /* ===== レポートモーダル ===== */
   .report-modal {
