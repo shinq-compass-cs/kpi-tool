@@ -796,9 +796,12 @@
   /* CS読み上げ用スクリプト行 */
   .rm-script-line { font-size: 12px; color: #4a5568; background: #edf2f7; border-left: 3px solid #a0aec0; border-radius: 0 8px 8px 0; padding: 9px 14px; margin-bottom: 14px; font-style: italic; line-height: 1.65; }
   /* S2 KPI ラベル・ターゲット・ユニット */
-  .rm-kc-label { font-size: 10px; font-weight: 700; color: #718096; margin-bottom: 6px; line-height: 1.3; }
+  .rm-kc-label { font-size: 11px; font-weight: 700; color: #718096; margin-bottom: 1px; line-height: 1.3; }
+  .rm-kc-sublabel { font-size: 9px; color: #b0b8c8; margin-bottom: 5px; line-height: 1.3; }
   .rm-kc-unitsp { font-size: 14px; font-weight: 400; color: #718096; margin-left: 2px; }
-  .rm-kc-target { font-size: 10px; color: #a0aec0; margin: 2px 0 4px; }
+  .rm-kc-target { font-size: 10px; color: #a0aec0; margin: 2px 0 2px; }
+  .rm-kc-proj { font-size: 10px; color: #4a65b0; margin: 1px 0 3px; }
+  .rm-kc-proj strong { font-weight: 800; }
   /* S2 総合判定バナー */
   .rm-verdict { margin-top: 14px; padding: 11px 16px; border-radius: 10px; font-size: 14px; font-weight: 700; text-align: center; }
   .rm-verdict-ok   { background: #f0fdf4; color: #15803d; border: 1.5px solid #bbf7d0; }
@@ -3198,27 +3201,48 @@ function buildRmSlide2(d, sections) {
   const review = Number(d.review) || 0;
   const nr     = Number(d.net_reserve) || 0;
 
+  // 月末着地見込み計算
+  const now = new Date();
+  const todayDay = now.getDate();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  function projection(val) {
+    if (!val || todayDay <= 0) return null;
+    return Math.round(val / todayDay * daysInMonth);
+  }
+  const accessProj = projection(access);
+  const clickProj  = projection(click);
+
   const kpiCards = [
-    { label: 'ページを見た人', val: access, unit: '人', target: 200, ok: access >= 200 },
-    { label: '予約ページを\n開いた人',      val: click,  unit: '人', target: 20,  ok: click  >= 20  },
-    { label: '口コミ数',       val: review, unit: '件', target: 5,   ok: review >= 5   },
-    { label: 'ネット予約数',   val: nr,     unit: '件', target: 2,   ok: nr     >= 2   },
+    {
+      label: 'アクセス数',    sublabel: 'ページを見た人数',
+      val: access, unit: '件', target: 200, ok: access >= 200,
+      proj: accessProj,
+    },
+    {
+      label: 'クリック数',    sublabel: 'クリックして予約ページを開いた人',
+      val: click,  unit: '件', target: 20,  ok: click  >= 20,
+      proj: clickProj,
+    },
+    {
+      label: 'ネット予約数',  sublabel: '',
+      val: nr,     unit: '件', target: 2,   ok: nr     >= 2,
+      proj: null,
+    },
+    {
+      label: '口コミ数',      sublabel: '',
+      val: review, unit: '件', target: 5,   ok: review >= 5,
+      proj: null,
+    },
   ].map(c => `
     <div class="rm-kpi-card ${c.ok ? 'rm-kc-ok' : 'rm-kc-ng'}">
-      <div class="rm-kc-label">${c.label.replace('\n', '<br>')}</div>
+      <div class="rm-kc-label">${c.label}</div>
+      ${c.sublabel ? `<div class="rm-kc-sublabel">${c.sublabel}</div>` : ''}
       <div class="rm-kc-val">${c.val}<span class="rm-kc-unitsp">${c.unit}</span></div>
       <div class="rm-kc-target">目標 ${c.target}${c.unit}</div>
+      ${c.proj !== null ? `<div class="rm-kc-proj">月末着地 <strong>${c.proj}${c.unit}</strong></div>` : ''}
       <div class="rm-kc-status">${c.ok ? '✅ 達成' : '⚠️ 要改善'}</div>
     </div>
   `).join('');
-
-  const okCount = [access >= 200, click >= 20, review >= 5, nr >= 2].filter(Boolean).length;
-  const verdictText = okCount === 4
-    ? '全項目達成！このまま継続しましょう 🎉'
-    : okCount >= 2
-    ? `${4 - okCount}項目に改善の余地があります`
-    : `重点的な改善が必要な状態です（${okCount}/4 達成）`;
-  const verdictClass = okCount === 4 ? 'rm-verdict-ok' : okCount >= 2 ? 'rm-verdict-warn' : 'rm-verdict-ng';
 
   const rank = d.area_rank ? `エリア内 <strong>${d.area_rank}位</strong>` : '';
 
@@ -3227,7 +3251,6 @@ function buildRmSlide2(d, sections) {
     <div class="rm-slide-body">
       ${rank ? `<div class="rm-rank">${rank}</div>` : ''}
       <div class="rm-kpi-grid">${kpiCards}</div>
-      <div class="rm-verdict ${verdictClass}">${verdictText}</div>
     </div>
   `;
   return el;
