@@ -2666,7 +2666,7 @@ function calcPotentialRank(area, maxPt, allRows, hm) {
   let countAbove = 0;
   for (let i = startRow; i < allRows.length; i++) {
     const rowArea = String(allRows[i][areaIdx] || '').trim();
-    const rowPt   = parseFloat(allRows[i][ptIdx]);
+    const rowPt   = parseNum(allRows[i][ptIdx]);
     if (rowArea === String(area || '').trim() && !isNaN(rowPt) && rowPt > maxPt) {
       countAbove++;
     }
