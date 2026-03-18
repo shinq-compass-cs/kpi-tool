@@ -2596,23 +2596,31 @@ function calcFirstPlacePt(area, allRows, hm) {
 }
 
 // ===== 追加取得可能ポイント計算 =====
+// ※初月ボーナス（プレミアム+150pt / プラチナ+300pt / ダイヤ+300pt）は継続後に消滅するため含まない
+// ※継続利用ポイント（最大150〜300pt）はスプレッドシート非取得のため含まない
 function calcAdditionalPoints(d) {
-  const isPlatinaPlus = String(d.compass_plan || '').trim() === 'プラチナPLUSプラン' ||
-                        String(d.compass_plan || '').trim() === 'プラチナPLUS';
+  const plan = getPlanType(d.compass_plan);
+  const isPaid = plan !== 'free';
+  const isPlatinaOrDiamond = plan === 'platina' || plan === 'diamond';
+  // 店舗情報登録（全5項目完了）: プラン別 50/100/200pt
+  const storePrPt = isPlatinaOrDiamond ? 200 : (plan === 'premium' ? 100 : 50);
+  // 口コミパーツ: 無料プランは対象外（0pt）
+  const reviewPartsPt = isPaid ? 30 : 0;
   const items = [
-    { key: 'store_pr',       point: 100, type: 'flag' },
-    { key: 'reserve_public', point: 50,  type: 'flag_str' },
-    { key: 'reserve_gmb',    point: 50,  type: 'flag' },
-    { key: 'reserve_banner', point: 50,  type: 'flag' },
-    { key: 'compass_link',   point: 30,  type: 'flag' },
-    { key: 'review_parts',   point: 30,  type: 'flag' },
+    { key: 'store_pr',       point: storePrPt,    type: 'flag' },
+    { key: 'reserve_public', point: 50,            type: 'flag_str' },
+    { key: 'reserve_gmb',    point: 50,            type: 'flag' },
+    { key: 'reserve_banner', point: 50,            type: 'flag' },
+    { key: 'compass_link',   point: 30,            type: 'flag' },
+    { key: 'review_parts',   point: reviewPartsPt, type: 'flag' },
   ];
   let add = 0;
   for (const item of items) {
+    if (item.point === 0) continue;
     const val = d[item.key];
     const achieved = item.type === 'flag'
       ? (Number(val) >= 1)
-      : (val == 1 || val === '公開') || (item.key === 'reserve_public' && isPlatinaPlus);
+      : (val == 1 || val === '公開');
     if (!achieved) add += item.point;
   }
   return add;
