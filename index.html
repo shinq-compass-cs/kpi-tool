@@ -2601,7 +2601,7 @@ function calcFirstPlacePt(area, allRows, hm) {
   let maxPt = 0;
   for (let i = hi + 1; i < allRows.length; i++) {
     const rowArea = String(allRows[i][areaIdx] || '').trim();
-    const rowPt   = parseFloat(allRows[i][ptIdx]);
+    const rowPt   = parseNum(allRows[i][ptIdx]);
     if (rowArea === String(area || '').trim() && !isNaN(rowPt)) {
       maxPt = Math.max(maxPt, rowPt);
     }
