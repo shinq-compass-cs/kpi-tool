@@ -2552,15 +2552,30 @@ function renderAreaHeatmap(d) {
   el.style.display = 'block';
 }
 
+// ===== プラン判定ヘルパー =====
+// 戻り値: 'diamond' | 'platina' | 'premium' | 'free'
+function getPlanType(compassPlan) {
+  const p = String(compassPlan || '').trim();
+  if (p.includes('ダイヤモンド')) return 'diamond';
+  if (p.includes('プラチナ')) return 'platina';  // プラチナPLUS も含む
+  if (p.includes('プレミアム')) return 'premium';
+  return 'free';  // 無料体験・無料プラン
+}
+
 // ===== プラン別・口コミポイント定義 =====
-// プレミアム:  口コミ3pt（上限300pt）/ 返信2pt（上限200pt）
-// プラチナ系:  口コミ5pt（上限500pt）/ 返信3pt（上限300pt）
+// 無料:        口コミ2pt（上限200pt）/ 返信0pt
+// プレミアム:   口コミ3pt（上限300pt）/ 返信2pt（上限200pt）
+// プラチナ系:   口コミ5pt（上限500pt）/ 返信3pt（上限300pt）
+// ダイヤモンド: 口コミ5pt（上限500pt）/ 返信3pt（上限300pt）
 function getReviewPlanPts(compassPlan) {
-  const plan = String(compassPlan || '').trim();
-  const isPlatina = plan.includes('プラチナ');
-  return isPlatina
-    ? { reviewPt: 5, replyPt: 3, reviewCapPt: 500, replyCapPt: 300 }
-    : { reviewPt: 3, replyPt: 2, reviewCapPt: 300, replyCapPt: 200 };
+  const plan = getPlanType(compassPlan);
+  if (plan === 'platina' || plan === 'diamond') {
+    return { reviewPt: 5, replyPt: 3, reviewCapPt: 500, replyCapPt: 300 };
+  } else if (plan === 'premium') {
+    return { reviewPt: 3, replyPt: 2, reviewCapPt: 300, replyCapPt: 200 };
+  } else {
+    return { reviewPt: 2, replyPt: 0, reviewCapPt: 200, replyCapPt: 0 };
+  }
 }
 
 // ===== エリア内1位のポイントを取得 =====
