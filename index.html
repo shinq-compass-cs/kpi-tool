@@ -2153,8 +2153,15 @@ function renderDashboard(d, sheetName) {
         valueText = value !== null ? `${value}${item.unit}` : '―';
       }
 
+      let ptDisplay = item.point;
+      if (item.key === 'store_pr') {
+        const pt = getPlanType(d.compass_plan);
+        ptDisplay = (pt === 'platina' || pt === 'diamond') ? 200 : pt === 'premium' ? 100 : 50;
+      } else if (item.key === 'review_parts') {
+        ptDisplay = getPlanType(d.compass_plan) !== 'free' ? 30 : null;
+      }
       const pointBadge = item.searchPoint
-        ? `<span class="kpi-point-badge">★ ${item.point ? item.point + 'pt' : 'ポイント対象'}</span>`
+        ? `<span class="kpi-point-badge">★ ${ptDisplay ? ptDisplay + 'pt' : 'ポイント対象'}</span>`
         : '';
 
       const statusIcon = isInfo ? '―' : (achieved ? '✓' : '!');
