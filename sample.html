@@ -2523,7 +2523,7 @@ function renderAreaHeatmap(d) {
   const rowsHtml = rows.map(item => {
     const isGap = !item.selfAchieved && item.rate >= 50;
     const rowClass = isGap ? 'heatmap-row gap' : 'heatmap-row';
-    const selfIcon = item.selfAchieved ? '✓ 達成' : '✗ 未達';
+    const selfIcon = item.selfAchieved ? '✓ 自院達成' : '✗ 自院未達';
     const selfClass = item.selfAchieved ? 'ok' : 'ng';
 
     let diffHtml = '';
@@ -2557,8 +2557,8 @@ function renderAreaHeatmap(d) {
       </p>
       <div class="hm-legend">
         <span class="hm-legend-item"><span class="hm-legend-bar"></span> エリア実施率</span>
-        <span class="hm-legend-item"><span class="hm-self ok" style="font-size:11px;padding:1px 6px;border-radius:8px;">✓ 達成</span> 自院達成済み</span>
-        <span class="hm-legend-item"><span class="hm-self ng" style="font-size:11px;padding:1px 6px;border-radius:8px;">✗ 未達</span> 自院未達・未設定</span>
+        <span class="hm-legend-item"><span class="hm-self ok" style="font-size:11px;padding:1px 6px;border-radius:8px;">✓ 自院達成</span></span>
+        <span class="hm-legend-item"><span class="hm-self ng" style="font-size:11px;padding:1px 6px;border-radius:8px;">✗ 自院未達</span></span>
       </div>
       ${rowsHtml}
     </div>
