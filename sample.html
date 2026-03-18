@@ -1743,13 +1743,20 @@ function buildHeaderMap(headerRow) {
   return map;
 }
 
+// ===== 数値パース（カンマ区切り対応） =====
+// Google Sheets API はデフォルトで書式付き文字列を返すため "1,000" → parseFloat が1になる問題を解消
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return NaN;
+  return parseFloat(typeof v === 'string' ? v.replace(/,/g, '') : v);
+}
+
 // ===== 行データをヘッダーマップで解析（VLOOKUP方式） =====
 function parseRowDynamic(row, hm) {
   const getVal = (idx) => {
     if (idx === undefined) return null;
     const val = row[idx];
     if (val === undefined || val === null || val === '' || val === '#N/A') return null;
-    const num = parseFloat(val);
+    const num = parseNum(val);
     return isNaN(num) ? val : num;
   };
 
@@ -2594,7 +2601,7 @@ function calcFirstPlacePt(area, allRows, hm) {
   let maxPt = 0;
   for (let i = hi + 1; i < allRows.length; i++) {
     const rowArea = String(allRows[i][areaIdx] || '').trim();
-    const rowPt   = parseFloat(allRows[i][ptIdx]);
+    const rowPt   = parseNum(allRows[i][ptIdx]);
     if (rowArea === String(area || '').trim() && !isNaN(rowPt)) {
       maxPt = Math.max(maxPt, rowPt);
     }
@@ -2659,7 +2666,7 @@ function calcPotentialRank(area, maxPt, allRows, hm) {
   let countAbove = 0;
   for (let i = startRow; i < allRows.length; i++) {
     const rowArea = String(allRows[i][areaIdx] || '').trim();
-    const rowPt   = parseFloat(allRows[i][ptIdx]);
+    const rowPt   = parseNum(allRows[i][ptIdx]);
     if (rowArea === String(area || '').trim() && !isNaN(rowPt) && rowPt > maxPt) {
       countAbove++;
     }
