@@ -2378,9 +2378,14 @@ function closeDelegateModal() {
   document.body.style.overflow = '';
 }
 
-function toggleGbpField() {
-  const show = document.getElementById('chk-gbp').checked;
-  document.getElementById('gbp-field-section').style.display = show ? 'block' : 'none';
+function updateDelegateVisibility() {
+  const hpChecked = ['chk-banner','chk-link','chk-parts']
+    .some(id => document.getElementById(id).checked);
+  const gbpChecked = document.getElementById('chk-gbp').checked;
+  document.getElementById('hp-cred-section').style.display = hpChecked ? 'block' : 'none';
+  document.getElementById('position-section').style.display  = hpChecked ? 'block' : 'none';
+  document.getElementById('gbp-field-section').style.display = gbpChecked ? 'block' : 'none';
+  if (!hpChecked) document.getElementById('position-detail-field').style.display = 'none';
 }
 
 function togglePositionDetail(radio) {
