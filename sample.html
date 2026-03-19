@@ -1432,6 +1432,47 @@
       <div>
         <div class="delegate-section-title">■ 依頼内容（複数選択可）</div>
         <div class="delegate-check-list">
+          <!-- GBP を先頭に配置 + 展開セクションをインライン -->
+          <div>
+            <label class="delegate-check-label">
+              <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="updateDelegateVisibility()">
+              GoogleビジネスプロフィールにしんきゅうURLを設置する <span class="delegate-pt">+50pt</span>
+            </label>
+            <div id="gbp-field-section" style="display:none; margin-top:10px;">
+              <div class="delegate-gbp-steps">
+                <div class="delegate-gbp-step">
+                  <div class="delegate-gbp-step-num">1</div>
+                  <div class="delegate-gbp-step-text">
+                    下のボタンからGoogleマップを開いてください<br>
+                    <a class="delegate-gbp-open-btn" href="https://maps.google.com" target="_blank" rel="noopener">🗺️ Googleマップを開く</a>
+                  </div>
+                </div>
+                <div class="delegate-gbp-step">
+                  <div class="delegate-gbp-step-num">2</div>
+                  <div class="delegate-gbp-step-text">検索欄に<strong>自院の名前</strong>を入力して検索してください</div>
+                </div>
+                <div class="delegate-gbp-step">
+                  <div class="delegate-gbp-step-num">3</div>
+                  <div class="delegate-gbp-step-text">自院のページが表示されたら、<strong>「共有」ボタン</strong>をタップしてください</div>
+                </div>
+                <div class="delegate-gbp-step">
+                  <div class="delegate-gbp-step-num">4</div>
+                  <div class="delegate-gbp-step-text">
+                    表示された<strong>短いURL</strong>をコピーしてください
+                    <div class="delegate-gbp-url-example">例）https://maps.app.goo.gl/<span>XXXXXXXXX</span></div>
+                  </div>
+                </div>
+                <div class="delegate-gbp-step">
+                  <div class="delegate-gbp-step-num">5</div>
+                  <div class="delegate-gbp-step-text">コピーしたURLを下の入力欄に貼り付けてください</div>
+                </div>
+              </div>
+              <div class="delegate-field">
+                <label>GBPのURL<span style="color:var(--danger)">*</span></label>
+                <input type="url" id="del-gbp-url" placeholder="https://maps.app.goo.gl/...">
+              </div>
+            </div>
+          </div>
           <label class="delegate-check-label">
             <input type="checkbox" id="chk-banner" value="予約バナー設置" onchange="updateDelegateVisibility()">
             予約バナーをホームページに設置する <span class="delegate-pt">+50pt</span>
@@ -1443,10 +1484,6 @@
           <label class="delegate-check-label">
             <input type="checkbox" id="chk-parts" value="口コミパーツ設置" onchange="updateDelegateVisibility()">
             口コミパーツをホームページに埋め込む <span class="delegate-pt">+30pt</span>
-          </label>
-          <label class="delegate-check-label">
-            <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="updateDelegateVisibility()">
-            GoogleビジネスプロフィールにしんきゅうURLを設置する <span class="delegate-pt">+50pt</span>
           </label>
         </div>
       </div>
@@ -1477,43 +1514,6 @@
           </div>
         </div>
         <p class="delegate-security-note">🔒 いただいたログイン情報は代行設置のみに使用し、設定完了後は速やかに破棄いたします。</p>
-      </div>
-
-      <!-- GBP URL（GBPチェック時のみ表示） -->
-      <div id="gbp-field-section" style="display:none;">
-        <div class="delegate-section-title">■ GoogleビジネスプロフィールのURL</div>
-        <div class="delegate-gbp-steps">
-          <div class="delegate-gbp-step">
-            <div class="delegate-gbp-step-num">1</div>
-            <div class="delegate-gbp-step-text">
-              下のボタンからGoogleマップを開いてください<br>
-              <a class="delegate-gbp-open-btn" href="https://maps.google.com" target="_blank" rel="noopener">🗺️ Googleマップを開く</a>
-            </div>
-          </div>
-          <div class="delegate-gbp-step">
-            <div class="delegate-gbp-step-num">2</div>
-            <div class="delegate-gbp-step-text">検索欄に<strong>自院の名前</strong>を入力して検索してください</div>
-          </div>
-          <div class="delegate-gbp-step">
-            <div class="delegate-gbp-step-num">3</div>
-            <div class="delegate-gbp-step-text">自院のページが表示されたら、<strong>「共有」ボタン</strong>をタップしてください</div>
-          </div>
-          <div class="delegate-gbp-step">
-            <div class="delegate-gbp-step-num">4</div>
-            <div class="delegate-gbp-step-text">
-              表示された<strong>短いURL</strong>をコピーしてください
-              <div class="delegate-gbp-url-example">例）https://maps.app.goo.gl/<span>XXXXXXXXX</span></div>
-            </div>
-          </div>
-          <div class="delegate-gbp-step">
-            <div class="delegate-gbp-step-num">5</div>
-            <div class="delegate-gbp-step-text">コピーしたURLを下の入力欄に貼り付けてください</div>
-          </div>
-        </div>
-        <div class="delegate-field">
-          <label>GBPのURL<span style="color:var(--danger)">*</span></label>
-          <input type="url" id="del-gbp-url" placeholder="https://maps.app.goo.gl/...">
-        </div>
       </div>
 
       <!-- 掲載位置（HP系チェック時のみ表示） -->

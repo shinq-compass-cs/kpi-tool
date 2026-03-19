@@ -297,6 +297,50 @@
       <div class="card">
         <div class="section-title">■ 依頼内容（複数選択可）</div>
         <div class="check-list">
+          <!-- GBP を先頭に配置 + 展開セクションをインライン -->
+          <div>
+            <label class="check-label">
+              <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="updateVisibility()">
+              <span>GoogleビジネスプロフィールにしんきゅうURLを設置する</span>
+              <span class="pt-badge">+50pt</span>
+            </label>
+            <div class="hidden" id="gbp-section" style="margin-top:10px;">
+              <div class="gbp-steps">
+                <div class="gbp-step">
+                  <div class="gbp-step-num">1</div>
+                  <div class="gbp-step-text">
+                    下のボタンからGoogleマップを開いてください<br>
+                    <a class="gbp-open-btn" href="https://maps.google.com" target="_blank" rel="noopener">
+                      🗺️ Googleマップを開く
+                    </a>
+                  </div>
+                </div>
+                <div class="gbp-step">
+                  <div class="gbp-step-num">2</div>
+                  <div class="gbp-step-text">検索欄に<strong>自院の名前</strong>を入力して検索してください</div>
+                </div>
+                <div class="gbp-step">
+                  <div class="gbp-step-num">3</div>
+                  <div class="gbp-step-text">自院のページが表示されたら、<strong>「共有」ボタン</strong>をタップしてください</div>
+                </div>
+                <div class="gbp-step">
+                  <div class="gbp-step-num">4</div>
+                  <div class="gbp-step-text">
+                    表示された<strong>短いURL</strong>をコピーしてください
+                    <div class="gbp-url-example">例）https://maps.app.goo.gl/<span>XXXXXXXXX</span></div>
+                  </div>
+                </div>
+                <div class="gbp-step">
+                  <div class="gbp-step-num">5</div>
+                  <div class="gbp-step-text">コピーしたURLを下の入力欄に貼り付けてください</div>
+                </div>
+              </div>
+              <div class="field" style="margin-top:8px;">
+                <label>GBPのURL<span class="req">*</span></label>
+                <input type="url" id="inp-gbp-url" placeholder="https://maps.app.goo.gl/...">
+              </div>
+            </div>
+          </div>
           <label class="check-label">
             <input type="checkbox" id="chk-banner" value="予約バナー設置" onchange="updateVisibility()">
             <span>予約バナーをホームページに設置する</span>
@@ -311,11 +355,6 @@
             <input type="checkbox" id="chk-parts" value="口コミパーツ設置" onchange="updateVisibility()">
             <span>口コミパーツをホームページに埋め込む</span>
             <span class="pt-badge">+30pt</span>
-          </label>
-          <label class="check-label">
-            <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="updateVisibility()">
-            <span>GoogleビジネスプロフィールにしんきゅうURLを設置する</span>
-            <span class="pt-badge">+50pt</span>
           </label>
         </div>
       </div>
@@ -348,55 +387,6 @@
         <p style="font-size:12px;color:#718096;line-height:1.7;margin-top:4px;padding:10px 12px;background:#fffbeb;border-radius:6px;border:1px solid #fde68a;">
           🔒 いただいたログイン情報は代行設置のみに使用し、設定完了後は速やかに破棄いたします。
         </p>
-      </div>
-
-      <!-- GBP URL -->
-      <div class="card hidden" id="gbp-section">
-        <div class="section-title">■ GoogleビジネスプロフィールのURL</div>
-
-        <div class="gbp-steps">
-          <div class="gbp-step">
-            <div class="gbp-step-num">1</div>
-            <div class="gbp-step-text">
-              下のボタンからGoogleマップを開いてください<br>
-              <a class="gbp-open-btn" href="https://maps.google.com" target="_blank" rel="noopener">
-                🗺️ Googleマップを開く
-              </a>
-            </div>
-          </div>
-          <div class="gbp-step">
-            <div class="gbp-step-num">2</div>
-            <div class="gbp-step-text">
-              検索欄に<strong>自院の名前</strong>を入力して検索してください
-            </div>
-          </div>
-          <div class="gbp-step">
-            <div class="gbp-step-num">3</div>
-            <div class="gbp-step-text">
-              自院のページが表示されたら、<strong>「共有」ボタン</strong>をタップしてください
-            </div>
-          </div>
-          <div class="gbp-step">
-            <div class="gbp-step-num">4</div>
-            <div class="gbp-step-text">
-              表示された<strong>短いURL</strong>をコピーしてください
-              <div class="gbp-url-example">
-                例）https://maps.app.goo.gl/<span>XXXXXXXXX</span>
-              </div>
-            </div>
-          </div>
-          <div class="gbp-step">
-            <div class="gbp-step-num">5</div>
-            <div class="gbp-step-text">
-              コピーしたURLを下の入力欄に貼り付けてください
-            </div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>GBPのURL<span class="req">*</span></label>
-          <input type="url" id="inp-gbp-url" placeholder="https://maps.app.goo.gl/...">
-        </div>
       </div>
 
       <!-- 掲載位置 -->
