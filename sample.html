@@ -1163,6 +1163,16 @@
   }
   .delegate-msg.success { background: var(--accent-light); color: var(--accent); }
   .delegate-msg.error   { background: var(--danger-light);  color: var(--danger); }
+  .delegate-gbp-steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .delegate-gbp-step { display: flex; align-items: flex-start; gap: 10px; background: #f7faff; border-radius: 8px; padding: 9px 11px; }
+  .delegate-gbp-step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .delegate-gbp-step-text { font-size: 12px; line-height: 1.6; color: #2d3748; }
+  .delegate-gbp-step-text strong { color: #1e3a5c; }
+  .delegate-gbp-open-btn { display: inline-flex; align-items: center; gap: 5px; background: #4285f4; color: white; border: none; border-radius: 5px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; margin-top: 4px; }
+  .delegate-gbp-open-btn:hover { background: #3367d6; }
+  .delegate-gbp-url-example { background: #edf2f7; border-radius: 5px; padding: 6px 10px; font-size: 11px; color: #4a5568; word-break: break-all; line-height: 1.5; margin-top: 5px; }
+  .delegate-gbp-url-example span { color: #c05621; font-weight: 700; }
+  .delegate-security-note { font-size: 11px; color: #718096; line-height: 1.6; margin: 4px 0 12px; padding: 8px 11px; background: #fffbeb; border-radius: 6px; border: 1px solid #fde68a; }
 
   /* ===== プランリンク ===== */
   .plan-link { color: var(--primary-light); text-decoration: none; font-weight: 600; }
@@ -1423,27 +1433,30 @@
         <div class="delegate-section-title">■ 依頼内容（複数選択可）</div>
         <div class="delegate-check-list">
           <label class="delegate-check-label">
-            <input type="checkbox" id="chk-banner" value="予約バナー設置">
+            <input type="checkbox" id="chk-banner" value="予約バナー設置" onchange="updateDelegateVisibility()">
             予約バナーをホームページに設置する <span class="delegate-pt">+50pt</span>
           </label>
           <label class="delegate-check-label">
-            <input type="checkbox" id="chk-link" value="コンパス相互リンク設置">
+            <input type="checkbox" id="chk-link" value="コンパス相互リンク設置" onchange="updateDelegateVisibility()">
             コンパス相互リンクをホームページに設置する <span class="delegate-pt">+30pt</span>
           </label>
           <label class="delegate-check-label">
-            <input type="checkbox" id="chk-parts" value="口コミパーツ設置">
+            <input type="checkbox" id="chk-parts" value="口コミパーツ設置" onchange="updateDelegateVisibility()">
             口コミパーツをホームページに埋め込む <span class="delegate-pt">+30pt</span>
           </label>
           <label class="delegate-check-label">
-            <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="toggleGbpField()">
+            <input type="checkbox" id="chk-gbp" value="GBP予約URL設置" onchange="updateDelegateVisibility()">
             GoogleビジネスプロフィールにしんきゅうURLを設置する <span class="delegate-pt">+50pt</span>
           </label>
         </div>
       </div>
 
-      <!-- ホームページのログイン情報 -->
-      <div id="hp-cred-section">
+      <!-- ホームページのログイン情報（HP系チェック時のみ表示） -->
+      <div id="hp-cred-section" style="display:none;">
         <div class="delegate-section-title">■ ホームページのログイン情報</div>
+        <p style="font-size:12px;color:#718096;margin-bottom:10px;line-height:1.6;">
+          代行設定に必要な情報です。担当者が設定完了後、速やかに削除いたします。
+        </p>
         <div class="delegate-field">
           <label>ホームページのURL（公開URL）</label>
           <input type="url" id="del-hp-url" placeholder="https://www.example.com">
@@ -1463,19 +1476,48 @@
             <button type="button" class="pw-toggle" onclick="togglePwVisibility()" title="表示/非表示">👁</button>
           </div>
         </div>
+        <p class="delegate-security-note">🔒 いただいたログイン情報は代行設置のみに使用し、設定完了後は速やかに破棄いたします。</p>
       </div>
 
       <!-- GBP URL（GBPチェック時のみ表示） -->
       <div id="gbp-field-section" style="display:none;">
-        <div class="delegate-section-title">■ GBP URL</div>
+        <div class="delegate-section-title">■ GoogleビジネスプロフィールのURL</div>
+        <div class="delegate-gbp-steps">
+          <div class="delegate-gbp-step">
+            <div class="delegate-gbp-step-num">1</div>
+            <div class="delegate-gbp-step-text">
+              下のボタンからGoogleマップを開いてください<br>
+              <a class="delegate-gbp-open-btn" href="https://maps.google.com" target="_blank" rel="noopener">🗺️ Googleマップを開く</a>
+            </div>
+          </div>
+          <div class="delegate-gbp-step">
+            <div class="delegate-gbp-step-num">2</div>
+            <div class="delegate-gbp-step-text">検索欄に<strong>自院の名前</strong>を入力して検索してください</div>
+          </div>
+          <div class="delegate-gbp-step">
+            <div class="delegate-gbp-step-num">3</div>
+            <div class="delegate-gbp-step-text">自院のページが表示されたら、<strong>「共有」ボタン</strong>をタップしてください</div>
+          </div>
+          <div class="delegate-gbp-step">
+            <div class="delegate-gbp-step-num">4</div>
+            <div class="delegate-gbp-step-text">
+              表示された<strong>短いURL</strong>をコピーしてください
+              <div class="delegate-gbp-url-example">例）https://maps.app.goo.gl/<span>XXXXXXXXX</span></div>
+            </div>
+          </div>
+          <div class="delegate-gbp-step">
+            <div class="delegate-gbp-step-num">5</div>
+            <div class="delegate-gbp-step-text">コピーしたURLを下の入力欄に貼り付けてください</div>
+          </div>
+        </div>
         <div class="delegate-field">
-          <label>GoogleビジネスプロフィールのURL</label>
-          <input type="url" id="del-gbp-url" placeholder="Googleマップで自院を検索してURLをコピー">
+          <label>GBPのURL<span style="color:var(--danger)">*</span></label>
+          <input type="url" id="del-gbp-url" placeholder="https://maps.app.goo.gl/...">
         </div>
       </div>
 
-      <!-- 掲載位置 -->
-      <div id="position-section">
+      <!-- 掲載位置（HP系チェック時のみ表示） -->
+      <div id="position-section" style="display:none;">
         <div class="delegate-section-title">■ ホームページへの掲載位置</div>
         <div class="delegate-radio-list">
           <label class="delegate-radio-label">
@@ -1491,6 +1533,15 @@
         <div class="delegate-field" id="position-detail-field" style="display:none; margin-top:10px;">
           <label>掲載位置の詳細</label>
           <input type="text" id="del-position-detail" placeholder="例：トップページのスタッフ紹介の下">
+        </div>
+      </div>
+
+      <!-- 備考 -->
+      <div>
+        <div class="delegate-section-title">■ 備考（任意）</div>
+        <div class="delegate-field">
+          <textarea id="del-note" rows="3" placeholder="例：WordPressではなくFTPでの管理のため制作会社に依頼が必要です。担当：〇〇様、TEL：000-000-0000"></textarea>
+          <div style="font-size:11px;color:#718096;margin-top:4px;">ホームページの編集方法・制作会社情報など、CS担当者へ伝えたいことをご記入ください。</div>
         </div>
       </div>
 
@@ -2308,8 +2359,11 @@ function openHpForm() {
   document.getElementById('del-password').value = '';
   document.getElementById('del-gbp-url').value = '';
   document.getElementById('del-position-detail').value = '';
+  document.getElementById('del-note').value = '';
   document.querySelector('input[name="position"][value="一任する"]').checked = true;
+  document.getElementById('hp-cred-section').style.display = 'none';
   document.getElementById('gbp-field-section').style.display = 'none';
+  document.getElementById('position-section').style.display = 'none';
   document.getElementById('position-detail-field').style.display = 'none';
   const msg = document.getElementById('delegate-msg');
   msg.style.display = 'none';
@@ -2324,9 +2378,14 @@ function closeDelegateModal() {
   document.body.style.overflow = '';
 }
 
-function toggleGbpField() {
-  const show = document.getElementById('chk-gbp').checked;
-  document.getElementById('gbp-field-section').style.display = show ? 'block' : 'none';
+function updateDelegateVisibility() {
+  const hpChecked = ['chk-banner','chk-link','chk-parts']
+    .some(id => document.getElementById(id).checked);
+  const gbpChecked = document.getElementById('chk-gbp').checked;
+  document.getElementById('hp-cred-section').style.display = hpChecked ? 'block' : 'none';
+  document.getElementById('position-section').style.display  = hpChecked ? 'block' : 'none';
+  document.getElementById('gbp-field-section').style.display = gbpChecked ? 'block' : 'none';
+  if (!hpChecked) document.getElementById('position-detail-field').style.display = 'none';
 }
 
 function togglePositionDetail(radio) {
@@ -2371,6 +2430,7 @@ async function submitDelegateForm() {
     gbp_url:         document.getElementById('del-gbp-url').value.trim(),
     position,
     position_detail: document.getElementById('del-position-detail').value.trim(),
+    note:            document.getElementById('del-note').value.trim(),
   };
 
   const btn = document.getElementById('delegate-submit-btn');
