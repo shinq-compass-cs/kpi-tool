@@ -85,7 +85,7 @@
       padding: 10px 12px;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 16px; /* iOS Safari ズーム防止: 16px 未満だとフォーカス時に画面が拡大される */
       font-family: 'Noto Sans JP', sans-serif;
       outline: none;
       transition: border-color 0.2s;
@@ -263,6 +263,7 @@
 
     /* ── ユーティリティ ── */
     .hidden { display: none !important; }
+    .field-hint { font-size: 11px; color: #b07a3a; display: none; margin-top: 3px; padding-left: 2px; }
   </style>
 </head>
 <body>
@@ -512,6 +513,12 @@
         showErr('依頼内容を1つ以上選択してください。'); return;
       }
 
+      // GBP選択時はURL必須
+      const gbpUrl = document.getElementById('inp-gbp-url').value.trim();
+      if (types.includes('GBP予約URL設置') && !gbpUrl) {
+        showErr('GBPのURLを入力してください。（手順4〜5を参照）'); return;
+      }
+
       const needsHp = types.some(t => t !== 'GBP予約URL設置');
       const loginId = document.getElementById('inp-login-id').value.trim();
       const password = document.getElementById('inp-password').value;
@@ -557,6 +564,54 @@
         showErr('送信に失敗しました。時間をおいて再試行してください。');
       }
     }
+
+    // ── Layer1 入力制限（CLAUDE.md §9 準拠）──────────────────────────
+    const FIELD_RESTRICTORS = {
+      email: /[^a-zA-Z0-9@._\-+%]/g, // 半角英数字・記号以外を除去
+    };
+    const FIELD_HINT_MSGS = {
+      email: '半角英数字・記号（@ . - _）のみ入力できます',
+    };
+
+    function showFieldHint(input, msg) {
+      let hint = input.parentElement.querySelector('.field-hint');
+      if (!hint) {
+        hint = document.createElement('div');
+        hint.className = 'field-hint';
+        input.after(hint);
+      }
+      hint.textContent = msg;
+      hint.style.display = 'block';
+      clearTimeout(hint._timer);
+      hint._timer = setTimeout(() => { hint.style.display = 'none'; }, 2000);
+    }
+
+    function doRestrict(input) {
+      const key = input.dataset.restrict;
+      const pattern = FIELD_RESTRICTORS[key];
+      if (!pattern) return;
+      const pos = input.selectionStart;
+      const newVal = input.value.replace(pattern, '');
+      if (newVal === input.value) return;
+      const beforeCursor = input.value.slice(0, pos).replace(pattern, '').length;
+      input.value = newVal;
+      try { input.setSelectionRange(beforeCursor, beforeCursor); } catch (_) {}
+      if (FIELD_HINT_MSGS[key]) showFieldHint(input, FIELD_HINT_MSGS[key]);
+    }
+
+    function attachRestrict(input) {
+      let composing = false;
+      input.addEventListener('compositionstart', () => { composing = true; });
+      input.addEventListener('compositionend',   () => { composing = false; doRestrict(input); });
+      input.addEventListener('input',            () => { if (!composing) doRestrict(input); });
+    }
+
+    // ページ読み込み後に制限を適用
+    document.addEventListener('DOMContentLoaded', () => {
+      const emailInput = document.getElementById('inp-email');
+      emailInput.dataset.restrict = 'email';
+      attachRestrict(emailInput);
+    });
   </script>
 </body>
 </html>
