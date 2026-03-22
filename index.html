@@ -2410,6 +2410,12 @@ async function submitDelegateForm() {
     showDelegateMsg('依頼内容を1つ以上選択してください。', 'error');
     return;
   }
+  // GBP選択時はURL必須
+  const gbpUrl = document.getElementById('del-gbp-url').value.trim();
+  if (types.includes('GBP予約URL設置') && !gbpUrl) {
+    showDelegateMsg('GBPのURLを入力してください。（手順4〜5を参照）', 'error');
+    return;
+  }
   // HP系が含まれる場合はID/PW必須
   const needsHp = types.some(t => t !== 'GBP予約URL設置');
   const loginId = document.getElementById('del-login-id').value.trim();
