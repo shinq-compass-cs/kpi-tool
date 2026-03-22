@@ -2228,6 +2228,11 @@ function renderDashboard(d, sheetName) {
       const statusIcon = isInfo ? '―' : (achieved ? '✓' : '!');
       const statusClass = isInfo ? 'info' : (achieved ? 'ok' : 'ng');
 
+      // 口コミ件数：達成・未達成問わず月次目標を常時表示
+      const reviewGoalNote = item.key === 'review'
+        ? `<div class="kpi-monthly-goal">🎯 毎月 +3件のペースで増やし続けることが目標です</div>`
+        : '';
+
       itemEl.innerHTML = `
         <div class="kpi-status ${statusClass}">${statusIcon}</div>
         <div class="kpi-main">
@@ -2238,6 +2243,7 @@ function renderDashboard(d, sheetName) {
           <div class="kpi-values">
             <span class="current ${statusClass}">${valueText}</span>
           </div>
+          ${reviewGoalNote}
           ${!isInfo && !achieved && ACTIONS[item.key] ? renderAction(item.key) : ''}
         </div>
       `;
