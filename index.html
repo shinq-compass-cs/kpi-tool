@@ -1870,8 +1870,8 @@ async function handleLogin() {
     err.style.display = 'block';
     return;
   }
-  // 社内判定：CS専用メアドでログインした場合はメール照合をスキップ
-  const loginIsInternal = (email === CS_INTERNAL_EMAIL);
+  // 社内判定：CS専用メアドまたは「test」でログインした場合はメール照合をスキップ・ログ記録なし
+  const loginIsInternal = (email === CS_INTERNAL_EMAIL || email === 'test');
 
   showLoading(true);
   document.getElementById('login-error').style.display = 'none';
