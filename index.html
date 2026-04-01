@@ -1768,8 +1768,8 @@ async function fetchSheet(sheetName, range = 'A1:BZ1200') {
   const res = await fetch(url);
   // シートが存在しない場合（400/404）はエラーをthrowせず空配列を返す
   if (!res.ok) return [];
-  const json = await res.json();
-  return json.values || [];
+  try { const json = await res.json(); return json.values || []; }
+  catch { return []; } // JSONパースエラー時も空配列
 }
 
 // ===== 無料体験タブの行有効チェック =====
