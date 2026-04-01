@@ -2063,7 +2063,7 @@ function renderDashboard(d, sheetName) {
   let dateStr = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
   if (d.compass_plan) {
     const compassUrl = `https://www.shinq-compass.jp/salon/detail/${d.salon_id}`;
-    dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${d.compass_plan}</a>`;
+    dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${escHtml(d.compass_plan)}</a>`;
     const reserveUrl = `https://www.shinq-compass.jp/salon/reserve/${d.salon_id}`;
     if (isPlatinaPlus) {
       // プラチナPLUS：公開状態に関わらず常にリンク付きで表示
