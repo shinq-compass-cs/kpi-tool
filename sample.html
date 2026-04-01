@@ -1569,6 +1569,9 @@ const DELEGATE_GAS_URL = 'https://script.google.com/macros/s/AKfycbw4Pm3pzkGnF44
 const ADVISOR_GAS_URL = 'https://script.google.com/macros/s/AKfycbxZB0-yz0F0jlqUoQKeI9KP8jndqWF5H5IcsoQ5Lf-NBuFEEvCYGUYdXWMk3QigT4Q7/exec';
 let currentSalonData = null; // AI分析用にログイン中のサロンデータを保持
 let isInternal = false; // ログイン時に社内/社外を判定して設定
+
+// HTMLエスケープ（外部データをinnerHTMLに埋め込む際に必ず使う）
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 let loginTime = null;
 let loginLogSent = false;  // ログイン直後送信フラグ
 let urlLogSent   = false;  // セッション終了時URL送信フラグ
@@ -1765,8 +1768,8 @@ async function fetchSheet(sheetName, range = 'A1:BZ1200') {
   const res = await fetch(url);
   // シートが存在しない場合（400/404）はエラーをthrowせず空配列を返す
   if (!res.ok) return [];
-  const json = await res.json();
-  return json.values || [];
+  try { const json = await res.json(); return json.values || []; }
+  catch { return []; } // JSONパースエラー時も空配列
 }
 
 // ===== 無料体験タブの行有効チェック =====
@@ -2060,7 +2063,7 @@ function renderDashboard(d, sheetName) {
   let dateStr = `データ参照元：${formatSheetName(sheetName)} ｜ 表示日時：${new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'})}`;
   if (d.compass_plan) {
     const compassUrl = `https://www.shinq-compass.jp/salon/detail/${d.salon_id}`;
-    dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${d.compass_plan}</a>`;
+    dateStr += ` ｜ <a href="${compassUrl}" target="_blank" rel="noopener" class="plan-link">しんきゅうコンパス：${escHtml(d.compass_plan)}</a>`;
     const reserveUrl = `https://www.shinq-compass.jp/salon/reserve/${d.salon_id}`;
     if (isPlatinaPlus) {
       // プラチナPLUS：公開状態に関わらず常にリンク付きで表示
@@ -2293,12 +2296,16 @@ function renderDashboard(d, sheetName) {
     correctLevel: QRCode.CorrectLevel.M,
   });
   const qrSection = document.getElementById('qr-section');
-  qrSection.style.display = 'block';
-  if (window.innerWidth <= 600) qrSection.classList.add('collapsed');
-  qrSection.querySelector('.section-title').addEventListener('click', () => qrSection.classList.toggle('collapsed'));
+  if (qrSection) {
+    qrSection.style.display = 'block';
+    if (window.innerWidth <= 600) qrSection.classList.add('collapsed');
+    const qrTitle = qrSection.querySelector('.section-title');
+    if (qrTitle) qrTitle.addEventListener('click', () => qrSection.classList.toggle('collapsed'));
+  }
 
   // ライン問い合わせURL更新
-  document.querySelector('.contact-btn.line').href = LINE_URL;
+  const lineBtn = document.querySelector('.contact-btn.line');
+  if (lineBtn) lineBtn.href = LINE_URL;
 
   // エリア比較ヒートマップ描画
   renderAreaHeatmap(d);
@@ -2372,7 +2379,8 @@ function openHpForm() {
   document.getElementById('del-gbp-url').value = '';
   document.getElementById('del-position-detail').value = '';
   document.getElementById('del-note').value = '';
-  document.querySelector('input[name="position"][value="一任する"]').checked = true;
+  const posDefault = document.querySelector('input[name="position"][value="一任する"]');
+  if (posDefault) posDefault.checked = true;
   document.getElementById('hp-cred-section').style.display = 'none';
   document.getElementById('gbp-field-section').style.display = 'none';
   document.getElementById('position-section').style.display = 'none';
@@ -3328,8 +3336,8 @@ function buildRmSlide1(d) {
   const sub = [d.area, d.compass_plan, monthLabel].filter(Boolean).join('　｜　');
   el.innerHTML = `
     <div class="rm-s1-label">月次KPI フォローレポート</div>
-    <div class="rm-s1-salon">${d.name || '―'}</div>
-    <div class="rm-s1-sub">${sub}</div>
+    <div class="rm-s1-salon">${escHtml(d.name || '―')}</div>
+    <div class="rm-s1-sub">${escHtml(sub)}</div>
   `;
   return el;
 }
