@@ -1935,8 +1935,8 @@ async function handleLogin() {
       return;
     }
 
-    // メールアドレス照合（社内メアドの場合はスキップ）
-    if (!loginIsInternal && found.email !== email) {
+    // メールアドレス照合（社内メアド・testの場合はスキップ）
+    if (!loginSkipEmailCheck && found.email !== email) {
       const err = document.getElementById('login-error');
       err.textContent = 'メールアドレスが一致しません。ご確認ください。';
       err.style.display = 'block';
