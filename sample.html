@@ -1121,7 +1121,7 @@
   .delegate-field textarea {
     width: 100%; padding: 10px 12px;
     border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
-    font-size: 14px; font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px; font-family: 'Noto Sans JP', sans-serif;
     outline: none; transition: border-color 0.2s;
   }
   .delegate-field input:focus, .delegate-field textarea:focus { border-color: var(--primary-light); }
@@ -1380,6 +1380,7 @@
           <div class="qr-info-label">口コミ投稿URL</div>
           <a id="qr-review-url" class="qr-review-url" href="" target="_blank" rel="noopener"></a>
           <p class="qr-hint">このQRコードをスキャンすると、しんきゅうコンパスの口コミ投稿ページに直接アクセスできます。院内への掲示やチラシへの印刷にご活用ください。</p>
+          <p class="qr-hint" style="margin-top:6px; font-weight:600; color:#00a86b;">🎯 口コミは毎月 +3件が目標です。このQRコードを活用して、来院者に積極的に投稿をお願いしましょう。</p>
         </div>
       </div>
     </div>
@@ -1401,7 +1402,7 @@
           <canvas id="chart-cvr"></canvas>
         </div>
         <div class="trend-chart-wrap">
-          <div class="trend-chart-title">口コミ件数</div>
+          <div class="trend-chart-title">口コミ件数 <span style="font-size:10px; font-weight:400; color:#00a86b; margin-left:4px;">🎯 目標：毎月 +3件</span></div>
           <canvas id="chart-review"></canvas>
         </div>
       </div>
@@ -1650,7 +1651,7 @@ const ACTIONS = {
     links: [{ label: '💬 口コミ関連の取り組みを確認する', action: 'scroll_click' }]
   },
   review: {
-    text: '口コミを増やすために、以下のツールをご活用ください。',
+    text: '口コミは毎月 +3件が目標です。コツコツ積み上げることで検索順位・クリック率の両方に効きます。以下のツールで投稿を促しましょう。',
     note: '※ 口コミ代理投稿用紙は各院7枚まで（通算）となっております。',
     links: [
       { label: '📄 口コミ代理投稿用紙をダウンロード', url: 'https://shinq-compass-cs.github.io/kpi-tool/docs/kuchikomi.pdf' },
@@ -1870,7 +1871,9 @@ async function handleLogin() {
     err.style.display = 'block';
     return;
   }
-  // 社内判定：CS専用メアドでログインした場合はメール照合をスキップ
+  // メール照合スキップ：CS専用メアドまたは「test」でログインした場合
+  const loginSkipEmailCheck = (email === CS_INTERNAL_EMAIL || email === 'test');
+  // 社内判定（レポーティング等のCS機能表示）：CS専用メアドのみ
   const loginIsInternal = (email === CS_INTERNAL_EMAIL);
 
   showLoading(true);
@@ -1932,8 +1935,8 @@ async function handleLogin() {
       return;
     }
 
-    // メールアドレス照合（社内メアドの場合はスキップ）
-    if (!loginIsInternal && found.email !== email) {
+    // メールアドレス照合（社内メアド・testの場合はスキップ）
+    if (!loginSkipEmailCheck && found.email !== email) {
       const err = document.getElementById('login-error');
       err.textContent = 'メールアドレスが一致しません。ご確認ください。';
       err.style.display = 'block';
@@ -2228,6 +2231,11 @@ function renderDashboard(d, sheetName) {
       const statusIcon = isInfo ? '―' : (achieved ? '✓' : '!');
       const statusClass = isInfo ? 'info' : (achieved ? 'ok' : 'ng');
 
+      // 口コミ件数：達成・未達成問わず月次目標を常時表示
+      const reviewGoalNote = item.key === 'review'
+        ? `<div class="kpi-monthly-goal">🎯 毎月 +3件のペースで増やし続けることが目標です</div>`
+        : '';
+
       itemEl.innerHTML = `
         <div class="kpi-status ${statusClass}">${statusIcon}</div>
         <div class="kpi-main">
@@ -2238,6 +2246,7 @@ function renderDashboard(d, sheetName) {
           <div class="kpi-values">
             <span class="current ${statusClass}">${valueText}</span>
           </div>
+          ${reviewGoalNote}
           ${!isInfo && !achieved && ACTIONS[item.key] ? renderAction(item.key) : ''}
         </div>
       `;
@@ -2408,6 +2417,12 @@ async function submitDelegateForm() {
     .map(id => document.getElementById(id).value);
   if (types.length === 0) {
     showDelegateMsg('依頼内容を1つ以上選択してください。', 'error');
+    return;
+  }
+  // GBP選択時はURL必須
+  const gbpUrl = document.getElementById('del-gbp-url').value.trim();
+  if (types.includes('GBP予約URL設置') && !gbpUrl) {
+    showDelegateMsg('GBPのURLを入力してください。（手順4〜5を参照）', 'error');
     return;
   }
   // HP系が含まれる場合はID/PW必須
