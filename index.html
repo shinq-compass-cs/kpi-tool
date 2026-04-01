@@ -1871,8 +1871,10 @@ async function handleLogin() {
     err.style.display = 'block';
     return;
   }
-  // 社内判定：CS専用メアドまたは「test」でログインした場合はメール照合をスキップ・ログ記録なし
-  const loginIsInternal = (email === CS_INTERNAL_EMAIL || email === 'test');
+  // メール照合スキップ：CS専用メアドまたは「test」でログインした場合
+  const loginSkipEmailCheck = (email === CS_INTERNAL_EMAIL || email === 'test');
+  // 社内判定（レポーティング等のCS機能表示）：CS専用メアドのみ
+  const loginIsInternal = (email === CS_INTERNAL_EMAIL);
 
   showLoading(true);
   document.getElementById('login-error').style.display = 'none';
