@@ -2379,7 +2379,8 @@ function openHpForm() {
   document.getElementById('del-gbp-url').value = '';
   document.getElementById('del-position-detail').value = '';
   document.getElementById('del-note').value = '';
-  document.querySelector('input[name="position"][value="一任する"]').checked = true;
+  const posDefault = document.querySelector('input[name="position"][value="一任する"]');
+  if (posDefault) posDefault.checked = true;
   document.getElementById('hp-cred-section').style.display = 'none';
   document.getElementById('gbp-field-section').style.display = 'none';
   document.getElementById('position-section').style.display = 'none';
