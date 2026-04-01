@@ -1569,6 +1569,9 @@ const DELEGATE_GAS_URL = 'https://script.google.com/macros/s/AKfycbw4Pm3pzkGnF44
 const ADVISOR_GAS_URL = 'https://script.google.com/macros/s/AKfycbxZB0-yz0F0jlqUoQKeI9KP8jndqWF5H5IcsoQ5Lf-NBuFEEvCYGUYdXWMk3QigT4Q7/exec';
 let currentSalonData = null; // AI分析用にログイン中のサロンデータを保持
 let isInternal = false; // ログイン時に社内/社外を判定して設定
+
+// HTMLエスケープ（外部データをinnerHTMLに埋め込む際に必ず使う）
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 let loginTime = null;
 let loginLogSent = false;  // ログイン直後送信フラグ
 let urlLogSent   = false;  // セッション終了時URL送信フラグ
