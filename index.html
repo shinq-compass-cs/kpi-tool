@@ -2296,12 +2296,16 @@ function renderDashboard(d, sheetName) {
     correctLevel: QRCode.CorrectLevel.M,
   });
   const qrSection = document.getElementById('qr-section');
-  qrSection.style.display = 'block';
-  if (window.innerWidth <= 600) qrSection.classList.add('collapsed');
-  qrSection.querySelector('.section-title').addEventListener('click', () => qrSection.classList.toggle('collapsed'));
+  if (qrSection) {
+    qrSection.style.display = 'block';
+    if (window.innerWidth <= 600) qrSection.classList.add('collapsed');
+    const qrTitle = qrSection.querySelector('.section-title');
+    if (qrTitle) qrTitle.addEventListener('click', () => qrSection.classList.toggle('collapsed'));
+  }
 
   // ライン問い合わせURL更新
-  document.querySelector('.contact-btn.line').href = LINE_URL;
+  const lineBtn = document.querySelector('.contact-btn.line');
+  if (lineBtn) lineBtn.href = LINE_URL;
 
   // エリア比較ヒートマップ描画
   renderAreaHeatmap(d);
