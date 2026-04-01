@@ -3331,8 +3331,8 @@ function buildRmSlide1(d) {
   const sub = [d.area, d.compass_plan, monthLabel].filter(Boolean).join('　｜　');
   el.innerHTML = `
     <div class="rm-s1-label">月次KPI フォローレポート</div>
-    <div class="rm-s1-salon">${d.name || '―'}</div>
-    <div class="rm-s1-sub">${sub}</div>
+    <div class="rm-s1-salon">${escHtml(d.name || '―')}</div>
+    <div class="rm-s1-sub">${escHtml(sub)}</div>
   `;
   return el;
 }
