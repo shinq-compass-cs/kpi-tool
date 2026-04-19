@@ -1935,9 +1935,21 @@ async function handleLogin() {
     let foundSheet = null;
     trendData = [];
 
-    // === Step1: 最新月次タブのみ取得・検索 ===
+    // === Step1+2: 最新月次と無料体験タブを並列fetch開始（Step3の24ヶ月も同時に走らせる） ===
+    // 高速化：以前は Step1→Step2→Step3 の直列だったが、全タブを同時発火してキャッシュで重複排除。
     const latestSheet = monthlySheetName(0);
-    const latestRows = await fetchSheet(latestSheet);
+    const MAX_MONTHS = 24;
+    const monthlySheetNames = [];
+    const monthlyPromises = [];
+    for (let offset = 0; offset <= MAX_MONTHS; offset++) {
+      const s = monthlySheetName(offset);
+      monthlySheetNames.push(s);
+      monthlyPromises.push(fetchSheet(s));
+    }
+    const freeTrialPromise = fetchSheet(FREE_TRIAL_SHEET);
+
+    // === Step1: 最新月次でサロン検索 ===
+    const latestRows = await monthlyPromises[0];
     let firstSheetRows = null, firstSheetHm = null;
     if (latestRows.length) {
       const hi = findHeaderRowIndex(latestRows);
@@ -1955,10 +1967,10 @@ async function handleLogin() {
       }
     }
 
-    // === Step2: 最新月次で見つからなければ無料体験タブを検索 ===
+    // === Step2: 最新月次で見つからなければ無料体験タブを検索（すでにfetch開始済み） ===
     let freeTrialRows = null, freeTrialHm = null;
     if (!found) {
-      const rows = await fetchSheet(FREE_TRIAL_SHEET);
+      const rows = await freeTrialPromise;
       if (rows.length) {
         const hi = findHeaderRowIndex(rows);
         freeTrialHm = buildHeaderMap(rows[hi]);
