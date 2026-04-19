@@ -2008,15 +2008,27 @@ async function handleLogin() {
       found.first_place_pt   = refRows ? calcFirstPlacePt(found.area, refRows, refHm) : null;
     }
 
-    // === Step3: 月次推移データ収集（最新月から遡る、3連続ミスで打ち切り、最大2年分） ===
+    // === Step3: 月次推移データ収集（最新24ヶ月を並列取得して3連続ミスで打ち切り） ===
+    // 高速化：直列 await → Promise.all 並列。存在しないタブは空配列が返るため安全。
     {
-      let missCount = 0;
-      for (let offset = 0; offset <= 24; offset++) {
-        if (missCount >= 3) break;
+      const MAX_MONTHS = 24;
+      const sheetNames = [];
+      const fetchPromises = [];
+      for (let offset = 0; offset <= MAX_MONTHS; offset++) {
         const sheet = monthlySheetName(offset);
-        // offset=0（最新月次）は取得済みのデータを再利用
-        const rows = (offset === 0) ? latestRows : await fetchSheet(sheet);
+        sheetNames.push(sheet);
+        // offset=0 は取得済みの latestRows を再利用
+        fetchPromises.push(offset === 0 ? Promise.resolve(latestRows) : fetchSheet(sheet));
+      }
+      const allResults = await Promise.all(fetchPromises);
+
+      // 結果を offset=0 から順に処理し、3連続ミスで打ち切り（既存仕様維持）
+      let missCount = 0;
+      for (let offset = 0; offset <= MAX_MONTHS; offset++) {
+        if (missCount >= 3) break;
+        const rows = allResults[offset];
         if (!rows || !rows.length) { missCount++; continue; }
+        const sheet = sheetNames[offset];
         const hi = findHeaderRowIndex(rows);
         const hm = (offset === 0 && firstSheetHm) ? firstSheetHm : buildHeaderMap(rows[hi]);
         const idCol = hm['サロンID'] ?? 0;
