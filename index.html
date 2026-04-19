@@ -2086,9 +2086,9 @@ async function handleLogin() {
         collectAreaRows(firstSheetRows, firstSheetHm);
       }
 
-      // 無料体験タブ（ログイン検索で取得済みなら再利用、未取得なら新規取得）
+      // 無料体験タブ（Step1+2で既にfetch開始済みのPromiseを再利用）
       if (!freeTrialRows) {
-        const rows = await fetchSheet(FREE_TRIAL_SHEET);
+        const rows = await freeTrialPromise;
         if (rows.length) {
           const hi = findHeaderRowIndex(rows);
           freeTrialHm = buildHeaderMap(rows[hi]);
