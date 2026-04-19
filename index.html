@@ -1765,13 +1765,59 @@ function extractValue(cell) {
   return str;
 }
 
+// ===== fetchSheet キャッシュ層（sessionStorage + メモリ） =====
+// sessionStorageは同一タブ内で有効。月次データは月内で変わらないので再取得不要。
+const SHEET_CACHE_TTL = 10 * 60 * 1000; // 10分（月次は実質もっと長くてOKだが安全側）
+const sheetMemCache = new Map(); // メモリ内キャッシュ（Promise保持で重複fetch防止）
+
+function _cacheKey(sheetName, range) {
+  return `kpi_sheet_v1:${sheetName}:${range}`;
+}
+
+function _loadFromStorage(key) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj || !obj.t || (Date.now() - obj.t) > SHEET_CACHE_TTL) return null;
+    return obj.v;
+  } catch { return null; }
+}
+
+function _saveToStorage(key, values) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), v: values }));
+  } catch { /* quota超過などは無視 */ }
+}
+
 async function fetchSheet(sheetName, range = 'A1:BZ1200') {
+  const key = _cacheKey(sheetName, range);
+
+  // 1. メモリ内のin-flight Promiseがあれば再利用（重複fetch防止）
+  if (sheetMemCache.has(key)) return sheetMemCache.get(key);
+
+  // 2. sessionStorageキャッシュヒットなら即返す
+  const cached = _loadFromStorage(key);
+  if (cached) {
+    const p = Promise.resolve(cached);
+    sheetMemCache.set(key, p);
+    return p;
+  }
+
+  // 3. 新規fetch（Promiseをメモリに保存）
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}!${range}?key=${API_KEY}`;
-  const res = await fetch(url);
-  // シートが存在しない場合（400/404）はエラーをthrowせず空配列を返す
-  if (!res.ok) return [];
-  try { const json = await res.json(); return json.values || []; }
-  catch { return []; } // JSONパースエラー時も空配列
+  const promise = fetch(url).then(async res => {
+    if (!res.ok) return [];
+    try {
+      const json = await res.json();
+      const values = json.values || [];
+      if (values.length) _saveToStorage(key, values);
+      return values;
+    } catch { return []; }
+  }).catch(() => []);
+
+  sheetMemCache.set(key, promise);
+  return promise;
 }
 
 // ===== 無料体験タブの行有効チェック =====
