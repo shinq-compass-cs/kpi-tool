@@ -3264,8 +3264,37 @@ function buildAdvisorPrompt(d) {
     + 'top3: 10件程度（最低7件）。KPI改善・ページ改善を合わせて優先度順に。上位3件が最重要。';
 }
 
-async function loadAIForReport(d, detailUrl) {
-  const st = document.getElementById('rm-ai-status');
+// AI応答のセッションキャッシュ（同サロンの2回目以降は即時表示）
+const AI_REPORT_CACHE_TTL = 60 * 60 * 1000; // 1時間（同セッション内なら十分）
+function _aiCacheKey(salonId) { return `kpi_ai_report_v1:${salonId}`; }
+function _loadAiCache(salonId) {
+  try {
+    const raw = sessionStorage.getItem(_aiCacheKey(salonId));
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj || !obj.t || (Date.now() - obj.t) > AI_REPORT_CACHE_TTL) return null;
+    return obj.advice;
+  } catch { return null; }
+}
+function _saveAiCache(salonId, advice) {
+  try { sessionStorage.setItem(_aiCacheKey(salonId), JSON.stringify({ t: Date.now(), advice })); } catch {}
+}
+
+async function loadAIForReport(d, detailUrl, opts = {}) {
+  const statusId    = opts.statusId    || 'rm-ai-status';
+  const containerId = opts.containerId || 'rm-slides';
+  const st = document.getElementById(statusId);
+
+  // キャッシュヒット → 即時描画
+  const cached = d.salon_id ? _loadAiCache(d.salon_id) : null;
+  if (cached) {
+    console.log('[AI Advisor] cache hit for salon', d.salon_id);
+    const sections = parseAIToSections(cached);
+    renderReportSlides(d, sections, true, containerId);
+    if (st) st.style.display = 'none';
+    return;
+  }
+
   try {
     const params = new URLSearchParams();
     params.append('data', JSON.stringify({
@@ -3281,8 +3310,9 @@ async function loadAIForReport(d, detailUrl) {
       if (json.tokens) {
         console.log('[AI Advisor] Token usage — input:', json.tokens.input_tokens, '/ output:', json.tokens.output_tokens);
       }
+      if (d.salon_id) _saveAiCache(d.salon_id, json.advice);
       const sections = parseAIToSections(json.advice);
-      renderReportSlides(d, sections, true);
+      renderReportSlides(d, sections, true, containerId);
     } else {
       console.warn('[AI Advisor] GASエラー:', json.error);
       if (st) st.textContent = 'AI分析エラー: ' + (json.error || '不明');
