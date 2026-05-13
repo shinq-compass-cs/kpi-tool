@@ -2416,8 +2416,14 @@ function renderDashboard(d, sheetName) {
   // エリア比較ヒートマップ描画
   renderAreaHeatmap(d);
 
-  // レポーティングボタン（社内アカウントのみ表示）
-  document.getElementById('report-trigger-row').style.display = isInternal ? 'block' : 'none';
+  // レポーティングボタン（鍼灸院・社内アカウント問わず表示）
+  document.getElementById('report-trigger-row').style.display = 'block';
+  // インライン表示エリアは初期状態は非表示（ボタン押下で表示）
+  const inlineSection = document.getElementById('inline-report-section');
+  if (inlineSection) inlineSection.style.display = 'none';
+  // 再ログイン時にボタンラベルを初期化
+  const triggerBtn = document.getElementById('report-trigger-btn');
+  if (triggerBtn) triggerBtn.textContent = '📊 コンサルアドバイスを生成';
 
   // ログイン記録を即時送信（最重要：モバイルで確実に残す）
   sendLoginRecord();
