@@ -3210,6 +3210,37 @@ function openReport() {
 
 }
 
+// ===== インライン版レポーティング =====
+// ボタン押下時にダッシュボード下部に直接表示（モーダル遷移なし）
+function openInlineReport() {
+  const d = currentSalonData;
+  if (!d) return;
+
+  // ボタンを非表示にしてセクションを表示
+  const triggerRow = document.getElementById('report-trigger-row');
+  const section    = document.getElementById('inline-report-section');
+  if (triggerRow) triggerRow.style.display = 'none';
+  if (section)    section.style.display = 'block';
+
+  // ルールベースでスライド描画（即時）
+  const sections = generateRuleBasedSections(d);
+  renderReportSlides(d, sections, false, 'inline-slides');
+
+  // セクションへスクロール（タップ位置のフィードバック）
+  if (section) {
+    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+
+  // AI読み込み（detail_urlがなければsalon_idから自動生成）
+  const detailUrl = d.detail_url
+    || (d.salon_id ? 'https://www.shinq-compass.jp/salon/detail/' + d.salon_id : null);
+  if (detailUrl && ADVISOR_GAS_URL) {
+    const st = document.getElementById('inline-ai-status');
+    if (st) st.style.display = 'inline-flex';
+    loadAIForReport(d, detailUrl, { statusId: 'inline-ai-status', containerId: 'inline-slides' });
+  }
+}
+
 function closeReport() {
   document.getElementById('report-modal').style.display = 'none';
   document.body.style.overflow = '';
