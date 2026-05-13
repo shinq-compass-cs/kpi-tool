@@ -1410,9 +1410,18 @@
       </div>
     </div>
 
-    <!-- レポーティングボタン -->
+    <!-- レポーティング（ボタン＋インライン表示） -->
     <div class="report-trigger-row" id="report-trigger-row" style="display:none;">
-      <button class="report-trigger-btn" onclick="openReport()">📊 レポーティング</button>
+      <button class="report-trigger-btn" id="report-trigger-btn" onclick="openInlineReport()">📊 コンサルアドバイスを生成</button>
+    </div>
+    <div class="inline-report-section" id="inline-report-section" style="display:none;">
+      <div class="inline-report-header">
+        📊 コンサルアドバイス
+        <span class="inline-ai-status" id="inline-ai-status" style="display:none;">
+          <span class="rm-spinner"></span> AI分析中…
+        </span>
+      </div>
+      <div id="inline-slides"></div>
     </div>
 
     <div class="footer">Copyright &copy; shinq-compass.jp All Rights Reserved.</div>
