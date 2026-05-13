@@ -3411,8 +3411,9 @@ function flagLabel(key) {
   return map[key] || key;
 }
 
-function renderReportSlides(d, sections, fromAI) {
-  const container = document.getElementById('rm-slides');
+function renderReportSlides(d, sections, fromAI, containerId = 'rm-slides') {
+  const container = document.getElementById(containerId);
+  if (!container) return;
   container.innerHTML = '';
   container.scrollTop = 0;
 
