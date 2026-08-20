@@ -2022,7 +2022,7 @@ async function handleLogin() {
         const idCol = freeTrialHm['サロンID'] ?? 0;
         for (let i = hi + 1; i < rows.length; i++) {
           const row = rows[i];
-          if (String(row[idCol] || '').trim() === salonId) {
+          if (String(row[idCol] || '').replace(/,/g, '').trim() === salonId) {
             if (!isFreeTrialDateValid(row)) break;
             found = parseRowDynamic(row, freeTrialHm);
             found.salon_id = salonId;
