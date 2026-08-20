@@ -2001,7 +2001,7 @@ async function handleLogin() {
       firstSheetRows = latestRows;
       const idCol = firstSheetHm['サロンID'] ?? 0;
       for (let i = hi + 1; i < latestRows.length; i++) {
-        if (String(latestRows[i][idCol] || '').trim() === salonId) {
+        if (String(latestRows[i][idCol] || '').replace(/,/g, '').trim() === salonId) {
           found = parseRowDynamic(latestRows[i], firstSheetHm);
           found.salon_id = salonId;
           found.detail_url = String(latestRows[i][49] || '').trim() || null; // AX列
