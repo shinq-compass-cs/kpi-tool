@@ -2080,7 +2080,7 @@ async function handleLogin() {
         const idCol = hm['サロンID'] ?? 0;
         let foundInSheet = false;
         for (let i = hi + 1; i < rows.length; i++) {
-          if (String(rows[i][idCol] || '').trim() === salonId) {
+          if (String(rows[i][idCol] || '').replace(/,/g, '').trim() === salonId) {
             trendData.unshift({ sheet, data: parseRowDynamic(rows[i], hm) });
             foundInSheet = true;
             missCount = 0;
