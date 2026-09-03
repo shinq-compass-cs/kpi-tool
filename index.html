@@ -1981,7 +1981,6 @@ async function handleLogin() {
 
     // === Step1+2: 最新月次と無料体験タブを並列fetch開始（Step3の24ヶ月も同時に走らせる） ===
     // 高速化：以前は Step1→Step2→Step3 の直列だったが、全タブを同時発火してキャッシュで重複排除。
-    const latestSheet = monthlySheetName(0);
     const MAX_MONTHS = 24;
     const monthlySheetNames = [];
     const monthlyPromises = [];
