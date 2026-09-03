@@ -1993,22 +1993,28 @@ async function handleLogin() {
     const freeTrialPromise = fetchSheet(FREE_TRIAL_SHEET);
 
     // === Step1: 最新月次でサロン検索 ===
-    const latestRows = await monthlyPromises[0];
+    // 当月タブ（例：2609）がまだ作成されていない月初期間は、直近の既存タブに自動フォールバックする
+    // （固定で monthlySheetName(0) だけを見ると、タブ作成前は全有料院がログイン不可になってしまうため）
+    const LATEST_LOOKBACK = 3;
     let firstSheetRows = null, firstSheetHm = null;
-    if (latestRows.length) {
-      const hi = findHeaderRowIndex(latestRows);
-      firstSheetHm = buildHeaderMap(latestRows[hi]);
-      firstSheetRows = latestRows;
+    for (let offset = 0; offset < LATEST_LOOKBACK; offset++) {
+      const rows = await monthlyPromises[offset];
+      if (!rows.length) continue;
+      const sheetName = monthlySheetNames[offset];
+      const hi = findHeaderRowIndex(rows);
+      firstSheetHm = buildHeaderMap(rows[hi]);
+      firstSheetRows = rows;
       const idCol = firstSheetHm['サロンID'] ?? 0;
-      for (let i = hi + 1; i < latestRows.length; i++) {
-        if (String(latestRows[i][idCol] || '').replace(/,/g, '').trim() === salonId) {
-          found = parseRowDynamic(latestRows[i], firstSheetHm);
+      for (let i = hi + 1; i < rows.length; i++) {
+        if (String(rows[i][idCol] || '').replace(/,/g, '').trim() === salonId) {
+          found = parseRowDynamic(rows[i], firstSheetHm);
           found.salon_id = salonId;
-          found.detail_url = String(latestRows[i][49] || '').trim() || null; // AX列
-          foundSheet = latestSheet;
+          found.detail_url = String(rows[i][49] || '').trim() || null; // AX列
+          foundSheet = sheetName;
           break;
         }
       }
+      break; // 最初に見つかった実在タブを「最新月次」として扱う
     }
 
     // === Step2: 最新月次で見つからなければ無料体験タブを検索（すでにfetch開始済み） ===
