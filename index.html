@@ -1814,143 +1814,28 @@ async function handleLogin() {
     err.style.display = 'block';
     return;
   }
-  // メール照合スキップ：CS専用メアドまたは「test」でログインした場合
-  const loginSkipEmailCheck = (email === CS_INTERNAL_EMAIL || email === 'test');
-  // 社内判定（レポーティング等のCS機能表示）：CS専用メアドのみ
-  const loginIsInternal = (email === CS_INTERNAL_EMAIL);
-
   showLoading(true);
   document.getElementById('login-error').style.display = 'none';
 
   try {
-    let found = null;
-    let foundSheet = null;
-    trendData = [];
-
-    // === Step1+2: 最新月次と無料体験タブを並列fetch開始（Step3の24ヶ月も同時に走らせる） ===
-    // 高速化：以前は Step1→Step2→Step3 の直列だったが、全タブを同時発火してキャッシュで重複排除。
-    const MAX_MONTHS = 24;
-    const monthlySheetNames = [];
-    const monthlyPromises = [];
-    for (let offset = 0; offset <= MAX_MONTHS; offset++) {
-      const s = monthlySheetName(offset);
-      monthlySheetNames.push(s);
-      monthlyPromises.push(fetchSheet(s));
-    }
-    const freeTrialPromise = fetchSheet(FREE_TRIAL_SHEET);
-
-    // === Step1: 最新月次でサロン検索 ===
-    // 当月タブ（例：2609）がまだ作成されていない月初期間は、直近の既存タブに自動フォールバックする
-    // （固定で monthlySheetName(0) だけを見ると、タブ作成前は全有料院がログイン不可になってしまうため）
-    const LATEST_LOOKBACK = 3;
-    let firstSheetRows = null, firstSheetHm = null;
-    for (let offset = 0; offset < LATEST_LOOKBACK; offset++) {
-      const rows = await monthlyPromises[offset];
-      if (!rows.length) continue;
-      const sheetName = monthlySheetNames[offset];
-      const hi = findHeaderRowIndex(rows);
-      firstSheetHm = buildHeaderMap(rows[hi]);
-      firstSheetRows = rows;
-      const idCol = firstSheetHm['サロンID'] ?? 0;
-      for (let i = hi + 1; i < rows.length; i++) {
-        if (String(rows[i][idCol] || '').replace(/,/g, '').trim() === salonId) {
-          found = parseRowDynamic(rows[i], firstSheetHm);
-          found.salon_id = salonId;
-          found.detail_url = String(rows[i][49] || '').trim() || null; // AX列
-          foundSheet = sheetName;
-          break;
-        }
-      }
-      break; // 最初に見つかった実在タブを「最新月次」として扱う
-    }
-
-    // === Step2: 最新月次で見つからなければ無料体験タブを検索（すでにfetch開始済み） ===
-    let freeTrialRows = null, freeTrialHm = null;
-    if (!found) {
-      const rows = await freeTrialPromise;
-      if (rows.length) {
-        const hi = findHeaderRowIndex(rows);
-        freeTrialHm = buildHeaderMap(rows[hi]);
-        freeTrialRows = rows;
-        const idCol = freeTrialHm['サロンID'] ?? 0;
-        for (let i = hi + 1; i < rows.length; i++) {
-          const row = rows[i];
-          if (String(row[idCol] || '').replace(/,/g, '').trim() === salonId) {
-            if (!isFreeTrialDateValid(row)) break;
-            found = parseRowDynamic(row, freeTrialHm);
-            found.salon_id = salonId;
-            found.detail_url = String(row[9] || '').trim() || null; // J列
-            foundSheet = FREE_TRIAL_SHEET;
-            break;
-          }
-        }
-      }
-    }
-
-    if (!found) {
+    // 照合・集計はGAS側で行い、本人の数字と比較用の匿名データだけを受け取る
+    const resp = await fetchSalonData(salonId, email);
+    if (!resp.ok) {
       const err = document.getElementById('login-error');
-      err.textContent = 'サロンIDが見つかりませんでした。番号をご確認ください。';
+      err.textContent = resp.error === 'not_found'      ? 'サロンIDが見つかりませんでした。番号をご確認ください。'
+                      : resp.error === 'email_mismatch' ? 'メールアドレスが一致しません。ご確認ください。'
+                      : 'データの読み込みに失敗しました。時間をおいて再試行してください。';
       err.style.display = 'block';
       showLoading(false);
       return;
     }
 
-    // メールアドレス照合（社内メアド・testの場合はスキップ）
-    if (!loginSkipEmailCheck && found.email !== email) {
-      const err = document.getElementById('login-error');
-      err.textContent = 'メールアドレスが一致しません。ご確認ください。';
-      err.style.display = 'block';
-      showLoading(false);
-      return;
-    }
-
-    // 到達可能ポイント・順位を計算（最新月次優先、なければ無料体験タブで代替）
-    {
-      const refRows = firstSheetRows || freeTrialRows;
-      const refHm   = firstSheetHm   || freeTrialHm;
-      const addPt = calcAdditionalPoints(found);
-      const maxPt = Number(found.search_point || 0) + addPt;
-      found.add_pt = addPt;
-      found.potential_max_pt = maxPt;
-      found.potential_rank   = refRows ? calcPotentialRank(found.area, maxPt, refRows, refHm) : null;
-      // フラグ項目だけでは1位に届かない場合に備えてエリア1位のptを取得
-      found.first_place_pt   = refRows ? calcFirstPlacePt(found.area, refRows, refHm) : null;
-    }
-
-    // === Step3: 月次推移データ収集（既に並列fetch開始済みの結果を使う、3連続ミスで打ち切り） ===
-    {
-      const allResults = await Promise.all(monthlyPromises);
-
-      // 結果を offset=0 から順に処理し、3連続ミスで打ち切り（既存仕様維持）
-      let missCount = 0;
-      for (let offset = 0; offset <= MAX_MONTHS; offset++) {
-        if (missCount >= 3) break;
-        const rows = allResults[offset];
-        if (!rows || !rows.length) { missCount++; continue; }
-        const sheet = monthlySheetNames[offset];
-        const hi = findHeaderRowIndex(rows);
-        const hm = (offset === 0 && firstSheetHm) ? firstSheetHm : buildHeaderMap(rows[hi]);
-        const idCol = hm['サロンID'] ?? 0;
-        let foundInSheet = false;
-        for (let i = hi + 1; i < rows.length; i++) {
-          if (String(rows[i][idCol] || '').replace(/,/g, '').trim() === salonId) {
-            trendData.unshift({ sheet, data: parseRowDynamic(rows[i], hm) });
-            foundInSheet = true;
-            missCount = 0;
-            break;
-          }
-        }
-        if (!foundInSheet) missCount++;
-      }
-    }
-
-    // 有料院平均値を計算（最新月次タブから、キャッシュ済みなら再計算しない）
-    if (!avgData && firstSheetRows && firstSheetHm) {
-      avgData = calcSheetAverages(firstSheetRows, firstSheetHm);
-    }
+    const found = resp.found;
+    trendData = resp.trend || [];
+    avgData = resp.avg || null;
 
     currentData = found;
-    isInternal = loginIsInternal;
+    isInternal = !!resp.is_internal;
     if (!isInternal) {
       loginTime = new Date();
       loginLogSent = false;
@@ -1959,45 +1844,9 @@ async function handleLogin() {
     }
     saveSession(salonId, email);
 
-    // === Step4: 同エリア院データを収集（最新月次タブ + 無料体験タブ） ===
-    areaRows = [];
-    if (found.area) {
-      const areaVal = String(found.area).trim();
+    areaRows = resp.area_rows || [];
 
-      // 指定エリアの行をareaRowsに追加（salon_id重複は除外）
-      const collectAreaRows = (allRows, hm) => {
-        const areaIdx = hm['検索順位エリア'];
-        if (areaIdx === undefined) return;
-        const hi = findHeaderRowIndex(allRows);
-        for (let i = hi + 1; i < allRows.length; i++) {
-          const rowArea = String(allRows[i][areaIdx] || '').trim();
-          if (rowArea !== areaVal) continue;
-          const parsed = parseRowDynamic(allRows[i], hm);
-          if (!areaRows.some(r => String(r.salon_id).trim() === String(parsed.salon_id).trim())) {
-            areaRows.push(parsed);
-          }
-        }
-      };
-
-      if (firstSheetRows && firstSheetHm) {
-        collectAreaRows(firstSheetRows, firstSheetHm);
-      }
-
-      // 無料体験タブ（Step1+2で既にfetch開始済みのPromiseを再利用）
-      if (!freeTrialRows) {
-        const rows = await freeTrialPromise;
-        if (rows.length) {
-          const hi = findHeaderRowIndex(rows);
-          freeTrialHm = buildHeaderMap(rows[hi]);
-          freeTrialRows = rows;
-        }
-      }
-      if (freeTrialRows && freeTrialRows.length && freeTrialHm) {
-        collectAreaRows(freeTrialRows, freeTrialHm);
-      }
-    }
-
-    renderDashboard(found, foundSheet);
+    renderDashboard(found, resp.found_sheet);
 
   } catch (e) {
     console.error(e);
@@ -2554,8 +2403,8 @@ function renderAreaHeatmap(d) {
     return false;
   };
 
-  // 自院データ：areaRows内の同一salon_idの行を優先使用（月次タブのデータが優先、なければdをそのまま使用）
-  const selfRow = areaRows.find(r => String(r.salon_id).trim() === String(d.salon_id).trim()) || d;
+  // 自院データ：areaRows内の自院行（GASが is_self を付与）を優先使用、なければdをそのまま使用
+  const selfRow = areaRows.find(r => r.is_self) || d;
 
   const rows = items.map(item => {
     const achievedCount = areaRows.filter(r => isAchieved(r, item)).length;
@@ -2641,88 +2490,6 @@ function getReviewPlanPts(compassPlan) {
   } else {
     return { reviewPt: 2, replyPt: 0, reviewCapPt: 200, replyCapPt: 0 };
   }
-}
-
-// ===== エリア内1位のポイントを取得 =====
-function calcFirstPlacePt(area, allRows, hm) {
-  const areaIdx = hm['検索順位エリア'];
-  const ptIdx   = hm['検索優先ポイント'] ?? hm['掲載優先ポイント'];
-  if (areaIdx === undefined || ptIdx === undefined) return null;
-  const hi = findHeaderRowIndex(allRows);
-  let maxPt = 0;
-  for (let i = hi + 1; i < allRows.length; i++) {
-    const rowArea = String(allRows[i][areaIdx] || '').trim();
-    const rowPt   = parseNum(allRows[i][ptIdx]);
-    if (rowArea === String(area || '').trim() && !isNaN(rowPt)) {
-      maxPt = Math.max(maxPt, rowPt);
-    }
-  }
-  return maxPt;
-}
-
-// ===== 追加取得可能ポイント計算 =====
-// ※初月ボーナス（プレミアム+150pt / プラチナ+300pt / ダイヤ+300pt）は継続後に消滅するため含まない
-// ※継続利用ポイント（最大150〜300pt）はスプレッドシート非取得のため含まない
-function calcAdditionalPoints(d) {
-  const plan = getPlanType(d.compass_plan);
-  const isPaid = plan !== 'free';
-  const isPlatinaOrDiamond = plan === 'platina' || plan === 'diamond';
-  // 店舗情報登録（全5項目完了）: プラン別 50/100/200pt
-  const storePrPt = isPlatinaOrDiamond ? 200 : (plan === 'premium' ? 100 : 50);
-  // 口コミパーツ: 無料プランは対象外（0pt）
-  const reviewPartsPt = isPaid ? 30 : 0;
-  const items = [
-    { key: 'store_pr',       point: storePrPt,    type: 'flag' },
-    { key: 'reserve_public', point: 50,            type: 'flag_str' },
-    { key: 'reserve_gmb',    point: 50,            type: 'flag' },
-    { key: 'reserve_banner', point: 50,            type: 'flag' },
-    { key: 'compass_link',   point: 30,            type: 'flag' },
-    { key: 'review_parts',   point: reviewPartsPt, type: 'flag' },
-  ];
-  let add = 0;
-  for (const item of items) {
-    if (item.point === 0) continue;
-    const val = d[item.key];
-    const achieved = item.type === 'flag'
-      ? (Number(val) >= 1)
-      : (val == 1 || val === '公開');
-    if (!achieved) add += item.point;
-  }
-  return add;
-}
-
-// ===== 同エリア内での到達可能順位を計算 =====
-// maxPt を達成した場合に何位になるかを全行データから算出（VLOOKUP方式）
-// ===== 有料院平均値計算（最新月別シート全行） =====
-function calcSheetAverages(allRows, hm) {
-  const hi = findHeaderRowIndex(allRows);
-  const acc = [], ctr = [], cvr = [], rev = [];
-  for (let i = hi + 1; i < allRows.length; i++) {
-    const d = parseRowDynamic(allRows[i], hm);
-    if (d.access > 0)  acc.push(d.access);
-    if (d.access > 0 && d.click != null)  ctr.push(d.click / d.access * 100);
-    if (d.click > 0 && d.net_reserve != null) cvr.push(d.net_reserve / d.click * 100);
-    if (d.review != null && d.review >= 0)  rev.push(d.review);
-  }
-  const avg = arr => arr.length ? parseFloat((arr.reduce((s,v)=>s+v,0)/arr.length).toFixed(1)) : null;
-  return { access: avg(acc), ctr: avg(ctr), cvr: avg(cvr), review: avg(rev) };
-}
-
-function calcPotentialRank(area, maxPt, allRows, hm) {
-  const areaIdx = hm['検索順位エリア'];
-  // シートにより列名が異なる（2602: 掲載優先ポイント、2601以前: 検索優先ポイント）
-  const ptIdx   = hm['検索優先ポイント'] ?? hm['掲載優先ポイント'];
-  if (areaIdx === undefined || ptIdx === undefined) return null;
-  const startRow = findHeaderRowIndex(allRows) + 1; // ヘッダー行をスキップ
-  let countAbove = 0;
-  for (let i = startRow; i < allRows.length; i++) {
-    const rowArea = String(allRows[i][areaIdx] || '').trim();
-    const rowPt   = parseNum(allRows[i][ptIdx]);
-    if (rowArea === String(area || '').trim() && !isNaN(rowPt) && rowPt > maxPt) {
-      countAbove++;
-    }
-  }
-  return countAbove + 1;
 }
 
 // ===== アドバイス用リッチ定義 =====
