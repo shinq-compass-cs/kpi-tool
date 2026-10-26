@@ -18,9 +18,10 @@ Edit ツールでコードを変更したら、必ず以下を確認してから
 - `try-catch` の範囲内で不要な例外が発生していないか確認する
 
 ### 4. 月次タブについて
-- `MONTHLY_SHEETS` は廃止済み。`monthlySheetName(offsetMonths)` で YYMM 形式を自動生成する
-- 毎月新しいタブが追加されても、コード変更は不要（自動で最新月を参照する）
-- 月次タブが存在しない場合は `fetchSheet` が空配列を返すので、ログインは壊れない
+- シートの読み取り・ログイン照合・集計は `kpi-data/kpi-data.gs`（GAS）が行う。ページ側に Google の鍵やシート番号は置かない
+- 月次タブ名は GAS の `monthlySheetName(offsetMonths)` が YYMM 形式で自動生成する（日本時間）
+- 毎月新しいタブが追加されても、コード変更は不要（直近3か月以内の既存タブを最新として参照する）
+- 他院のデータは、院名・メール・サロンIDを外したエリア比較項目だけをページに返す
 
 ### 5. 代行設置フォームの同期ルール
 - `delegate.html`（スタンドアロンページ）と `index.html` 内のモーダル（`#delegate-overlay`）は**同じフォーム内容**を保つ
@@ -30,5 +31,7 @@ Edit ツールでコードを変更したら、必ず以下を確認してから
 
 ## プロジェクト構成
 - 編集ファイル：`kpi-tool.html`（ローカル確認用）/ `index.html`（GitHub Pages 公開用）
-- 変更は `index.html` に対して行い、auto-commit フックが自動コミットする
+- 変更は `index.html` に対して行う
+- 注意：`~/.claude/hooks/autopush.sh` は kpi-tool 内のファイルを編集するたびに index.html をコミットし、**`git push` まで行う**（編集途中の版が公開される）。複数回の編集が必要な作業では、事前に止めること
 - 公開反映：`git push origin main` → GitHub Pages に数分で反映
+- GAS（kpi-data）は `kpi-data/` 配下。`clasp deploy` は使わない

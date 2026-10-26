@@ -1,16 +1,21 @@
 // ============================================================
 // browser.test.js — kpi-tool Playwright ブラウザテスト
-// 実行: node browser.test.js
+// 実行: KPI_CS_PASSPHRASE=<社内用の合言葉> node browser.test.js
+//   （合言葉は公開リポジトリに書かないため、環境変数で渡す。KPI_BASE_URL で対象URLを差し替え可）
 // 対象: https://shinq-compass-cs.github.io/kpi-tool/
 //       https://shinq-compass-cs.github.io/kpi-tool/delegate.html
 // ============================================================
 
 const { chromium, webkit } = require('../repeat-rate/node_modules/playwright');
 
-const BASE_URL      = 'https://shinq-compass-cs.github.io/kpi-tool/';
-const DELEGATE_URL  = 'https://shinq-compass-cs.github.io/kpi-tool/delegate.html';
+const BASE_URL      = process.env.KPI_BASE_URL || 'https://shinq-compass-cs.github.io/kpi-tool/';
+const DELEGATE_URL  = new URL('delegate.html', BASE_URL).href;
 const TEST_SALON_ID = '38459';  // 無料体験タブに存在するサロン
-const TEST_EMAIL    = 'test';   // 内部ショートカット（メール照合スキップ）
+const TEST_EMAIL    = process.env.KPI_CS_PASSPHRASE || '';  // 社内用の合言葉（メール照合スキップ・社内機能表示）
+if (!TEST_EMAIL) {
+  console.error('環境変数 KPI_CS_PASSPHRASE（社内用の合言葉）を設定して実行してください。');
+  process.exit(2);
+}
 
 // ─── ユーティリティ ─────────────────────────────────────────
 
@@ -109,7 +114,7 @@ async function runSuite(browserName, browserType) {
   await run('ST-LOGIN-06', 'テスト(内部)ログイン → レポーティングボタン表示', async () => {
     // ST-LOGIN-05でページリセットされているため再ログイン
     await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
-    await doLogin(page);  // testメールは内部ショートカット
+    await doLogin(page);  // 合言葉ログインは社内扱い
     const display = await page.$eval('#report-trigger-row', el => el.style.display);
     if (display === 'none') throw new Error('内部ログイン時にレポーティングボタンが非表示');
     // このままST-DASH-*テストへ続く（ログイン済み状態を維持）
@@ -295,7 +300,7 @@ async function runSuite(browserName, browserType) {
 (async () => {
   console.log('kpi-tool Playwrightテスト開始');
   console.log(`対象: ${BASE_URL}`);
-  console.log(`サロンID: ${TEST_SALON_ID} / email: ${TEST_EMAIL}`);
+  console.log(`サロンID: ${TEST_SALON_ID} / 合言葉ログイン`);
 
   try {
     await runSuite('Android Chrome (390×800)', chromium);
