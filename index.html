@@ -1609,7 +1609,8 @@
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script>
 // ===== ログ設定 =====
-const CS_INTERNAL_EMAIL = 'info@shinq-compass.jp'; // このメアドでログイン→社内判定
+// ログイン照合とデータ取得（kpi-data/kpi-data.gs）。社内用の合言葉もGAS側で照合する
+const KPI_DATA_GAS_URL = '';
 const GAS_LOG_URL = 'https://script.google.com/macros/s/AKfycbyUQ7zwgR4lT5eHddLBYnA2Oob55Z63kh4vlHZM7ZaPCEwfNu6oqqFwKsd5zJ4tYOWa/exec'; // ← log-sheet.gs をデプロイして取得したURLを貼り付け
 const DELEGATE_GAS_URL = 'https://script.google.com/macros/s/AKfycbw4Pm3pzkGnF4443l4O-5wGb-aW0wYP3cTLUgGEuQhCYmpVtpC8O7lp4qfispNynmsq/exec';
 const ADVISOR_GAS_URL = 'https://script.google.com/macros/s/AKfycbxZB0-yz0F0jlqUoQKeI9KP8jndqWF5H5IcsoQ5Lf-NBuFEEvCYGUYdXWMk3QigT4Q7/exec';
