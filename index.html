@@ -1615,6 +1615,7 @@ const GAS_LOG_URL = 'https://script.google.com/macros/s/AKfycbyUQ7zwgR4lT5eHddLB
 const DELEGATE_GAS_URL = 'https://script.google.com/macros/s/AKfycbw4Pm3pzkGnF4443l4O-5wGb-aW0wYP3cTLUgGEuQhCYmpVtpC8O7lp4qfispNynmsq/exec';
 const ADVISOR_GAS_URL = 'https://script.google.com/macros/s/AKfycbxZB0-yz0F0jlqUoQKeI9KP8jndqWF5H5IcsoQ5Lf-NBuFEEvCYGUYdXWMk3QigT4Q7/exec';
 let currentSalonData = null; // AI分析用にログイン中のサロンデータを保持
+let aiLogin = null;          // AI分析の本人確認用（ログインに通ったサロンIDとメール／合言葉）
 let isInternal = false; // ログイン時に社内/社外を判定して設定
 
 // HTMLエスケープ（外部データをinnerHTMLに埋め込む際に必ず使う）
@@ -1844,6 +1845,7 @@ async function handleLogin() {
       sessionClickedUrls.length = 0;
     }
     saveSession(salonId, email);
+    aiLogin = { salon_id: salonId, email };
 
     areaRows = resp.area_rows || [];
 
@@ -2705,6 +2707,7 @@ function handleLogout() {
   document.getElementById('area-heatmap').style.display = 'none';
   document.getElementById('report-trigger-row').style.display = 'none';
   currentSalonData = null;
+  aiLogin = null;
 }
 
 // Enterキーでログイン
@@ -2827,12 +2830,10 @@ function openReport() {
   const sections = generateRuleBasedSections(d);
   renderReportSlides(d, sections, false);
 
-  // AI読み込み（detail_urlがなければsalon_idから自動生成）
-  const detailUrl = d.detail_url
-    || (d.salon_id ? 'https://www.shinq-compass.jp/salon/detail/' + d.salon_id : null);
-  if (detailUrl && ADVISOR_GAS_URL) {
+  // AI読み込み（読み込む院ページと指示文はGAS側で決める）
+  if (ADVISOR_GAS_URL && aiLogin) {
     document.getElementById('rm-ai-status').style.display = 'flex';
-    loadAIForReport(d, detailUrl);
+    loadAIForReport(d);
   }
 
 }
@@ -2858,13 +2859,11 @@ function openInlineReport() {
     setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   }
 
-  // AI読み込み（detail_urlがなければsalon_idから自動生成）
-  const detailUrl = d.detail_url
-    || (d.salon_id ? 'https://www.shinq-compass.jp/salon/detail/' + d.salon_id : null);
-  if (detailUrl && ADVISOR_GAS_URL) {
+  // AI読み込み（読み込む院ページと指示文はGAS側で決める）
+  if (ADVISOR_GAS_URL && aiLogin) {
     const st = document.getElementById('inline-ai-status');
     if (st) st.style.display = 'inline-flex';
-    loadAIForReport(d, detailUrl, { statusId: 'inline-ai-status', containerId: 'inline-slides' });
+    loadAIForReport(d, { statusId: 'inline-ai-status', containerId: 'inline-slides' });
   }
 }
 
@@ -2873,54 +2872,7 @@ function closeReport() {
   document.body.style.overflow = '';
 }
 
-function buildAdvisorPrompt(d) {
-  const kv = (v) => (v !== null && v !== undefined) ? String(v) : '-';
-  const fl = (v) => (v == 1 || v === '1' || v === '公開') ? '達成✓' : (v == null ? '未設定' : '未達✗');
-  const kpiLines = [
-    '院名：' + kv(d.name), 'エリア：' + kv(d.area), 'プラン：' + kv(d.compass_plan),
-    '検索優先ポイント：' + kv(d.search_point) + 'pt', 'エリア内順位：' + kv(d.area_rank) + '位', '',
-    '■ ニーズ1（検索で見つけてもらう）',
-    '  アクセス数：' + kv(d.access) + '（目標200）',
-    '  店舗PR情報登録：' + fl(d.store_pr), '  予約公開：' + fl(d.reserve_public),
-    '  予約GMB設置：' + fl(d.reserve_gmb), '  予約バナー設置：' + fl(d.reserve_banner),
-    '  コンパス相互リンク：' + fl(d.compass_link), '',
-    '■ ニーズ2（予約ボタンを押してもらう）',
-    '  クリック数：' + kv(d.click) + '（目標20）', '  クリック率：' + kv(d.click_rate) + '%（目標10%）',
-    '  口コミ件数：' + kv(d.review) + '件（目標5件）', '  口コミ返信：' + kv(d.review_reply) + '件（目標5件）',
-    '  PickUp口コミ：' + fl(d.pickup_review), '  口コミパーツ設置：' + fl(d.review_parts),
-    '  メニュー3件以上：' + fl(d.menu3), '',
-    '■ ニーズ3（実際に予約してもらう）',
-    '  予約数：' + kv(d.net_reserve) + '件（目標2件）', '  ネット予約率：' + kv(d.net_reserve_rate) + '%（目標10%）',
-    '  メニュー連携：' + fl(d.menu_link), '  ゲスト予約利用：' + fl(d.guest_reserve),
-    '  予約受付締切時間：' + kv(d.deadline) + '分前'
-  ].join('\n');
-
-  return 'あなたは鍼灸院・整骨院専門のWebマーケティングコンサルタントです。\n'
-    + '以下の情報をもとに、カスタマーサクセス担当が院長フォロー時に参照する分析資料を作成してください。\n\n'
-    + '【重要】院詳細ページはスマートフォン表示（縦スクロール）を想定して分析してください。\n'
-    + '来院を検討している患者が初めてページを見た視点で評価してください。\n\n'
-    + '【院詳細ページ情報（shinq-compass.jpより取得）】\n{{PAGE_TEXT}}\n\n'
-    + '【現在のKPIデータ】\n' + kpiLines + '\n\n'
-    + '## 出力形式\n'
-    + '必ず以下のJSON形式のみで返してください。JSONの前後に説明文やコードブロック記号は一切不要です。\n\n'
-    + '{"kpi_issues":[{"item":"KPI項目名","problem":"現状（未達成・未設定など）","action":"具体的な対策（1文）"}],'
-    + '"page_summary":"スマホで来院検討者視点から見たページ全体の評価（2〜3文）",'
-    + '"page_details":['
-    + '{"section":"ファーストビュー","score":"◎/○/△/×","comment":"スマホで3秒以内にターゲットを掴めているか（写真・キャッチコピー・予約可能状況）"},'
-    + '{"section":"口コミ","score":"◎/○/△/×","comment":"量・質・鮮度の観点で評価"},'
-    + '{"section":"特徴","score":"◎/○/△/×","comment":"ターゲットの悩みを解決できそうか・分かりやすさ・写真"},'
-    + '{"section":"当院のこだわり","score":"◎/○/△/×","comment":"ターゲットメリットが定義されているか・分かりやすさ・写真"},'
-    + '{"section":"メニュー","score":"◎/○/△/×","comment":"ページ内容との合致・時間と価格のバランス・分かりやすさ"},'
-    + '{"section":"クーポン","score":"◎/○/△/×","comment":"内容・設定状況を評価"},'
-    + '{"section":"スタッフ挨拶","score":"◎/○/△/×","comment":"感情的な共感が得られるか・権威性・信頼性"},'
-    + '{"section":"店舗データ","score":"◎/○/△/×","comment":"過不足を評価"},'
-    + '{"section":"対応しているこだわり","score":"◎/○/△/×","comment":"過不足を評価"}'
-    + '],'
-    + '"top3":[{"title":"やること（動詞始まりで短く）","detail":"具体的な手順（50文字以内）","effect":"期待効果（1文）"}]}\n\n'
-    + 'kpi_issues: KPIデータで未達成・未設定のもののみ（問題ない項目は含めない）。\n'
-    + 'page_details: 必ず9項目すべて・scoreは◎○△×のいずれか。\n'
-    + 'top3: 10件程度（最低7件）。KPI改善・ページ改善を合わせて優先度順に。上位3件が最重要。';
-}
+// AIへの指示文は advisor.gs（GAS）の中で組み立てる。ページからは送らない
 
 // AI応答のセッションキャッシュ（同サロンの2回目以降は即時表示）
 const AI_REPORT_CACHE_TTL = 60 * 60 * 1000; // 1時間（同セッション内なら十分）
@@ -2938,7 +2890,7 @@ function _saveAiCache(salonId, advice) {
   try { sessionStorage.setItem(_aiCacheKey(salonId), JSON.stringify({ t: Date.now(), advice })); } catch {}
 }
 
-async function loadAIForReport(d, detailUrl, opts = {}) {
+async function loadAIForReport(d, opts = {}) {
   const statusId    = opts.statusId    || 'rm-ai-status';
   const containerId = opts.containerId || 'rm-slides';
   const st = document.getElementById(statusId);
@@ -2955,12 +2907,12 @@ async function loadAIForReport(d, detailUrl, opts = {}) {
 
   try {
     const params = new URLSearchParams();
+    // 送るのはログインに通ったサロンIDとメール（社内は合言葉）だけ。GAS側で本人確認する
     params.append('data', JSON.stringify({
-      detail_url:      detailUrl,
-      prompt_template: buildAdvisorPrompt(d),
-      max_tokens:      4000
+      salon_id: aiLogin.salon_id,
+      email:    aiLogin.email
     }));
-    console.log('[AI Advisor] POST →', ADVISOR_GAS_URL, '/ detail_url:', detailUrl);
+    console.log('[AI Advisor] POST →', ADVISOR_GAS_URL, '/ salon:', aiLogin.salon_id);
     const res = await fetch(ADVISOR_GAS_URL, { method: 'POST', body: params });
     const json = await res.json();
     console.log('[AI Advisor] response:', json);
@@ -2983,17 +2935,34 @@ async function loadAIForReport(d, detailUrl, opts = {}) {
   }
 }
 
+// 文字列は < > & " ' を置き換え、配列・オブジェクトは中身まで同じ処理をする
+function escapeAIValue(v) {
+  if (typeof v === 'string') {
+    return v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  if (typeof v === 'number' || typeof v === 'boolean') return v;
+  if (Array.isArray(v)) return v.map(escapeAIValue);
+  if (v && typeof v === 'object') {
+    const out = {};
+    Object.keys(v).forEach(k => { out[k] = escapeAIValue(v[k]); });
+    return out;
+  }
+  return '';
+}
+
 function parseAIToSections(text) {
   try {
     const clean = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
     const obj = JSON.parse(clean);
     console.log('[AI Advisor] JSON parse OK:', obj);
-    return {
+    // AIの回答は院ページの文章をもとに作られるため、画面に出す前にすべて文字として扱う形に変える
+    return escapeAIValue({
       kpi_issues:   Array.isArray(obj.kpi_issues)   ? obj.kpi_issues   : [],
       page_summary: typeof obj.page_summary === 'string' ? obj.page_summary : '',
       page_details: Array.isArray(obj.page_details) ? obj.page_details  : [],
       top3:         Array.isArray(obj.top3)          ? obj.top3          : [],
-    };
+    });
   } catch(e) {
     console.warn('[AI Advisor] JSONパース失敗:', e.message);
     return { kpi_issues: [], page_summary: '', page_details: [], top3: [] };
